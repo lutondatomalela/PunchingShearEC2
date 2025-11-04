@@ -44,7 +44,7 @@ PunshingShearEC2/
 │
 ├── PunchingShear/
 │ ├── __init__.py
-│ ├── PunchsingEC2.py
+│ ├── Punchsing_EC2.py
 │ └── _utils.py
 │
 ├── examples/
