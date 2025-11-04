@@ -19,12 +19,12 @@ melhorias:
 """
 Projeto:    PunçoamentoEC2
 Versão:     v1.0.0
-Autor:      Eng.º Lutonda Tomalela
-LikedIn:    
-GitHub:     https://github.com/lutondatomalela/PuncoamentoEC2
-Direitos:   © 2025 Eng.º Lutonda Tomalela. Todos os direitos reservados.
-Norma:      NP EN 1992-1-1:2010 (+A1:2019)
+Autor:      Engº Lutonda Tomalela
+LikedIn:    https://pt.linkedin.com/in/lutondatomalela
+GitHub:     https://github.com/lutondatomalela/PunchingShearEC2
+Suporte normativo:      NP EN 1992-1-1:2010 (+A1:2019)
 Local/Data: Porto, 2025-10-31
+© 2025 Engº Lutonda Tomalela. Todos os direitos reservados
 """
 
 import math
@@ -57,7 +57,6 @@ class PuncoamentoEC2:
                  gamma_C: float = 1.5,
                  gamma_S: float = 1.15,
                  beta_mode: str = "simplificado",
-                 # NOVOS parâmetros de entrada
                  laje_As_lx_cm2pm: float | None = None,
                  laje_As_ly_cm2pm: float | None = None,
                  laje_rho_l: float | None = None):
@@ -65,7 +64,7 @@ class PuncoamentoEC2:
         Aceita Asx/Asy [cm²/m] ou ρl diretamente (retrocompatível).
         """
 
-        # -------- entradas base --------
+        # - entradas base -
         self.d = laje_d
         self.fck = betão_fck
         self.fyk = aço_fyk
@@ -86,7 +85,7 @@ class PuncoamentoEC2:
         self.gamma_S = gamma_S
         self.beta_mode = beta_mode.lower()
 
-        # -------- cálculo automático de ρl --------
+        # - cálculo automático de ρl -
         def _calc_rho_l_from_As(As_lx_cm2pm, As_ly_cm2pm, d):
             rho_lx = (As_lx_cm2pm or 0.0) / 10000.0 / d
             rho_ly = (As_ly_cm2pm or 0.0) / 10000.0 / d
@@ -107,7 +106,7 @@ class PuncoamentoEC2:
         else:
             raise ValueError("Forneça As_lx/As_ly (cm²/m) ou laje_rho_l.")
 
-        # -------- parâmetros de cálculo --------
+        #- parâmetros de cálculo -
         self.fcd = 1.0 * self.fck / self.gamma_C
         self.fctm = 0.30 * self.fck ** (2 / 3) if self.fck <= 50 else (2.12 * math.log(1 + (self.fck + 8) / 10))
         self.fctk_0_05 = 0.7 * self.fctm
@@ -121,7 +120,7 @@ class PuncoamentoEC2:
         self.nu = 0.6 * (1 - self.fck / 250)
         self.kmax = 1.5
 
-        # -------- resultados --------
+        # - resultados -
         self.u0 = 0.0
         self.u1 = 0.0
         self.u1_eff = 0.0
@@ -163,7 +162,7 @@ class PuncoamentoEC2:
                 self.u0 = min(3 * self.d, 2 * self.D)
                 self.u1 = 0.25 * math.pi * self.D + 2 * math.pi * self.d
     # ---------------------------------
-    # Auxiliares para β calculado
+    # aux para β calculado
     # ---------------------------------
     @staticmethod
     def _interp_k_por_ratio(r: float) -> float:
@@ -175,16 +174,16 @@ class PuncoamentoEC2:
             return 0.45
         if r >= 3.0:
             return 0.80
-        # Entre 0.5–1.0
+        # entre 0.5–1.0
         if r < 1.0:
             # de 0.45 a 0.60
             t = (r - 0.5) / (1.0 - 0.5)
             return 0.45 + t * (0.60 - 0.45)
-        # Entre 1.0–2.0
+        # entre 1.0–2.0
         if r < 2.0:
             t = (r - 1.0) / (2.0 - 1.0)
             return 0.60 + t * (0.70 - 0.60)
-        # Entre 2.0–3.0
+        # entre 2.0–3.0
         t = (r - 2.0) / (3.0 - 2.0)
         return 0.70 + t * (0.80 - 0.70)
 
@@ -205,7 +204,7 @@ class PuncoamentoEC2:
         d = self.d
         return (c1*c1 + c2*c2)/4.0 + 8.0*d*c1 + 4.0*d*d + 2.0*math.pi*d*c2 + 2.0*math.pi*d*d
 
-    # Equivalências para circulares (c1=c2=D)
+    # equivalências para circulares (c1=c2=D)
     def _u1_estrela_bordo_circ(self):
         c_eq = self.D
         red = 2.0 * min(0.5*c_eq, 1.5*self.d)
@@ -225,7 +224,7 @@ class PuncoamentoEC2:
     # --------------------------
     def _get_beta(self):
         """Calcula o fator β (simplificado ou calculado)."""
-        # Sem momentos → β=1.0
+        # sem momentos → β=1.0
         if abs(self.M_Edx) < 1e-12 and abs(self.M_Edy) < 1e-12:
             self.beta = 1.0
             self.k_beta = None
@@ -243,15 +242,15 @@ class PuncoamentoEC2:
             self.relatorio.append(f"\nFator β (simplificado): {self.beta:{FMT}} (valores recomendados).")
             return
 
-        # ---- β calculado ----
+        # - β calculado -
         V = max(self.V_Ed, 1e-9)
         ex = abs(self.M_Edx)/V  # m
         ey = abs(self.M_Edy)/V  # m
 
-        # k automático por Quadro 6.1
+        # k automático por Quadro 6.1 (EC2)
         if self.forma_pilar == 'retangular':
             ratio = self.c1 / self.c2 if self.c2 != 0 else 1.0
-        else:  # circular → c1=c2=D ⇒ ratio=1.0
+        else:  # circular -> c1=c2=D ⇒ ratio=1.0
             ratio = 1.0
         self.k_beta = self._interp_k_por_ratio(ratio)
 
@@ -322,7 +321,7 @@ class PuncoamentoEC2:
                 )
                 return
 
-        # fallback (não previsto)
+        # fallback (nao previsto)
         if self.tipo_pilar == 'interior':
             self.beta = 1.15
             origem = "aprox. interior (com momentos)"
@@ -336,8 +335,8 @@ class PuncoamentoEC2:
         self.relatorio.append(f"\nFator β (provisório): {self.beta:{FMT}} [{origem}].")
 
     # --------------------------
-    # Resistências e esforços
-    # --------------------------
+    # resistências e esforços
+    # ------------------------------------------------------------------------------
     def _get_v_Rd_c(self):
         """v_Rd,c (MPa) – Eq. 6.47."""
         v_Rd_c_calc = self.C_Rd_c * self.k_val * (100 * self.rho_l * self.fck)**(1/3) + self.k1 * self.sigma_cp
@@ -349,11 +348,11 @@ class PuncoamentoEC2:
         """V_Ed_red (sapatas) e u1_eff (aberturas)."""
         self.V_Ed_red = self.V_Ed
         
-        # Sapatas
+        # sapatas
         if self.is_sapata and self.sigma_gd > 0:
             if self.forma_pilar == 'retangular':
                 A_control_1 = (self.c1 * self.c2) + (self.c1 * 2 * self.d) + (self.c2 * 2 * self.d) + (math.pi * (2 * self.d)**2 / 4)
-            else: # circular
+            else: # pilar circular
                 A_control_1 = math.pi * (self.D/2 + 2*self.d)**2
             Delta_V_Ed = self.sigma_gd * A_control_1
             self.V_Ed_red = self.V_Ed - Delta_V_Ed
@@ -362,7 +361,7 @@ class PuncoamentoEC2:
                 f"(ΔV_Ed={(Delta_V_Ed/1000):{FMT}} kN)."
             )
         
-        # Aberturas
+        # aberturas
         self.u1_eff = self.u1 - self.u1_ineffective
         if self.u1_ineffective > 0:
             self.relatorio.append(f"\nAbertura detetada. u1: {self.u1:{FMT}} m → u1,ef: {self.u1_eff:{FMT}} m.")
@@ -376,7 +375,7 @@ class PuncoamentoEC2:
             return False
         
         self.v_Rd_max = 0.4 * self.nu * self.fcd
-        #self.v_Rd_max = 0.5 * self.nu * self.fcd """alteração de 0.5 para 0.4"""
+        #self.v_Rd_max = 0.5 * self.nu * self.fcd """alteração de 0.5 para 0.4""" ************ PRA VERIFICR DEPOIS
         self.v_Ed_u0 = (self.beta * self.V_Ed) / (self.u0 * self.d) / 1e6 # MPa
         
         self.relatorio.append(f"\n--- Verificação da Escora (u0={self.u0:{FMT}} m) ---")
@@ -395,7 +394,7 @@ class PuncoamentoEC2:
         self.armadura_necessaria = True
         self.relatorio.append(f"\n\n--- Dimensionamento de Armadura (u1,ef={self.u1_eff:{FMT}} m) ---")
 
-        # Limite superior
+        # limite superior
         v_Rd_cs_max = self.kmax * self.v_Rd_c
         self.relatorio.append(f"Resistência máxima c/ armadura (v_Rd,cs,max = {self.kmax:{FMT}} * v_Rd,c): {v_Rd_cs_max:{FMT}} MPa")
         if self.v_Ed_u1 > v_Rd_cs_max:
@@ -419,7 +418,7 @@ class PuncoamentoEC2:
         self.u_out_ef = (self.beta * self.V_Ed_red) / (self.v_Rd_c * self.d) / 1e6 # m
         self.relatorio.append(f"\nPerímetro exterior (u_out,ef): {self.u_out_ef:{FMT}} m")
 
-        # zona a armar e nº de perímetros
+        # zona a armar e número de perímetros
         if self.forma_pilar == 'retangular':
             if self.tipo_pilar == 'interior':
                 r_out = (self.u_out_ef - 2*(self.c1 + self.c2)) / (2*math.pi)
@@ -441,7 +440,7 @@ class PuncoamentoEC2:
         self.relatorio.append(f"Posição do 1º perímetro (s0): ≤ {s0_max:{FMT}} m")
         
         if dist_zona_armar < s0_max:
-            n_perimetros = 2  # mínimo
+            n_perimetros = 2  # número mínimo por defeito
             self.relatorio.append(f"Zona a armar é pequena. Adotar {n_perimetros} perímetros (mínimo).")
         else:
             n_perimetros = math.ceil((dist_zona_armar - s0_max) / sr_max) + 1
@@ -452,8 +451,8 @@ class PuncoamentoEC2:
         Asw_por_perimetro = Asw_sr_req * sr_max
         self.relatorio.append(f"Área por perímetro (Asw) (para sr={sr_max:{FMT}} m): {(Asw_por_perimetro * 1e4):{FMT}} cm²")
 
-    # --------------------------
-    # Pipeline principal
+    # ------------------------------------------------------
+    # pipeline principal
     # --------------------------
     def verificar_puncoamento(self):
         """Executa a verificação completa ao punçoamento."""
@@ -483,7 +482,7 @@ class PuncoamentoEC2:
             
             self.v_Ed_u1 = (self.beta * self.V_Ed_red) / (self.u1_eff * self.d) / 1e6 # MPa
             
-            self.relatorio.append(f"\n--- Verificação da Necessidade de Armadura (u1,ef={self.u1_eff:{FMT}} m) ---")
+            self.relatorio.append(f"\n--- Verificação da necessidade de armadura (u1,ef={self.u1_eff:{FMT}} m) ---")
             self.relatorio.append(f"Tensão de cálculo v_Ed(u1): {self.v_Ed_u1:{FMT}} MPa")
             
             if self.v_Ed_u1 <= self.v_Rd_c:
@@ -503,7 +502,7 @@ class PuncoamentoEC2:
         return "\n".join(self.relatorio)
 
 # ---------------------------------------------------------------------
-# --- FUNÇÕES INTERATIVAS PARA OBTER DADOS ---
+# --- FUNÇÕES INTERATIVAS PRA OBTER DADOS --- 
 # ---------------------------------------------------------------------
 
 def obter_float(mensagem: str, min_val: float = -math.inf, max_val: float = math.inf, default_zero: bool = False) -> float:
@@ -544,7 +543,7 @@ def obter_sim_nao(mensagem: str) -> bool:
     return obter_string(mensagem + " (s/n): ", ['s', 'n']) == 's'
 
 # ---------------------------------------------------------------------
-# --- EXECUÇÃO PRINCIPAL ---
+# FUNÇ. PRINCIPAL            
 # ---------------------------------------------------------------------
 if __name__ == "__main__":
 
@@ -553,13 +552,13 @@ if __name__ == "__main__":
     print("==============================================================")
     print("Por favor, insira os dados do projeto.")
     
-    # 1. Materiais
+    # 1. materiais
     print("\n--- 1. Materiais ---")
     fck = obter_float(f"Classe do Betão, fck (MPa) [ex: 30]: ", min_val=12, max_val=90)
     fyk = obter_float(f"Classe do Aço (fyk) (MPa) [ex: 500]: ", min_val=400, max_val=600)
     fywk = fyk
 
-    # 2. Laje
+    # 2. lajes
     print("\n--- 2. Laje ---")
     d = obter_float(f"Altura útil da laje, d (m) [ex: 0.22]: ", min_val=0.01)
     
@@ -574,7 +573,7 @@ if __name__ == "__main__":
 
     sigma_cp = obter_float(f"\nTensão de compressão média, σ_cp (MPa) [Default=0]: ", min_val=0.0, default_zero=True)
 
-    # 3. Pilar
+    # 3. pilares
     print("\n--- 3. Pilar ---")
     tipo_pilar = obter_string("Tipo de Pilar (interior, bordo, canto): ", ['interior', 'bordo', 'canto'])
     forma_pilar = obter_string("Forma do Pilar (retangular, circular): ", ['retangular', 'circular'])
@@ -594,7 +593,7 @@ if __name__ == "__main__":
     else: # circular
         c1 = obter_float("Diâmetro do pilar (m) [ex: 0.350]: ", min_val=0.01)
 
-    # 4. Esforços (ELU)
+    # 4. esforços (ELU) 
     print("\n--- 4. Esforços (ELU) ---")
     V_Ed_kN = obter_float("Esforço Transverso de Cálculo, V_Ed (kN) [ex: 600]: ", min_val=0.0)
     V_Ed_N = V_Ed_kN * 1000
@@ -604,7 +603,7 @@ if __name__ == "__main__":
     M_Edy_kNm = obter_float("Momento fletor M_Edy (kN.m) [em torno do eixo y, default=0]: ", default_zero=True)
     M_Edy_Nm = M_Edy_kNm * 1000
     
-    # 5. Parâmetros adicionais
+    # 5. parâmetros adicionais
     print("\n--- 5. Parâmetros adicionais ---")
     is_sapata = obter_sim_nao("O elemento é uma sapata (laje de fundação)?")
     sigma_gd_kpa = 0.0
@@ -615,11 +614,11 @@ if __name__ == "__main__":
     if obter_sim_nao(f"\nExistem aberturas a menos de 6*d ({(6*d):{FMT}} m) da face do pilar?"):
         u1_ineffective = obter_float("Comprimento ineficaz a subtrair a u1 (m) [Fig. 6.14]: ", min_val=0.0)
 
-    # 6. Modo de β
+    # 6. modo de β
     print("\n--- 6. Opções de β ---")
     beta_mode = obter_string("Modo de β (simplificado, calculado): ", ['simplificado', 'calculado'])
 
-    # Instância
+    # instância
     verificacao = PuncoamentoEC2(
         laje_d=d,
         laje_rho_l=rho_l,
@@ -640,9 +639,10 @@ if __name__ == "__main__":
         beta_mode=beta_mode
     )
 
-    # Executar
+    # execução
     print("\n" + "="*62)
     print(" INICIALIZAÇÃO...")
     print("="*62)
     print(verificacao.verificar_puncoamento())
     print("="*62 + "\n")
+
