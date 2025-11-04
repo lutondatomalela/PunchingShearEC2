@@ -18,7 +18,7 @@ if __name__ == "__main__":
     print(header("Ex.1 – Pilar INTERIOR retangular | β simplificado"))
 
     # ------------------------------------------------------------
-    # DADOS DE ENTRADA
+    # DADOS PARA INPUT
     # ------------------------------------------------------------
     # laje_d ............. altura útil da laje (m)
     # betão_fck .......... resistência característica à compressão do betão (MPa)
@@ -50,4 +50,5 @@ if __name__ == "__main__":
     )
 
     print(v.verificar_puncoamento())
+
 
