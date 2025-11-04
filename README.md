@@ -1,11 +1,10 @@
-# 🧱 PunchingShearEC2
+# PunchingShearEC2
 
 Verificação do **punçoamento em lajes maciças de betão armado** segundo a **NP EN 1992-1-1:2010 (+A1:2019)**.  
-Desenvolvido por **Eng.º Lutonda Tomalela** 🇵🇹 | 🇦🇴
-
+Desenvolvido por **Eng.º Lutonda Tomalela**
 ---
 
-## ⚙️ Descrição
+#### Descrição
 
 **PunchingShearEC2** é um programa interativo e um módulo Python para  
 verificação do **punçoamento** em lajes maciças apoiadas em pilares (interiores, de bordo e de canto).  
@@ -21,7 +20,7 @@ O programa segue o **Eurocódigo 2** e integra as principais verificações da s
 
 ---
 
-## 🧩 Funcionalidades principais
+#### Funcionalidades principais
 
 | Tema | Implementado | Detalhes |
 |------|---------------|-----------|
@@ -35,7 +34,7 @@ O programa segue o **Eurocódigo 2** e integra as principais verificações da s
 
 ---
 
-## 📦 Estrutura do Repositório
+#### Estrutura do Repositório
 PunshingShearEC2/      
 │
 ├── README.md
@@ -62,19 +61,19 @@ PunshingShearEC2/
 
 ---
 
-## 🚀 Utilização
+## Utilização
 
-### 1️⃣ Executar como programa interativo
+#####  Executar como programa interativo
 ```bash
 python PunshingShear/PunchingEC2.py
 ```
 
-## 🪪 Licença
+###### Licença
 
 Este projeto é distribuído sob a Licença MIT.
 Consulta o ficheiro LICENSE para mais detalhes.
 
-## 🧠 Créditos
+###### Créditos
 
 Desenvolvido no contexto de estudos e prática profissional em Engenharia Estrutural.
 Ferramenta de apoio ao dimensionamento conforme o Eurocódigo 2, para utilização técnica, educativa e académica.
