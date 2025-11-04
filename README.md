@@ -39,22 +39,16 @@ PunshingShearEC2/
 ├── README.md
 ├── LICENSE
 ├── .gitignore
-│
-├── PunchingShear/
-│ ├── __init__.py
-│ ├── Punchsing_EC2.py
-│ └── _utils.py
-│
-├── examples/
-│ ├── _utils.py
-│ ├── ex1_interior_rect_simplificado.py
-│ ├── ex2_bordo_rect_calculado.py
-│ ├── ex3_canto_rect_calculado.py
-│ ├── ex4_interior_circular_calculado.py
-│ ├── ex5_sapata_circular.py
-│ ├── ex6_bordo_rect_abertura.py
-│
-└── Testes/
+── __init__.py
+── Punchsing_EC2.py
+── _utils.py
+├── _utils.py
+├── ex1_interior_rect_simplificado.py
+├── ex2_bordo_rect_calculado.py
+├── ex3_canto_rect_calculado.py
+├── ex4_interior_circular_calculado.py
+├── ex5_sapata_circular.py
+├── ex6_bordo_rect_abertura.py
 └── TestePuncoamentoEC2.py
 
 
