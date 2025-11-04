@@ -17,8 +17,8 @@ from _utils import header
 if __name__ == "__main__":
     print(header("Ex.6 – Pilar de BORDO retangular | abertura próxima (u1_ineffective)"))
 
-    # u1_ineffective .... comprimento (m) do perímetro ineficaz devido a aberturas
-    # O valor pode ser obtido pela Fig. 6.14 da NP EN 1992-1-1.
+    # u1_ineffective .... comprimento (m) do perímetro ineficaz (a subtrair do eficaz) devido a aberturas
+    # valor pode ser estimado (verificar a Fig. 6.14 da NP EN 1992-1-1).
 
     v = PuncoamentoEC2(
         laje_d=0.220,
@@ -36,3 +36,4 @@ if __name__ == "__main__":
     )
 
     print(v.verificar_puncoamento())
+
