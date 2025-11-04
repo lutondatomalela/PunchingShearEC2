@@ -1,7 +1,6 @@
 # PunchingShearEC2
 
-Verificação do **punçoamento em lajes maciças de betão armado** segundo a **NP EN 1992-1-1:2010 (+A1:2019)**.  
-Desenvolvido por **Eng.º Lutonda Tomalela**
+Verificação do **punçoamento em lajes maciças de betão armado** segundo a **NP EN 1992-1-1:2010 (+A1:2019)**  
 ---
 
 #### Descrição
