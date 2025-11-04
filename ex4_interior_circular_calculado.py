@@ -17,8 +17,8 @@ from _utils import header
 if __name__ == "__main__":
     print(header("Ex.4 – Pilar INTERIOR circular | β calculado (equiv. retangular)"))
 
-    # Circular tratado como equivalente retangular (c1=c2=D)
-    # Permite cálculo de β com as mesmas equações do pilar retangular.
+    # o pilar circular é tratado como equivalente retangular (c1=c2=D)
+    # o q ermite cálculo de β com as mesmas equações do pilar retangular
 
     v = PuncoamentoEC2(
         laje_d=0.220,
@@ -31,8 +31,9 @@ if __name__ == "__main__":
         is_sapata=False, sigma_gd_kpa=0.0,
         u1_ineffective=0.0,
         beta_mode='calculado',
-        laje_As_lx_cm2pm=9.00,
-        laje_As_ly_cm2pm=9.00
+        laje_As_lx_cm2pm=9.00, # cm2/m
+        laje_As_ly_cm2pm=9.00 # cm2/m
     )
 
     print(v.verificar_puncoamento())
+
