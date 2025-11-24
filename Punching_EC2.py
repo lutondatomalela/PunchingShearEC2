@@ -374,8 +374,8 @@ class PuncoamentoEC2:
             self.relatorio.append("\nERRO: Perímetro u0 é zero. Verifique dimensões do pilar.")
             return False
         
-        self.v_Rd_max = 0.4 * self.nu * self.fcd
-        #self.v_Rd_max = 0.5 * self.nu * self.fcd """alteração de 0.5 para 0.4""" ************ PRA VERIFICR DEPOIS
+        self.v_Rd_max = 0.5 * self.nu * self.fcd
+        #self.v_Rd_max = 0.4 * self.nu * self.fcd """alteração de 0.5 para 0.4""" ************ PRA VERIFICR DEPOIS
         self.v_Ed_u0 = (self.beta * self.V_Ed) / (self.u0 * self.d) / 1e6 # MPa
         
         self.relatorio.append(f"\n--- Verificação da Escora (u0={self.u0:{FMT}} m) ---")
