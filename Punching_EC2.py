@@ -22,7 +22,7 @@ melhorias:
 
 """
 Projeto:    PunçoamentoEC2
-Versão:     v1.1.0
+Versão:     v1.2.0
 Autor:      Engº Lutonda Tomalela
 LikedIn:    https://pt.linkedin.com/in/lutondatomalela
 GitHub:     https://github.com/lutondatomalela/PunchingShearEC2
@@ -63,7 +63,9 @@ class PuncoamentoEC2:
                  beta_mode: str = "simplificado",
                  laje_As_lx_cm2pm: float | None = None,
                  laje_As_ly_cm2pm: float | None = None,
-                 laje_rho_l: float | None = None):
+                 laje_rho_l: float | None = None,
+                 edge_perp_interior: bool = True,
+                 corner_interior: bool = True):
         """
         Aceita Asx/Asy [cm²/m] ou ρl diretamente (retrocompatível).
         """
@@ -87,6 +89,8 @@ class PuncoamentoEC2:
         self.u1_ineffective = u1_ineffective
         self.gamma_C = gamma_C
         self.gamma_S = gamma_S
+        self.edge_perp_interior = bool(edge_perp_interior)
+        self.corner_interior = bool(corner_interior)
 
         #normalização do modo de β
         beta_mode = (beta_mode or "simplificado").lower().strip()
@@ -239,6 +243,34 @@ class PuncoamentoEC2:
         c1, c2, d = c_eq, c_eq, self.d
         return (c1**2) / 2.0 + c1 * c2 + 4.0 * c2 * d + 16.0 * d**2 + 2.0 * math.pi * d * c1
 
+    def _W1_retangular(self, c_par: float, c_perp: float):
+        """Expressão (6.41) com c_par paralelo à excentricidade e c_perp perpendicular."""
+        d = self.d
+        return (c_par**2) / 2.0 + c_par * c_perp + 4.0 * c_perp * d + 16.0 * d**2 + 2.0 * math.pi * d * c_par
+
+    def _W1_bordo_retangular(self):
+        """Expressão (6.45) para pilar de bordo retangular, com c1 paralelo ao bordo e c2 perpendicular."""
+        c1, c2, d = self.c1, self.c2, self.d
+        return (c1**2) / 4.0 + c1 * c2 + 4.0 * c2 * d + 8.0 * d**2 + math.pi * d * c1
+
+    def _interp_k_por_ratio_bordo(self, r: float) -> float:
+        return self._interp_k_por_ratio(r)
+
+    def _eccentricidades_planas(self, V: float):
+        """
+        Convenção interna em planta:
+        - e_x resulta de M_Edy / V_Ed
+        - e_y resulta de M_Edx / V_Ed
+        """
+        e_x = self.M_Edy / V
+        e_y = self.M_Edx / V
+        return e_x, e_y
+
+    def _beta_ec2_expressao_639(self, e: float, W1: float, k: float, u: float) -> float:
+        """Expressão geral do EC2 para transmissão de momento não equilibrado."""
+        return 1.0 + k * abs(e) * u / W1
+
+
     # --------------------------
     # Beta (simplificado / EC2 / fib)
     # ---------------------------------------
@@ -246,13 +278,12 @@ class PuncoamentoEC2:
         """Calcula o fator β (simplificado, EC2 ou fib)."""
 
         V = max(self.V_Ed, 1e-9)
-        ex = abs(self.M_Edx) / V  # m
-        ey = abs(self.M_Edy) / V  # m
+        e_x, e_y = self._eccentricidades_planas(V)
         tiny = 1e-12
 
         # 1) MODO SIMPLIFICADO (valores recomendados do EC2)
         if self.beta_mode == "simplificado":
-            if abs(ex) < tiny and abs(ey) < tiny:
+            if abs(e_x) < tiny and abs(e_y) < tiny:
                 self.beta = 1.0
                 self.k_beta = None
                 self.relatorio.append(f"\nFator β: {self.beta:{FMT}} (sem momentos, simplificado).")
@@ -269,9 +300,8 @@ class PuncoamentoEC2:
             )
             return
 
-        # 2) MODO EC2 (calcculado de acordo ao EC2) – fórmulas gerais com W1, u1* e k(c1/c2)
+        # 2) MODO EC2
         if self.beta_mode == "ec2":
-            # coeficiente k(c1/c2) para retangulares; 1.0 para circulares (c1=c2)
             if self.forma_pilar == 'retangular':
                 ratio = self.c1 / self.c2 if self.c2 not in (0.0, None) else 1.0
                 self.k_beta = self._interp_k_por_ratio(ratio)
@@ -281,49 +311,41 @@ class PuncoamentoEC2:
 
             # 2.1 PILAR INTERIOR
             if self.tipo_pilar == 'interior':
-                # sem momentos -> β = 1.0 (distribuição uniforme)
-                if abs(ex) < tiny and abs(ey) < tiny:
+                if abs(e_x) < tiny and abs(e_y) < tiny:
                     self.beta = 1.0
-                    self.relatorio.append(
-                        "\nFator β (EC2 – interior): 1.000 (sem excentricidades)."
-                    )
+                    self.relatorio.append("\nFator β (EC2 – interior): 1.000 (sem excentricidades).")
                     return
 
-                # retangular interior
                 if self.forma_pilar == 'retangular':
-                    u1 = self.u1
-                    W1 = self._W1_retangular_interior()
-
-                    # momento dominante em apenas um eixo
-                    if abs(ey) < tiny or abs(ex) < tiny:
-                        e = ex if abs(ex) >= abs(ey) else ey
-                        self.beta = 1.0 + self.k_beta * e * u1 / W1
+                    if abs(e_x) >= abs(e_y) and abs(e_y) < tiny:
+                        W1 = self._W1_retangular(self.c1, self.c2)
+                        self.beta = self._beta_ec2_expressao_639(e_x, W1, self.k_beta, self.u1)
                         self.relatorio.append(
-                            f"\nFator β (EC2 – interior ret., momento uniaxial): {self.beta:{FMT}} "
-                            f"(e={e:{FMT}} m, u1={u1:{FMT}} m, W1={W1:{FMT}} m², k={self.k_beta:{FMT}}, c1/c2={ratio:{FMT}})."
+                            f"\nFator β (EC2 – interior ret., uniaxial x): {self.beta:{FMT}} "
+                            f"(e_x={e_x:{FMT}} m, W1={W1:{FMT}} m², k={self.k_beta:{FMT}}, c1/c2={ratio:{FMT}})."
+                        )
+                        return
+                    if abs(e_y) > abs(e_x) and abs(e_x) < tiny:
+                        W1 = self._W1_retangular(self.c2, self.c1)
+                        k = self._interp_k_por_ratio(1.0 / ratio if ratio > tiny else 1.0)
+                        self.beta = self._beta_ec2_expressao_639(e_y, W1, k, self.u1)
+                        self.relatorio.append(
+                            f"\nFator β (EC2 – interior ret., uniaxial y): {self.beta:{FMT}} "
+                            f"(e_y={e_y:{FMT}} m, W1={W1:{FMT}} m², k={k:{FMT}})."
                         )
                         return
 
-                    #momentos nos dois eixos – formulação vetorial aproximada (EC2 6.4.3)
-                    # by, bz ~ dimensões da secção de controlo
-                    by = self.c2 + 4.0 * self.d
-                    bz = self.c1 + 4.0 * self.d
-                    self.beta = 1.0 + 1.8 * math.sqrt((ex / bz) ** 2 + (ey / by) ** 2)
+                    b_x = self.c1 + 4.0 * self.d
+                    b_y = self.c2 + 4.0 * self.d
+                    self.beta = 1.0 + 1.8 * math.sqrt((e_x / b_x) ** 2 + (e_y / b_y) ** 2)
                     self.relatorio.append(
-                        f"\nFator β (EC2 – interior ret., momentos biaxiais): {self.beta:{FMT}} "
-                        f"(ex={ex:{FMT}} m, ey={ey:{FMT}} m, by={by:{FMT}} m, bz={bz:{FMT}} m, c1/c2={ratio:{FMT}})."
+                        f"\nFator β (EC2 – interior ret., biaxial): {self.beta:{FMT}} "
+                        f"(e_x={e_x:{FMT}} m, e_y={e_y:{FMT}} m, b_x={b_x:{FMT}} m, b_y={b_y:{FMT}} m)."
                     )
                     return
 
-                #circular interior – usando perímetro equivalente quadrado
                 if self.forma_pilar == 'circular':
-                    e_tot = math.sqrt(ex**2 + ey**2)
-                    if e_tot < tiny:
-                        self.beta = 1.0
-                        self.relatorio.append(
-                            "\nFator β (EC2 – interior circ.): 1.000 (sem excentricidades)."
-                        )
-                        return
+                    e_tot = math.sqrt(e_x**2 + e_y**2)
                     self.beta = 1.0 + 0.6 * math.pi * e_tot / (self.D + 4.0 * self.d)
                     self.relatorio.append(
                         f"\nFator β (EC2 – interior circ.): {self.beta:{FMT}} "
@@ -333,40 +355,45 @@ class PuncoamentoEC2:
 
             # 2.2 PILAR DE BORDO
             if self.tipo_pilar == 'bordo':
+                # Convenção geométrica do programa: c1 paralelo ao bordo; c2 perpendicular ao bordo.
+                e_perp = e_y
+                e_par = e_x
+
                 if self.forma_pilar == 'retangular':
                     u1_star = self._u1_estrela_bordo_ret()
-                    W1 = self._W1_retangular_interior()  # usa-se a mesma expressão de W1
-                else:  # circular
+                    W1 = self._W1_bordo_retangular()
+                    ratio_bordo = self.c1 / (2.0 * self.c2) if self.c2 not in (0.0, None) else 1.0
+                    k_bordo = self._interp_k_por_ratio_bordo(ratio_bordo)
+                else:
                     u1_star = self._u1_estrela_bordo_circ()
                     W1 = self._W1_circular_equiv()
+                    ratio_bordo = 0.5
+                    k_bordo = self._interp_k_por_ratio_bordo(ratio_bordo)
 
-                if u1_star <= tiny or W1 <= tiny:
-                    self.beta = 1.0
+                if self.edge_perp_interior:
+                    beta_base = self.u1 / u1_star
+                    if abs(e_par) < tiny:
+                        self.beta = beta_base
+                        self.k_beta = k_bordo
+                        self.relatorio.append(
+                            f"\nFator β (EC2 – bordo): {self.beta:{FMT}} (u1/u1*; excentricidade perpendicular dirigida para o interior)."
+                        )
+                        return
+
+                    self.beta = beta_base + k_bordo * (self.u1 / W1) * abs(e_par)
+                    self.k_beta = k_bordo
                     self.relatorio.append(
-                        "\nAviso EC2 – bordo: u1* ou W1 inválido; assumido β=1.000."
+                        f"\nFator β (EC2 – bordo, expr. 6.44): {self.beta:{FMT}} "
+                        f"(u1/u1*={beta_base:{FMT}}, e_par={abs(e_par):{FMT}} m, W1={W1:{FMT}} m², k={k_bordo:{FMT}}, c1/2c2={ratio_bordo:{FMT}})."
                     )
                     return
 
-                # componente básica (excentricidade interior perpendicular ao bordo):
-                beta_base = self.u1 / u1_star
-
-                # excentricidade paralela ao bordo (momento em torno do eixo perpendicular ao bordo)
-                # no input interativo: c1 é paralelo ao bordo -> ey é o momento “paralelo”
-                e_par = ey
-                if abs(ex) < tiny and abs(e_par) < tiny:
-                    self.beta = beta_base
-                    self.relatorio.append(
-                        f"\nFator β (EC2 – bordo, apenas excentricidade interior): {self.beta:{FMT}} "
-                        f"(u1/u1*={self.u1/u1_star:{FMT}})."
-                    )
-                    return
-
-                beta_add = (self.u1 / u1_star) * (e_par / W1) * self.k_beta
-                self.beta = beta_base + beta_add
+                # excentricidade perpendicular para o exterior -> expressão geral 6.39
+                self.beta = self._beta_ec2_expressao_639(e_perp, W1, k_bordo, self.u1)
+                self.k_beta = k_bordo
                 self.relatorio.append(
-                    f"\nFator β (EC2 – bordo): {self.beta:{FMT}} "
-                    f"(β_base={beta_base:{FMT}} = u1/u1*, e∥={e_par:{FMT}} m, "
-                    f"W1={W1:{FMT}} m², k={self.k_beta:{FMT}}, c1/c2={ratio:{FMT}})."
+                    f"\nFator β (EC2 – bordo, expr. geral 6.39): {self.beta:{FMT}} "
+                    f"(e_perp exterior={abs(e_perp):{FMT}} m, W1={W1:{FMT}} m², k={k_bordo:{FMT}})."
                 )
                 return
 
@@ -375,50 +402,34 @@ class PuncoamentoEC2:
                 if self.forma_pilar == 'retangular':
                     u1_star = self._u1_estrela_canto_ret()
                     W1 = self._W1_retangular_interior()
-                    e_comb = ex + ey
                 else:
                     u1_star = self._u1_estrela_canto_circ()
                     W1 = self._W1_circular_equiv()
-                    e_comb = ex + ey
 
-                if u1_star <= tiny or W1 <= tiny:
-                    self.beta = 1.0
+                if self.corner_interior:
+                    self.beta = self.u1 / u1_star
                     self.relatorio.append(
-                        "\nAviso EC2 – canto: u1* ou W1 inválido; assumido β=1.000."
+                        f"\nFator β (EC2 – canto, expr. 6.46): {self.beta:{FMT}} (u1/u1*; excentricidade dirigida para o interior)."
                     )
                     return
 
-                beta_base = self.u1 / u1_star
-
-                if abs(e_comb) < tiny:
-                    self.beta = beta_base
-                    self.relatorio.append(
-                        f"\nFator β (EC2 – canto, apenas excentricidade interior): {self.beta:{FMT}} "
-                        f"(u1/u1*={self.u1/u1_star:{FMT}})."
-                    )
-                    return
-
-                beta_add = (self.u1 / u1_star) * (e_comb / W1) * self.k_beta
-                self.beta = beta_base + beta_add
+                e_tot = math.sqrt(e_x**2 + e_y**2)
+                self.beta = self._beta_ec2_expressao_639(e_tot, W1, self.k_beta, self.u1)
                 self.relatorio.append(
-                    f"\nFator β (EC2 – canto): {self.beta:{FMT}} "
-                    f"(β_base={beta_base:{FMT}} = u1/u1*, ex+ey={e_comb:{FMT}} m, "
-                    f"W1={W1:{FMT}} m², k={self.k_beta:{FMT}}, c1/c2={ratio:{FMT}})."
+                    f"\nFator β (EC2 – canto, expr. geral 6.39): {self.beta:{FMT}} "
+                    f"(e={e_tot:{FMT}} m, W1={W1:{FMT}} m², k={self.k_beta:{FMT}})."
                 )
                 return
 
-            #fallback (não previsto)
             self.beta = 1.0
             self.k_beta = None
-            self.relatorio.append(
-                f"\nFator β (EC2 – fallback): {self.beta:{FMT}} (geometria não tratada explicitamente)."
-            )
+            self.relatorio.append(f"\nFator β (EC2 – fallback): {self.beta:{FMT}}.")
             return
 
         # 3) MODO fib_MC10 – via coeficiente de excentricidade ke (MC2010)
         if self.beta_mode == "fib":
             # sem momentos → ke ≈ 1 -> β = 1
-            if abs(ex) < tiny and abs(ey) < tiny:
+            if abs(e_x) < tiny and abs(e_y) < tiny:
                 self.beta = 1.0
                 self.k_beta = None
                 self.relatorio.append(
@@ -426,13 +437,13 @@ class PuncoamentoEC2:
                 )
                 return
 
-            e_tot = math.sqrt(ex**2 + ey**2)
+            e_tot = math.sqrt(e_x**2 + e_y**2)
 
             # comprimento característico be1 na direção da excentricidade
             # (aproximação: maior dimensão do perímetro de controlo na direção relevante)
             if self.forma_pilar == 'retangular':
                 # eixo “principal” da excentricidade
-                if abs(ex) >= abs(ey):
+                if abs(e_x) >= abs(e_y):
                     be1 = self.c1 + 4.0 * self.d
                 else:
                     be1 = self.c2 + 4.0 * self.d
@@ -537,6 +548,7 @@ class PuncoamentoEC2:
 
         # limite superior
         v_Rd_cs_max = self.kmax * self.v_Rd_c
+        self.v_Rd_cs_max = v_Rd_cs_max
         self.relatorio.append(
             f"Resistência máxima c/ armadura (v_Rd,cs,max = {self.kmax:{FMT}} * v_Rd,c): {v_Rd_cs_max:{FMT}} MPa"
         )
@@ -554,6 +566,10 @@ class PuncoamentoEC2:
         Asw_sr_calc = (self.v_Ed_u1 - 0.75 * self.v_Rd_c) * self.u1_eff / (1.5 * f_ywd_ef)
         Asw_sr_min = (0.08 * math.sqrt(self.fck) / self.fywk) * (self.u1_eff / 1.5)
         Asw_sr_req = max(Asw_sr_calc, Asw_sr_min)
+        self.f_ywd_ef = f_ywd_ef
+        self.Asw_sr_calc = Asw_sr_calc
+        self.Asw_sr_min = Asw_sr_min
+        self.Asw_sr_req = Asw_sr_req
         
         self.relatorio.append(f"Tensão f_ywd,ef: {f_ywd_ef:{FMT}} MPa")
         self.relatorio.append(f"Armadura necessária (Asw/sr) (cálculo): {(Asw_sr_calc * 1e4):{FMT}} cm²/m")
@@ -576,9 +592,12 @@ class PuncoamentoEC2:
             r_out = (self.u_out_ef / math.pi - self.D) / 2
         
         dist_zona_armar = r_out - 1.5 * self.d  # até 1.5d antes de u_out,ef
+        self.dist_zona_armar = dist_zona_armar
         
         s0_max = 0.5 * self.d
         sr_max = 0.75 * self.d
+        self.s0_max = s0_max
+        self.sr_max = sr_max
         
         self.relatorio.append("\n--- Pormenorização recomendada ---")
         self.relatorio.append(f"Distância radial a armar (da face): {dist_zona_armar:{FMT}} m (até {(1.5*self.d):{FMT}} m dentro de u_out,ef)")
@@ -595,6 +614,8 @@ class PuncoamentoEC2:
             self.relatorio.append(f"Número de perímetros estimado (com sr={sr_max:{FMT}} m): {n_perimetros}")
 
         Asw_por_perimetro = Asw_sr_req * sr_max
+        self.n_perimetros = n_perimetros
+        self.Asw_por_perimetro = Asw_por_perimetro
         self.relatorio.append(f"Área por perímetro (Asw) (para sr={sr_max:{FMT}} m): {(Asw_por_perimetro * 1e4):{FMT}} cm²")
 
     # ------------------------------------------------------
