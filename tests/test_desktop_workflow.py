@@ -43,7 +43,7 @@ def test_choice_labels_keep_canonical_saved_values(desktop,code,tmp_path,monkeyp
     assert app.input_widgets['beta_manual'].options['state']==('normal' if code=='manual' else 'disabled')
     path=tmp_path/'case.json';monkeypatch.setattr(gui.filedialog,'asksaveasfilename',lambda **kw:str(path))
     monkeypatch.setattr(gui.filedialog,'askopenfilename',lambda **kw:str(path))
-    app.guardar_caso();assert json.loads(path.read_text())['beta_mode']==code
+    app.guardar_caso();assert json.loads(path.read_text(encoding='utf-8'))['beta_mode']==code
     app.limpar();app.abrir_caso();app.tk.eval('update idletasks')
     assert binding.display.get()==CHOICES['beta_mode'][code]
     assert app.vars['beta_manual'].get()=='1.4'

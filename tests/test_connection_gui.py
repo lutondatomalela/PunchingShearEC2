@@ -62,7 +62,7 @@ def test_source_comparison_change_invalidates_current_result(collection):
 def test_individual_case_save_reopen_keeps_import_origin(collection,tmp_path,monkeypatch):
     ready(collection);p=tmp_path/'case.json'
     monkeypatch.setattr(gui.filedialog,'asksaveasfilename',lambda **kw:str(p));monkeypatch.setattr(gui.filedialog,'askopenfilename',lambda **kw:str(p))
-    collection.guardar_caso();data=json.loads(p.read_text());assert 'import_case' in data
+    collection.guardar_caso();data=json.loads(p.read_text(encoding='utf-8'));assert 'import_case' in data
     collection.limpar();collection.abrir_caso();collection.calcular()
     assert not collection.dialogs and collection._fresh_result()['load_trace']['adopted']['V_Ed']==450
 
@@ -87,8 +87,8 @@ def test_cancel_replacing_collection_does_not_drop_work(collection,tmp_path,monk
 def test_reports_all_retain_source_units_row_equilibrium_and_adopted_values(collection,tmp_path):
     result=ready(collection)
     for suffix,fn in [('json',export_json),('txt',export_txt),('xlsx',export_xlsx),('pdf',export_pdf)]:fn(result,tmp_path/('report.'+suffix))
-    assert json.loads((tmp_path/'report.json').read_text())['load_trace']==result['load_trace']
-    assert 'Ninf-Nsup' in (tmp_path/'report.txt').read_text()
+    assert json.loads((tmp_path/'report.json').read_text(encoding='utf-8'))['load_trace']==result['load_trace']
+    assert 'Ninf-Nsup' in (tmp_path/'report.txt').read_text(encoding='utf-8')
     from openpyxl import load_workbook
     wb=load_workbook(tmp_path/'report.xlsx');lines='\n'.join(str(row[0]) for row in wb['OrigemEsforcos'].values);wb.close()
     assert 'linha 2' in lines and 'V_Ed=450' in lines and 'não adotada' in lines
@@ -109,7 +109,7 @@ def test_cli_retains_origin_and_blocks_changed_imported_force(collection,tmp_pat
     target=tmp_path/'valid'
     run=subprocess.run([sys.executable,'-m','punching.cli',str(p),'--out',str(target)],capture_output=True,text=True)
     assert run.returncode in (0,1)
-    assert json.loads((target/'resultado.json').read_text())['load_trace']['adopted']['V_Ed']==450
+    assert json.loads((target/'resultado.json').read_text(encoding='utf-8'))['load_trace']['adopted']['V_Ed']==450
     result['inputs']['V_Ed']=200000;export_json(result,p);target=tmp_path/'invalid'
     run=subprocess.run([sys.executable,'-m','punching.cli',str(p),'--out',str(target)],capture_output=True,text=True)
     assert run.returncode==2 and not target.exists() and 'alterados' in run.stderr

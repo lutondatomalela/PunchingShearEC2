@@ -1,5 +1,15 @@
 # Histórico de alterações
 
+## 1.15.1-rc.1 — 2026-09-15
+
+- Primeira candidata com executável Windows x64 autónomo, ícone e metadados.
+- Testes com leitura UTF-8 explícita; regressão da consola CP1252.
+- A linha de comandos representa símbolos não disponíveis por escapes, conservando os relatórios UTF-8.
+- Compilação e ensaio do executável condicionados à aprovação da suite em Linux e Windows.
+- Publicação em Releases com código-fonte, ZIP, executável, metadados e hashes SHA-256.
+- Fórmulas e formato de projetos preservados; revisão visual completa pendente.
+
+
 ## Publicação da base 1.15.0 — 2026-09-15
 
 - Código da aplicação e testes conservados integralmente da distribuição 1.15.0.

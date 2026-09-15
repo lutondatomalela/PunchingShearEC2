@@ -124,7 +124,7 @@ def test_invalid_method_inputs_are_rejected(changes):
     '21_bordo_excentricidade_exterior_uniaxial.json','22_bordo_exterior_combinacao_biaxial.json',
     '23_canto_exterior_combinacao_biaxial.json'])
 def test_detailed_beta_trace_matches_engine_and_xlsx(file,tmp_path):
-    p=json.loads((Path('examples')/file).read_text());v=PuncoamentoEC2(**p);v.verificar_puncoamento();r=v.snapshot()
+    p=json.loads((Path('examples')/file).read_text(encoding='utf-8'));v=PuncoamentoEC2(**p);v.verificar_puncoamento();r=v.snapshot()
     assert v.beta is not None
     last=r['beta_terms']['steps'][-1]
     assert last['symbol']=='beta' and last['value']==v.beta

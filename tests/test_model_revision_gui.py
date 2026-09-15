@@ -57,7 +57,7 @@ def test_save_from_model_window_updates_file_without_new_joints(model_dialogs,co
     assert target.exists() and collection.vars['M_Edx'].get()=='10'
     assert collection.vars['project'].get()=='Projeto preservado'
     assert collection._fresh_result() is None
-    payload=json.loads(target.read_text())
+    payload=json.loads(target.read_text(encoding='utf-8'))
     restored=ConnectionBook.from_payload(payload,DEFAULTS)
     assert len(restored.cases)==2 and restored.cases[k]['draft']==collection._book.cases[k]['draft']
     assert cached_calculation(restored.cases[k]) is None
@@ -66,7 +66,7 @@ def test_save_from_model_window_updates_file_without_new_joints(model_dialogs,co
     for c in collection._book.cases.values():calculate_case(c,DEFAULTS)
     monkeypatch.setattr(connection_ui.filedialog,'asksaveasfilename',lambda **kw:pytest.fail('Já existe um caminho do conjunto.'))
     assert collection._save_model_configuration(collection._book.model_setup['config'])
-    restored=ConnectionBook.from_payload(json.loads(target.read_text()),DEFAULTS)
+    restored=ConnectionBook.from_payload(json.loads(target.read_text(encoding='utf-8')),DEFAULTS)
     assert all(cached_calculation(c) for c in restored.cases.values())
 
 
@@ -84,7 +84,7 @@ def test_cancel_or_failed_save_does_not_apply_configuration(model_dialogs,collec
     if failure=='invalid_config':cfg['axes_confirmed']=False
     assert not collection._save_model_configuration(cfg)
     assert collection._book.payload()==before and collection._raw_draft()==draft
-    assert path.read_text()=='original'
+    assert path.read_text(encoding='utf-8')=='original'
 
 
 def test_save_initial_configuration_does_not_create_auto_selected_new_joints(model_dialogs,collection,tmp_path,monkeypatch):
@@ -97,6 +97,6 @@ def test_save_initial_configuration_does_not_create_auto_selected_new_joints(mod
     d.options['y'].set('+X');d.options['reference'].set('Modelo de referência')
     for v in d.checks.values():v.set(True)
     d.bar.set('2-3');d.bar_y.set('-Y');d._axis();d._save()
-    restored=ConnectionBook.from_payload(json.loads(target.read_text()),DEFAULTS)
+    restored=ConnectionBook.from_payload(json.loads(target.read_text(encoding='utf-8')),DEFAULTS)
     assert not restored.cases and set(restored.model_setup['config']['member_axes'])=={'2','3'}
     assert not collection.dialogs

@@ -16,7 +16,7 @@ DEMO=Path(__file__).resolve().parents[1]/'examples/importacao/Modelo_Ligacoes.js
 
 
 def many():
-    b=ConnectionBook.from_payload(json.loads(DEMO.read_text()),DEFAULTS)
+    b=ConnectionBook.from_payload(json.loads(DEMO.read_text(encoding='utf-8')),DEFAULTS)
     return b
 
 
@@ -153,7 +153,7 @@ def test_calculated_only_export_contains_failures_and_marks_missing_combos_parti
     assert all(g['status'].startswith('PARCIAL') for g in report['groups'])
     assert all(g['omitted_count']==2 for g in report['groups'])
     for ext,writer in [('json',export_collection_json),('txt',export_collection_txt),('pdf',export_collection_pdf)]:writer(report,tmp_path/('partial.'+ext))
-    assert '1/3 combinações calculadas' in (tmp_path/'partial.txt').read_text()
+    assert '1/3 combinações calculadas' in (tmp_path/'partial.txt').read_text(encoding='utf-8')
     full=build_report(b,only_calculated=False)
     assert len(full['entries'])==len(b.cases)
     assert any(e['status']=='NOT_EVALUATED' for e in full['entries'])

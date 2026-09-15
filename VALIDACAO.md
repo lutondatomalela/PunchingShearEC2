@@ -1,10 +1,18 @@
-# Validação — PunchingShearEC2 1.15.0
+# Validação — PunchingShearEC2
 
-## Evidência da publicação
+## Release candidate 1.15.1-rc.1
+
+A RC usa leituras UTF-8 explícitas nos testes e acrescenta um teste de regressão da linha de comandos com saída CP1252 estrita: os resultados JSON/TXT mantêm UTF-8 e um símbolo não representável no terminal não interrompe o cálculo.
+
+A publicação exige aprovação de 534 testes em Linux/Python 3.10 e 3.12 e Windows/Python 3.12. Depois, o executável é compilado e ensaiado em Windows: catálogo incluído, arranque real de Tk, cálculo pela interface, gravação/reabertura de caso e conjunto, importação XLSX/CSV UTF-16 e exportação PDF/XLSX/TXT/JSON. O ensaio corre fora da pasta do código, num caminho com acentos.
+
+A evidência efetiva de cada compilação está em Actions e no BUILD-INFO.json anexado à release. A configuração destes requisitos não equivale, por si só, à sua aprovação. Não foi realizada uma campanha visual completa em diferentes postos ou escalas de ecrã.
+
+## Evidência histórica da base 1.15.0
 
 A distribuição 1.15.0 reúne **533 testes automatizados**, incluindo 37 testes acrescentados para seleção de barras, extensão à prumada e revisão do modelo. A suite foi novamente executada na preparação deste repositório. O resultado da execução está em [validation/pytest_result.txt](validation/pytest_result.txt).
 
-A publicação preserva todos os ficheiros Python da distribuição original, incluindo os testes. A conferência SHA-256 está descrita em [BASELINE.md](BASELINE.md). A organização da documentação e os ficheiros de integração contínua não alteram o motor de cálculo.
+O commit da base 1.15.0 preserva todos os ficheiros Python da distribuição original, incluindo os testes. A conferência SHA-256 está descrita em [BASELINE.md](BASELINE.md). A organização da documentação e os ficheiros de integração contínua não alteram o motor de cálculo.
 
 ## Cobertura
 

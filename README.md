@@ -4,11 +4,15 @@ Verificação do punçoamento em lajes de betão armado segundo a **NP EN 1992-1
 
 Aplicação em Python com interface gráfica, preparação de ligações laje–pilar, gestão de conjuntos e relatórios de cálculo rastreáveis. O referencial implementado é o da primeira geração do Eurocódigo 2.
 
-## Versão de referência
+## Windows — release candidate
 
-A **1.15.0** é a base congelada para o desenvolvimento seguinte. Esta publicação mantém, byte a byte, o código da distribuição 1.15.0. As alterações de publicação abrangem documentação, organização dos registos públicos e integração contínua.
+**[Descarregar 1.15.1-rc.1](https://github.com/lutondatomalela/PunchingShearEC2/releases/tag/v1.15.1-rc.1)** · [Instalação e primeiro uso](docs/INSTALACAO_WINDOWS.md) · [Documentação](docs/README.md)
 
-Consulte [BASELINE.md](BASELINE.md) para a identificação da distribuição original e as regras de evolução. O congelamento não constitui certificação nem elimina as limitações documentadas.
+A distribuição Windows x64 inclui um executável autónomo, exemplos, documentação e metadados de compilação. Não requer Python instalado. Os binários são disponibilizados em **Releases**, com hashes SHA-256 e ligação ao commit de origem.
+
+A **1.15.1-rc.1** acrescenta empacotamento e correções de codificação à base **1.15.0**. As fórmulas e o formato dos projetos permanecem iguais. A candidata só é publicada após aprovação dos testes e do ensaio do executável; a revisão visual completa em postos Windows precede o lançamento estável.
+
+A referência original está identificada em [BASELINE.md](BASELINE.md). O histórico é preservado; o congelamento não constitui certificação nem elimina as limitações documentadas.
 
 ## Funcionalidades
 
@@ -25,9 +29,9 @@ Consulte [BASELINE.md](BASELINE.md) para a identificação da distribuição ori
 - Relatórios individuais PDF, XLSX, TXT e JSON; relatórios de conjunto PDF, TXT e JSON, filtrados por resultados calculados e atualizados.
 - Editor gráfico de aberturas e exemplos didáticos incluídos.
 
-## Instalação
+## Executar a partir do código-fonte
 
-Requer **Python 3.10 ou superior**, Tkinter e as bibliotecas de `requirements.txt`. A distribuição contém código-fonte; não é um executável autónomo.
+Requer **Python 3.10 ou superior**, Tkinter e as bibliotecas de `requirements.txt`. Esta opção destina-se a desenvolvimento ou execução por Python. Para Windows sem Python, utilize o executável em Releases.
 
 Obtenha o código:
 
@@ -105,7 +109,7 @@ python -m pytest -q
 python tools/verify_baseline.py
 ```
 
-A campanha local da publicação reúne **533 testes aprovados** em Python 3.12.14. A integração contínua executa a suite e a conferência da base; os resultados efetivos estão disponíveis em [Actions](https://github.com/lutondatomalela/PunchingShearEC2/actions).
+A suite da RC acrescenta um teste de regressão para consola com codificação legada aos 533 testes da base. A integração contínua executa a suite em Linux e Windows e ensaia o executável antes de publicar. Consulte a [validação](VALIDACAO.md) e os resultados de cada commit em [Actions](https://github.com/lutondatomalela/PunchingShearEC2/actions).
 
 ## Estrutura
 
@@ -114,7 +118,8 @@ A campanha local da publicação reúne **533 testes aprovados** em Python 3.12.
 - `examples/` — casos didáticos e tabelas de demonstração.
 - `tests/` — testes automatizados.
 - `validation/` — identificação da base e registos públicos de validação.
-- `tools/` — conferência de integridade da versão.
+- `tools/` — conferência de integridade, compilação e publicação da RC.
+- `docs/` — índice de documentação e instruções da distribuição Windows.
 - `docs/releases/` — notas de publicação.
 
 Os antigos pontos de entrada `Punching_EC2.py` e `Punching_EC2_GUI.py` são conservados para compatibilidade.

@@ -1,5 +1,6 @@
 import argparse
 import json
+import sys
 from pathlib import Path
 from .core import PuncoamentoEC2
 from .reports import export_json,export_txt,export_pdf,export_xlsx,text_report
@@ -7,6 +8,11 @@ from .connections import trace_for_api_inputs
 
 
 def main():
+    # UTF-8 files remain lossless. Legacy terminals may not represent symbols
+    # such as beta; use a visible escape instead of aborting the calculation.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, 'reconfigure'):
+            stream.reconfigure(errors='backslashreplace')
     parser=argparse.ArgumentParser(description='PunchingShearEC2 - cálculo de um caso JSON')
     parser.add_argument('input',help='JSON com os argumentos de PuncoamentoEC2')
     parser.add_argument('--out',default='resultados',help='Diretório dos resultados')

@@ -1,0 +1,11 @@
+{
+  "version": "1.15.1-rc.1",
+  "channel": "release-candidate",
+  "baseline_commit": "9dbf0bf8fa17e18c4ce22e874e6853548d13c560",
+  "local_validation": {"date": "2026-09-15", "python": "3.12.14", "passed": 534, "failed": 0},
+  "calculation_formula_changes": false,
+  "ci_required": ["Linux Python 3.10", "Linux Python 3.12", "Windows Python 3.12"],
+  "executable_evidence": "BUILD-INFO.json anexado à release após o ensaio",
+  "manual_visual_review": "pending",
+  "code_signed": false
+}

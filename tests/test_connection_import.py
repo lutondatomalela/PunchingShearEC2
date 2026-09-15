@@ -197,16 +197,16 @@ def test_missing_geometry_can_be_imported_after_forces():
 def test_project_round_trip_preserves_unfinished_drafts_and_validates_derived_loads(tmp_path):
     b=book();ckey=key('Piso 1','P01','ELU 01');c=b.cases[ckey];adopt(c,'columns',filled(c));c['draft']['laje_d']='0,';b.active=ckey
     path=tmp_path/'project.json';write_json_atomic(path,b.payload())
-    restored=ConnectionBook.from_payload(json.loads(path.read_text()),DEFAULTS)
+    restored=ConnectionBook.from_payload(json.loads(path.read_text(encoding='utf-8')),DEFAULTS)
     assert restored.payload()==b.payload()
-    broken=json.loads(path.read_text());broken['cases'][ckey]['candidates']['columns']['adopted']['V_Ed']=200
+    broken=json.loads(path.read_text(encoding='utf-8'));broken['cases'][ckey]['candidates']['columns']['adopted']['V_Ed']=200
     with pytest.raises(ValueError,match='origem'):ConnectionBook.from_payload(broken,DEFAULTS)
 
 
 def test_atomic_save_does_not_truncate_previous_file_on_error(tmp_path):
     path=tmp_path/'project.json';path.write_text('original')
     with pytest.raises(ValueError):write_json_atomic(path,{'value':float('nan')})
-    assert path.read_text()=='original'
+    assert path.read_text(encoding='utf-8')=='original'
 
 
 @pytest.mark.parametrize('sheet,name,mode', [('Geometria','geometria_pilares.csv','geometry'),('Tramos','esforcos_pilares.csv','columns'),('Resultantes','resultantes_ligacao.csv','resultants')])

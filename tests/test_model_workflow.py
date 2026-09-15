@@ -197,10 +197,10 @@ def test_reporting_requires_fresh_calculations_and_preserves_pending_cases(tmp_p
     for c in b.cases.values():calculate_case(c,DEFAULTS)
     report=build_report(b,full=True,only_calculated=False);assert report['groups'][0]['status']=='PARCIAL — PENDENTE'
     for ext,writer in [('json',export_collection_json),('txt',export_collection_txt),('pdf',export_collection_pdf)]:writer(report,tmp_path/('conjunto.'+ext))
-    loaded=json.loads((tmp_path/'conjunto.json').read_text());assert len(loaded['entries'])==2
+    loaded=json.loads((tmp_path/'conjunto.json').read_text(encoding='utf-8'));assert len(loaded['entries'])==2
     assert loaded['entries'][0]['snapshot']['load_trace']['adopted']['V_Ed']==450
     assert loaded['entries'][1]['snapshot'] is None
-    assert 'CQC/SRSS' in (tmp_path/'conjunto.txt').read_text()
+    assert 'CQC/SRSS' in (tmp_path/'conjunto.txt').read_text(encoding='utf-8')
     b.cases[k]['draft']['laje_d']='0.5'
     with pytest.raises(ValueError,match='atualizados'):build_report(b)
 

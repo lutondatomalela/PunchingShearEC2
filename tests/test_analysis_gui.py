@@ -108,7 +108,7 @@ def test_analysis_origin_survives_calculation_exports_and_reopen(collection,tmp_
     assert result['load_trace']['adopted']['M_Edy']==16 and 'Modelo 3D' in collection.last_report
     from punching.reports import export_json,export_xlsx,export_pdf,export_txt
     for ext,fn in [('json',export_json),('xlsx',export_xlsx),('pdf',export_pdf),('txt',export_txt)]:fn(result,tmp_path/('analysis.'+ext))
-    text=(tmp_path/'analysis.txt').read_text();assert 'Member/Node/Case' in text and 'linha 2' in text
+    text=(tmp_path/'analysis.txt').read_text(encoding='utf-8');assert 'Member/Node/Case' in text and 'linha 2' in text
     from openpyxl import load_workbook
     wb=load_workbook(tmp_path/'analysis.xlsx');source='\n'.join(str(r[0]) for r in wb['OrigemEsforcos'].values);wb.close()
     assert 'FXinf-FXsup' in source

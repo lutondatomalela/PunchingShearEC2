@@ -128,7 +128,7 @@ def test_circular_json_save_load_round_trip(app,tmp_path,monkeypatch):
     target=tmp_path/'caso.json'
     monkeypatch.setattr(gui.filedialog,'asksaveasfilename',lambda **kw:str(target))
     monkeypatch.setattr(gui.filedialog,'askopenfilename',lambda **kw:str(target))
-    app.guardar_caso();data=json.loads(target.read_text())
+    app.guardar_caso();data=json.loads(target.read_text(encoding='utf-8'))
     assert data['V_Ed']==321500 and data['pilar_c2'] is None
     app.limpar();app.abrir_caso();app.calcular()
     assert not app.dialogs
@@ -141,9 +141,9 @@ def test_all_export_formats_retain_state_and_values(load,status,tmp_path):
     r=run(V_Ed=load,project='=2+2').snapshot()
     export_json(r,tmp_path/'result.json');export_txt(r,tmp_path/'result.txt')
     export_xlsx(r,tmp_path/'result.xlsx');export_pdf(r,tmp_path/'result.pdf')
-    saved=json.loads((tmp_path/'result.json').read_text())
+    saved=json.loads((tmp_path/'result.json').read_text(encoding='utf-8'))
     assert saved['status']==status and saved['values']==r['values']
-    assert status in (tmp_path/'result.txt').read_text()
+    assert status in (tmp_path/'result.txt').read_text(encoding='utf-8')
     from openpyxl import load_workbook
     wb=load_workbook(tmp_path/'result.xlsx')
     assert wb['Resumo']['B2'].value==status
@@ -168,7 +168,7 @@ def test_cli_exit_status_and_json_record(load,exit_code,status,tmp_path):
     command=[sys.executable,'-m','punching.cli',str(source),'--out',str(out)]
     completed=subprocess.run(command,capture_output=True,text=True,encoding='utf-8')
     assert completed.returncode==exit_code,completed.stderr
-    assert json.loads((out/'resultado.json').read_text())['status']==status
+    assert json.loads((out/'resultado.json').read_text(encoding='utf-8'))['status']==status
 
 
 def test_cli_rejects_invalid_input_without_success_record(tmp_path):
@@ -183,7 +183,7 @@ def test_cli_records_pending_beta_with_nonzero_exit_code(tmp_path):
     out=tmp_path/'pending'
     p=subprocess.run([sys.executable,'-m','punching.cli',str(source),'--out',str(out)],capture_output=True,text=True)
     assert p.returncode==1
-    r=json.loads((out/'resultado.json').read_text())
+    r=json.loads((out/'resultado.json').read_text(encoding='utf-8'))
     assert r['status']=='BETA_PENDING' and r['values']['beta'] is None
     assert r['checks']==[] and r['reinforcement_rows']==[]
 

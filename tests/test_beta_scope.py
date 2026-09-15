@@ -110,7 +110,7 @@ def test_manual_beta_requires_finite_value_and_traceable_reference(changes):
 def test_pending_export_is_not_a_calculation_failure_or_zero_steel(tmp_path):
     r=connection(.343).snapshot()
     export_json(r,tmp_path/'pending.json');export_xlsx(r,tmp_path/'pending.xlsx');export_pdf(r,tmp_path/'pending.pdf')
-    saved=json.loads((tmp_path/'pending.json').read_text())
+    saved=json.loads((tmp_path/'pending.json').read_text(encoding='utf-8'))
     assert saved['status']=='BETA_PENDING' and saved['values']['beta'] is None
     assert 'Nenhuma verificação concluída' in text_report(r)
     from openpyxl import load_workbook
@@ -121,12 +121,12 @@ def test_pending_export_is_not_a_calculation_failure_or_zero_steel(tmp_path):
 
 def test_example_catalogue_uses_technical_descriptions_and_no_implicit_approvals():
     directory=Path(__file__).resolve().parents[1]/'examples'
-    catalog=json.loads((directory/'catalog.json').read_text())
+    catalog=json.loads((directory/'catalog.json').read_text(encoding='utf-8'))
     assert len({x['title'] for x in catalog})==len(catalog)==30
     for entry in catalog:
         text=(entry['title']+' '+entry['description']).lower()
         assert 'auditoria' not in text and 'imagem' not in text
-        p=json.loads((directory/entry['file']).read_text())
+        p=json.loads((directory/entry['file']).read_text(encoding='utf-8'))
         assert p['anchorage_confirmed'] is False
         assert p['support']==entry['title']
         if p['beta_mode']=='simplificado':

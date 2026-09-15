@@ -135,5 +135,5 @@ def test_report_controller_exports_fresh_results_and_selected_scope(model_dialog
     for c in collection._book.cases.values():calculate_case(c,DEFAULTS)
     monkeypatch.setattr(collection,'_run_collection',lambda *a:pytest.fail('A exportação não deve iniciar cálculos.'))
     collection._export_collection()
-    report=json.loads(target.read_text());assert len(report['entries'])==2
+    report=json.loads(target.read_text(encoding='utf-8'));assert len(report['entries'])==2
     assert {e['snapshot']['load_trace']['adopted']['V_Ed'] for e in report['entries']}=={400,450}

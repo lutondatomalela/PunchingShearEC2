@@ -28,7 +28,7 @@ def test_gui_editor_apply_and_cancel_are_transactional(app,monkeypatch):
 def test_physical_openings_round_trip_without_copying_generated_angles(app,tmp_path,monkeypatch):
     app.vars['openings'].set(json.dumps([rectangle()]));app.vars['opening_sectors'].set('80;100')
     path=tmp_path/'caso.json';monkeypatch.setattr(gui.filedialog,'asksaveasfilename',lambda **kw:str(path))
-    app.guardar_caso();data=json.loads(path.read_text())
+    app.guardar_caso();data=json.loads(path.read_text(encoding='utf-8'))
     assert data['opening_sectors']==[[80.,100.]] and data['openings']==[rectangle()]
     app.limpar();assert app.vars['openings'].get()=='[]'
     monkeypatch.setattr(gui.filedialog,'askopenfilename',lambda **kw:str(path));app.abrir_caso();app.calcular()
