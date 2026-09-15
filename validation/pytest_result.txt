@@ -1,0 +1,16 @@
+Validação da publicação — PunchingShearEC2 1.15.0
+Data: 2026-09-15
+Python: 3.12.14
+pytest: 9.1.1
+reportlab: 4.4.9
+openpyxl: 3.1.5
+
+Comando: python -m pytest -q -p no:cacheprovider
+Resultado: 533 testes aprovados.
+
+Integridade: 106 ficheiros da aplicação, testes, exemplos e dependências
+correspondem byte a byte à distribuição original 1.15.0.
+
+Esta execução é local. Os resultados da integração contínua são registados
+pelo GitHub Actions para o respetivo commit. A revisão visual nativa da
+interface não integra esta execução.

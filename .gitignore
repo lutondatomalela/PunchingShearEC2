@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+build/
+dist/
+artifacts/
+*.egg-info/
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+# Dados e relatórios privados: utilizar uma destas pastas, nunca examples/.
+local_data/
+project_data/
+reports_output/

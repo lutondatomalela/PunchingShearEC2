@@ -1,0 +1,58 @@
+{
+  "version": "1.15.0",
+  "date": "2026-09-13",
+  "previous_version": "1.14.0",
+  "automated_tests": 533,
+  "new_tests": 37,
+  "result": "passed",
+  "python": "3.12.14",
+  "native_gui_visual_review": false,
+  "unchanged_modules_sha256": {
+    "core.py": "6cd6f607c7f81e390c84edc6ebf80ca9e57e2f2c426ce9472a238ca1ddfdf62b",
+    "geometry.py": "2c844dc199da56b90c913d9e2f2b2d0cce028e47c163a17c4d9bbf2808f20569",
+    "detailing.py": "c0d8362e7404409c8f1010076dfab2684be7530ad96c3e1da272117a9f688725",
+    "openings.py": "200f5dac86866be991d43144ae32ae8b98a4aa6bbb33f13b6e1bbbc337e8d1ef",
+    "beta_trace.py": "a086703b7ae3dca4bba11bd9a83fbc365938194297fb69d5ab0f4fbed7266ff5",
+    "longitudinal.py": "7b940af0daafc67af899314dd87e5e9b4bb0ad310f8fff1764440ea061323b75",
+    "reports.py": "18138d2904239f872b0da46ad55a952ee565b8e6934da44dab7675c312c70be8",
+    "collection_reports.py": "39c2e0d5b6531dfe5a2671a5a41f419ce2b8d206b6efd674f9e2ca4982541bcb",
+    "analysis_import.py": "370759c2da402c4fccf4991403fba5730584611980de433c68af3bad17359ffb",
+    "collection_workflow.py": "2f0c59c974be2f4d0fa4e4c1d7baa0de4e14b76cf2ebf363264ec5f5ecd9c3bb"
+  },
+  "legacy_collections": [
+    {
+      "file": "Modelo_Ligacoes.json",
+      "cases": 12,
+      "roundtrip": true
+    },
+    {
+      "file": "Ligacoes_exemplo.json",
+      "cases": 4,
+      "roundtrip": true
+    },
+    {
+      "file": "Grupos_Ligacoes.json",
+      "cases": 12,
+      "roundtrip": true
+    }
+  ],
+  "coverage": [
+    "lists and para/hyphen member ranges",
+    "atomic rejection of unknown identifiers",
+    "connected vertical alignment with ambiguity checks",
+    "configuration save without new joints",
+    "save cancellation and write failure",
+    "preservation of slabs reinforcement groups openings and case frames",
+    "current calculated results retained only for unaffected cases",
+    "combination extension alongside axis revision",
+    "source geometry and manual geometry preservation",
+    "save and reopen with reconstructed provenance"
+  ],
+  "limits": [
+    "alignment requires coordinates and exact shared end nodes",
+    "existing joint connectivity is read-only",
+    "prepared combinations cannot be silently removed",
+    "new source file revisions use a separate collection",
+    "native desktop visual review remains to be performed"
+  ]
+}

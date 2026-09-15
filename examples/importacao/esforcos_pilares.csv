@@ -1,0 +1,7 @@
+piso;pilar;combinacao;barra;tramo;extremo;sem_superior;n;mx_no;my_no
+Piso 1;P01;ELU 01;B101;inferior;topo;nao;1800;18;-24
+Piso 1;P01;ELU 01;B201;superior;base;nao;1350;-6;8
+Piso 1;P01;ELU 02;B101;inferior;topo;nao;1700;22;-31
+Piso 1;P01;ELU 02;B201;superior;base;nao;1300;-4;5
+Piso 1;P02;ELU 01;B102;inferior;topo;nao;1500;12;-8
+Cobertura;P01;ELU 01;B301;inferior;topo;sim;280;0;0

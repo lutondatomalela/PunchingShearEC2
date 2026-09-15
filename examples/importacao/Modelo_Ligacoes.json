@@ -1,0 +1,1976 @@
+{
+  "schema": "PunchingShearEC2.connections/2",
+  "cases": {
+    "[\"Piso 1\",\"P01\",\"201 (C)\"]": {
+      "floor": "Piso 1",
+      "support": "P01",
+      "combination": "201 (C)",
+      "candidates": {
+        "columns": {
+          "adapter": "Modelo.model-ref/1",
+          "node": "12",
+          "turn": 0
+        }
+      },
+      "geometry": {
+        "floor": "Piso 1",
+        "support": "P01",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.3,
+          "pilar_c2": 0.6
+        },
+        "source": {
+          "file": "Modelo_Pilares.csv",
+          "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+          "sheet": "CSV",
+          "row": 15,
+          "raw": {
+            "Member/Node/Case": "101/ 12/203 (C) (CQC)",
+            "FX (kN)": "740",
+            "MY (kNm)": "18",
+            "MZ (kNm)": "-15",
+            "AX (cm2)": "1800",
+            "IY (cm4)": "540000",
+            "IZ (cm4)": "135000",
+            "HY (cm)": "30",
+            "HZ (cm)": "60",
+            "Name": "P01",
+            "Story": "Piso 1"
+          }
+        }
+      },
+      "choice": "columns",
+      "reference": "Modelo fictício de edifício de escritórios: pilares verticais P01 e P02, pisos às cotas 3 e 6 m. x local = +Z; y local P01 = +X, P02 = +Y. Sem outras transferências no nó. A combinação 203 (CQC) permanece pendente. MODELO_POR_PISO.md.",
+      "draft": {
+        "project": "",
+        "support": "P01 / Piso 1",
+        "combination": "201 (C)",
+        "laje_d": "",
+        "laje_dx": "",
+        "laje_dy": "",
+        "betão_fck": "",
+        "aço_fyk": "500",
+        "aço_fywk": "500",
+        "pilar_tipo": "",
+        "pilar_forma": "retangular",
+        "pilar_c1": "0.3",
+        "pilar_c2": "0.6",
+        "edge_distance_m": "0",
+        "V_Ed": "300",
+        "M_Edx": "12",
+        "M_Edy": "11",
+        "sigma_cp": "0",
+        "gamma_C": "1.5",
+        "gamma_S": "1.15",
+        "beta_mode": "ec2",
+        "beta_manual": "",
+        "beta_reference": "",
+        "laje_As_lx_cm2pm": "",
+        "laje_As_ly_cm2pm": "",
+        "interior_beta_method": "ec2_643",
+        "allow_biaxial_envelope": false,
+        "is_sapata": false,
+        "sigma_gd_kpa": "0",
+        "edge_perp_interior": true,
+        "corner_interior": true,
+        "simplified_applicable": false,
+        "opening_sectors": "",
+        "openings": "[]",
+        "reinforcement_diameter_mm": "10",
+        "reinforcement_sr_m": "",
+        "reinforcement_s0_m": "",
+        "cover_mm": "30",
+        "anchorage_confirmed": false,
+        "aggregate_mm": "20",
+        "footing_shape": "retangular",
+        "footing_bx": "",
+        "footing_by": "",
+        "footing_diameter": ""
+      },
+      "last_status": null,
+      "automated": true
+    },
+    "[\"Piso 1\",\"P01\",\"202 (C)\"]": {
+      "floor": "Piso 1",
+      "support": "P01",
+      "combination": "202 (C)",
+      "candidates": {
+        "columns": {
+          "adapter": "Modelo.model-ref/1",
+          "node": "12",
+          "turn": 0
+        }
+      },
+      "geometry": {
+        "floor": "Piso 1",
+        "support": "P01",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.3,
+          "pilar_c2": 0.6
+        },
+        "source": {
+          "file": "Modelo_Pilares.csv",
+          "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+          "sheet": "CSV",
+          "row": 15,
+          "raw": {
+            "Member/Node/Case": "101/ 12/203 (C) (CQC)",
+            "FX (kN)": "740",
+            "MY (kNm)": "18",
+            "MZ (kNm)": "-15",
+            "AX (cm2)": "1800",
+            "IY (cm4)": "540000",
+            "IZ (cm4)": "135000",
+            "HY (cm)": "30",
+            "HZ (cm)": "60",
+            "Name": "P01",
+            "Story": "Piso 1"
+          }
+        }
+      },
+      "choice": "columns",
+      "reference": "Modelo fictício de edifício de escritórios: pilares verticais P01 e P02, pisos às cotas 3 e 6 m. x local = +Z; y local P01 = +X, P02 = +Y. Sem outras transferências no nó. A combinação 203 (CQC) permanece pendente. MODELO_POR_PISO.md.",
+      "draft": {
+        "project": "",
+        "support": "P01 / Piso 1",
+        "combination": "202 (C)",
+        "laje_d": "",
+        "laje_dx": "",
+        "laje_dy": "",
+        "betão_fck": "",
+        "aço_fyk": "500",
+        "aço_fywk": "500",
+        "pilar_tipo": "",
+        "pilar_forma": "retangular",
+        "pilar_c1": "0.3",
+        "pilar_c2": "0.6",
+        "edge_distance_m": "0",
+        "V_Ed": "340",
+        "M_Edx": "12",
+        "M_Edy": "11",
+        "sigma_cp": "0",
+        "gamma_C": "1.5",
+        "gamma_S": "1.15",
+        "beta_mode": "ec2",
+        "beta_manual": "",
+        "beta_reference": "",
+        "laje_As_lx_cm2pm": "",
+        "laje_As_ly_cm2pm": "",
+        "interior_beta_method": "ec2_643",
+        "allow_biaxial_envelope": false,
+        "is_sapata": false,
+        "sigma_gd_kpa": "0",
+        "edge_perp_interior": true,
+        "corner_interior": true,
+        "simplified_applicable": false,
+        "opening_sectors": "",
+        "openings": "[]",
+        "reinforcement_diameter_mm": "10",
+        "reinforcement_sr_m": "",
+        "reinforcement_s0_m": "",
+        "cover_mm": "30",
+        "anchorage_confirmed": false,
+        "aggregate_mm": "20",
+        "footing_shape": "retangular",
+        "footing_bx": "",
+        "footing_by": "",
+        "footing_diameter": ""
+      },
+      "last_status": null,
+      "automated": true
+    },
+    "[\"Piso 1\",\"P01\",\"203 (C) (CQC)\"]": {
+      "floor": "Piso 1",
+      "support": "P01",
+      "combination": "203 (C) (CQC)",
+      "candidates": {
+        "columns": {
+          "adapter": "Modelo.model-ref/1",
+          "node": "12",
+          "turn": 0
+        }
+      },
+      "geometry": {
+        "floor": "Piso 1",
+        "support": "P01",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.3,
+          "pilar_c2": 0.6
+        },
+        "source": {
+          "file": "Modelo_Pilares.csv",
+          "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+          "sheet": "CSV",
+          "row": 15,
+          "raw": {
+            "Member/Node/Case": "101/ 12/203 (C) (CQC)",
+            "FX (kN)": "740",
+            "MY (kNm)": "18",
+            "MZ (kNm)": "-15",
+            "AX (cm2)": "1800",
+            "IY (cm4)": "540000",
+            "IZ (cm4)": "135000",
+            "HY (cm)": "30",
+            "HZ (cm)": "60",
+            "Name": "P01",
+            "Story": "Piso 1"
+          }
+        }
+      },
+      "choice": "",
+      "reference": "",
+      "draft": {
+        "project": "",
+        "support": "P01 / Piso 1",
+        "combination": "203 (C) (CQC)",
+        "laje_d": "",
+        "laje_dx": "",
+        "laje_dy": "",
+        "betão_fck": "",
+        "aço_fyk": "500",
+        "aço_fywk": "500",
+        "pilar_tipo": "",
+        "pilar_forma": "retangular",
+        "pilar_c1": "0.3",
+        "pilar_c2": "0.6",
+        "edge_distance_m": "0",
+        "V_Ed": "",
+        "M_Edx": "",
+        "M_Edy": "",
+        "sigma_cp": "0",
+        "gamma_C": "1.5",
+        "gamma_S": "1.15",
+        "beta_mode": "ec2",
+        "beta_manual": "",
+        "beta_reference": "",
+        "laje_As_lx_cm2pm": "",
+        "laje_As_ly_cm2pm": "",
+        "interior_beta_method": "ec2_643",
+        "allow_biaxial_envelope": false,
+        "is_sapata": false,
+        "sigma_gd_kpa": "0",
+        "edge_perp_interior": true,
+        "corner_interior": true,
+        "simplified_applicable": false,
+        "opening_sectors": "",
+        "openings": "[]",
+        "reinforcement_diameter_mm": "10",
+        "reinforcement_sr_m": "",
+        "reinforcement_s0_m": "",
+        "cover_mm": "30",
+        "anchorage_confirmed": false,
+        "aggregate_mm": "20",
+        "footing_shape": "retangular",
+        "footing_bx": "",
+        "footing_by": "",
+        "footing_diameter": ""
+      },
+      "last_status": null,
+      "automated": true
+    },
+    "[\"Piso 1\",\"P02\",\"201 (C)\"]": {
+      "floor": "Piso 1",
+      "support": "P02",
+      "combination": "201 (C)",
+      "candidates": {
+        "columns": {
+          "adapter": "Modelo.model-ref/1",
+          "node": "22",
+          "turn": 0
+        }
+      },
+      "geometry": {
+        "floor": "Piso 1",
+        "support": "P02",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.6,
+          "pilar_c2": 0.3
+        },
+        "source": {
+          "file": "Modelo_Pilares.csv",
+          "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+          "sheet": "CSV",
+          "row": 33,
+          "raw": {
+            "Member/Node/Case": "201/ 22/203 (C) (CQC)",
+            "FX (kN)": "740",
+            "MY (kNm)": "18",
+            "MZ (kNm)": "-15",
+            "AX (cm2)": "1800",
+            "IY (cm4)": "540000",
+            "IZ (cm4)": "135000",
+            "HY (cm)": "30",
+            "HZ (cm)": "60",
+            "Name": "P02",
+            "Story": "Piso 1"
+          }
+        }
+      },
+      "choice": "columns",
+      "reference": "Modelo fictício de edifício de escritórios: pilares verticais P01 e P02, pisos às cotas 3 e 6 m. x local = +Z; y local P01 = +X, P02 = +Y. Sem outras transferências no nó. A combinação 203 (CQC) permanece pendente. MODELO_POR_PISO.md.",
+      "draft": {
+        "project": "",
+        "support": "P02 / Piso 1",
+        "combination": "201 (C)",
+        "laje_d": "",
+        "laje_dx": "",
+        "laje_dy": "",
+        "betão_fck": "",
+        "aço_fyk": "500",
+        "aço_fywk": "500",
+        "pilar_tipo": "",
+        "pilar_forma": "retangular",
+        "pilar_c1": "0.6",
+        "pilar_c2": "0.3",
+        "edge_distance_m": "0",
+        "V_Ed": "300",
+        "M_Edx": "11",
+        "M_Edy": "-12",
+        "sigma_cp": "0",
+        "gamma_C": "1.5",
+        "gamma_S": "1.15",
+        "beta_mode": "ec2",
+        "beta_manual": "",
+        "beta_reference": "",
+        "laje_As_lx_cm2pm": "",
+        "laje_As_ly_cm2pm": "",
+        "interior_beta_method": "ec2_643",
+        "allow_biaxial_envelope": false,
+        "is_sapata": false,
+        "sigma_gd_kpa": "0",
+        "edge_perp_interior": true,
+        "corner_interior": false,
+        "simplified_applicable": false,
+        "opening_sectors": "",
+        "openings": "[]",
+        "reinforcement_diameter_mm": "10",
+        "reinforcement_sr_m": "",
+        "reinforcement_s0_m": "",
+        "cover_mm": "30",
+        "anchorage_confirmed": false,
+        "aggregate_mm": "20",
+        "footing_shape": "retangular",
+        "footing_bx": "",
+        "footing_by": "",
+        "footing_diameter": ""
+      },
+      "last_status": null,
+      "automated": true
+    },
+    "[\"Piso 1\",\"P02\",\"202 (C)\"]": {
+      "floor": "Piso 1",
+      "support": "P02",
+      "combination": "202 (C)",
+      "candidates": {
+        "columns": {
+          "adapter": "Modelo.model-ref/1",
+          "node": "22",
+          "turn": 0
+        }
+      },
+      "geometry": {
+        "floor": "Piso 1",
+        "support": "P02",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.6,
+          "pilar_c2": 0.3
+        },
+        "source": {
+          "file": "Modelo_Pilares.csv",
+          "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+          "sheet": "CSV",
+          "row": 33,
+          "raw": {
+            "Member/Node/Case": "201/ 22/203 (C) (CQC)",
+            "FX (kN)": "740",
+            "MY (kNm)": "18",
+            "MZ (kNm)": "-15",
+            "AX (cm2)": "1800",
+            "IY (cm4)": "540000",
+            "IZ (cm4)": "135000",
+            "HY (cm)": "30",
+            "HZ (cm)": "60",
+            "Name": "P02",
+            "Story": "Piso 1"
+          }
+        }
+      },
+      "choice": "columns",
+      "reference": "Modelo fictício de edifício de escritórios: pilares verticais P01 e P02, pisos às cotas 3 e 6 m. x local = +Z; y local P01 = +X, P02 = +Y. Sem outras transferências no nó. A combinação 203 (CQC) permanece pendente. MODELO_POR_PISO.md.",
+      "draft": {
+        "project": "",
+        "support": "P02 / Piso 1",
+        "combination": "202 (C)",
+        "laje_d": "",
+        "laje_dx": "",
+        "laje_dy": "",
+        "betão_fck": "",
+        "aço_fyk": "500",
+        "aço_fywk": "500",
+        "pilar_tipo": "",
+        "pilar_forma": "retangular",
+        "pilar_c1": "0.6",
+        "pilar_c2": "0.3",
+        "edge_distance_m": "0",
+        "V_Ed": "340",
+        "M_Edx": "11",
+        "M_Edy": "-12",
+        "sigma_cp": "0",
+        "gamma_C": "1.5",
+        "gamma_S": "1.15",
+        "beta_mode": "ec2",
+        "beta_manual": "",
+        "beta_reference": "",
+        "laje_As_lx_cm2pm": "",
+        "laje_As_ly_cm2pm": "",
+        "interior_beta_method": "ec2_643",
+        "allow_biaxial_envelope": false,
+        "is_sapata": false,
+        "sigma_gd_kpa": "0",
+        "edge_perp_interior": true,
+        "corner_interior": false,
+        "simplified_applicable": false,
+        "opening_sectors": "",
+        "openings": "[]",
+        "reinforcement_diameter_mm": "10",
+        "reinforcement_sr_m": "",
+        "reinforcement_s0_m": "",
+        "cover_mm": "30",
+        "anchorage_confirmed": false,
+        "aggregate_mm": "20",
+        "footing_shape": "retangular",
+        "footing_bx": "",
+        "footing_by": "",
+        "footing_diameter": ""
+      },
+      "last_status": null,
+      "automated": true
+    },
+    "[\"Piso 1\",\"P02\",\"203 (C) (CQC)\"]": {
+      "floor": "Piso 1",
+      "support": "P02",
+      "combination": "203 (C) (CQC)",
+      "candidates": {
+        "columns": {
+          "adapter": "Modelo.model-ref/1",
+          "node": "22",
+          "turn": 0
+        }
+      },
+      "geometry": {
+        "floor": "Piso 1",
+        "support": "P02",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.6,
+          "pilar_c2": 0.3
+        },
+        "source": {
+          "file": "Modelo_Pilares.csv",
+          "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+          "sheet": "CSV",
+          "row": 33,
+          "raw": {
+            "Member/Node/Case": "201/ 22/203 (C) (CQC)",
+            "FX (kN)": "740",
+            "MY (kNm)": "18",
+            "MZ (kNm)": "-15",
+            "AX (cm2)": "1800",
+            "IY (cm4)": "540000",
+            "IZ (cm4)": "135000",
+            "HY (cm)": "30",
+            "HZ (cm)": "60",
+            "Name": "P02",
+            "Story": "Piso 1"
+          }
+        }
+      },
+      "choice": "",
+      "reference": "",
+      "draft": {
+        "project": "",
+        "support": "P02 / Piso 1",
+        "combination": "203 (C) (CQC)",
+        "laje_d": "",
+        "laje_dx": "",
+        "laje_dy": "",
+        "betão_fck": "",
+        "aço_fyk": "500",
+        "aço_fywk": "500",
+        "pilar_tipo": "",
+        "pilar_forma": "retangular",
+        "pilar_c1": "0.6",
+        "pilar_c2": "0.3",
+        "edge_distance_m": "0",
+        "V_Ed": "",
+        "M_Edx": "",
+        "M_Edy": "",
+        "sigma_cp": "0",
+        "gamma_C": "1.5",
+        "gamma_S": "1.15",
+        "beta_mode": "ec2",
+        "beta_manual": "",
+        "beta_reference": "",
+        "laje_As_lx_cm2pm": "",
+        "laje_As_ly_cm2pm": "",
+        "interior_beta_method": "ec2_643",
+        "allow_biaxial_envelope": false,
+        "is_sapata": false,
+        "sigma_gd_kpa": "0",
+        "edge_perp_interior": true,
+        "corner_interior": true,
+        "simplified_applicable": false,
+        "opening_sectors": "",
+        "openings": "[]",
+        "reinforcement_diameter_mm": "10",
+        "reinforcement_sr_m": "",
+        "reinforcement_s0_m": "",
+        "cover_mm": "30",
+        "anchorage_confirmed": false,
+        "aggregate_mm": "20",
+        "footing_shape": "retangular",
+        "footing_bx": "",
+        "footing_by": "",
+        "footing_diameter": ""
+      },
+      "last_status": null,
+      "automated": true
+    },
+    "[\"Piso 2\",\"P01\",\"201 (C)\"]": {
+      "floor": "Piso 2",
+      "support": "P01",
+      "combination": "201 (C)",
+      "candidates": {
+        "columns": {
+          "adapter": "Modelo.model-ref/1",
+          "node": "13",
+          "turn": 0
+        }
+      },
+      "geometry": {
+        "floor": "Piso 2",
+        "support": "P01",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.3,
+          "pilar_c2": 0.6
+        },
+        "source": {
+          "file": "Modelo_Pilares.csv",
+          "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+          "sheet": "CSV",
+          "row": 17,
+          "raw": {
+            "Member/Node/Case": "102/ 13/203 (C) (CQC)",
+            "FX (kN)": "430",
+            "MY (kNm)": "12",
+            "MZ (kNm)": "-9",
+            "AX (cm2)": "1800",
+            "IY (cm4)": "540000",
+            "IZ (cm4)": "135000",
+            "HY (cm)": "30",
+            "HZ (cm)": "60",
+            "Name": "P01",
+            "Story": "Piso 2"
+          }
+        }
+      },
+      "choice": "columns",
+      "reference": "Modelo fictício de edifício de escritórios: pilares verticais P01 e P02, pisos às cotas 3 e 6 m. x local = +Z; y local P01 = +X, P02 = +Y. Sem outras transferências no nó. A combinação 203 (CQC) permanece pendente. MODELO_POR_PISO.md.",
+      "draft": {
+        "project": "",
+        "support": "P01 / Piso 2",
+        "combination": "201 (C)",
+        "laje_d": "",
+        "laje_dx": "",
+        "laje_dy": "",
+        "betão_fck": "",
+        "aço_fyk": "500",
+        "aço_fywk": "500",
+        "pilar_tipo": "",
+        "pilar_forma": "retangular",
+        "pilar_c1": "0.3",
+        "pilar_c2": "0.6",
+        "edge_distance_m": "0",
+        "V_Ed": "280",
+        "M_Edx": "8",
+        "M_Edy": "6",
+        "sigma_cp": "0",
+        "gamma_C": "1.5",
+        "gamma_S": "1.15",
+        "beta_mode": "ec2",
+        "beta_manual": "",
+        "beta_reference": "",
+        "laje_As_lx_cm2pm": "",
+        "laje_As_ly_cm2pm": "",
+        "interior_beta_method": "ec2_643",
+        "allow_biaxial_envelope": false,
+        "is_sapata": false,
+        "sigma_gd_kpa": "0",
+        "edge_perp_interior": true,
+        "corner_interior": true,
+        "simplified_applicable": false,
+        "opening_sectors": "",
+        "openings": "[]",
+        "reinforcement_diameter_mm": "10",
+        "reinforcement_sr_m": "",
+        "reinforcement_s0_m": "",
+        "cover_mm": "30",
+        "anchorage_confirmed": false,
+        "aggregate_mm": "20",
+        "footing_shape": "retangular",
+        "footing_bx": "",
+        "footing_by": "",
+        "footing_diameter": ""
+      },
+      "last_status": null,
+      "automated": true
+    },
+    "[\"Piso 2\",\"P01\",\"202 (C)\"]": {
+      "floor": "Piso 2",
+      "support": "P01",
+      "combination": "202 (C)",
+      "candidates": {
+        "columns": {
+          "adapter": "Modelo.model-ref/1",
+          "node": "13",
+          "turn": 0
+        }
+      },
+      "geometry": {
+        "floor": "Piso 2",
+        "support": "P01",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.3,
+          "pilar_c2": 0.6
+        },
+        "source": {
+          "file": "Modelo_Pilares.csv",
+          "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+          "sheet": "CSV",
+          "row": 17,
+          "raw": {
+            "Member/Node/Case": "102/ 13/203 (C) (CQC)",
+            "FX (kN)": "430",
+            "MY (kNm)": "12",
+            "MZ (kNm)": "-9",
+            "AX (cm2)": "1800",
+            "IY (cm4)": "540000",
+            "IZ (cm4)": "135000",
+            "HY (cm)": "30",
+            "HZ (cm)": "60",
+            "Name": "P01",
+            "Story": "Piso 2"
+          }
+        }
+      },
+      "choice": "columns",
+      "reference": "Modelo fictício de edifício de escritórios: pilares verticais P01 e P02, pisos às cotas 3 e 6 m. x local = +Z; y local P01 = +X, P02 = +Y. Sem outras transferências no nó. A combinação 203 (CQC) permanece pendente. MODELO_POR_PISO.md.",
+      "draft": {
+        "project": "",
+        "support": "P01 / Piso 2",
+        "combination": "202 (C)",
+        "laje_d": "",
+        "laje_dx": "",
+        "laje_dy": "",
+        "betão_fck": "",
+        "aço_fyk": "500",
+        "aço_fywk": "500",
+        "pilar_tipo": "",
+        "pilar_forma": "retangular",
+        "pilar_c1": "0.3",
+        "pilar_c2": "0.6",
+        "edge_distance_m": "0",
+        "V_Ed": "290",
+        "M_Edx": "8",
+        "M_Edy": "6",
+        "sigma_cp": "0",
+        "gamma_C": "1.5",
+        "gamma_S": "1.15",
+        "beta_mode": "ec2",
+        "beta_manual": "",
+        "beta_reference": "",
+        "laje_As_lx_cm2pm": "",
+        "laje_As_ly_cm2pm": "",
+        "interior_beta_method": "ec2_643",
+        "allow_biaxial_envelope": false,
+        "is_sapata": false,
+        "sigma_gd_kpa": "0",
+        "edge_perp_interior": true,
+        "corner_interior": true,
+        "simplified_applicable": false,
+        "opening_sectors": "",
+        "openings": "[]",
+        "reinforcement_diameter_mm": "10",
+        "reinforcement_sr_m": "",
+        "reinforcement_s0_m": "",
+        "cover_mm": "30",
+        "anchorage_confirmed": false,
+        "aggregate_mm": "20",
+        "footing_shape": "retangular",
+        "footing_bx": "",
+        "footing_by": "",
+        "footing_diameter": ""
+      },
+      "last_status": null,
+      "automated": true
+    },
+    "[\"Piso 2\",\"P01\",\"203 (C) (CQC)\"]": {
+      "floor": "Piso 2",
+      "support": "P01",
+      "combination": "203 (C) (CQC)",
+      "candidates": {
+        "columns": {
+          "adapter": "Modelo.model-ref/1",
+          "node": "13",
+          "turn": 0
+        }
+      },
+      "geometry": {
+        "floor": "Piso 2",
+        "support": "P01",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.3,
+          "pilar_c2": 0.6
+        },
+        "source": {
+          "file": "Modelo_Pilares.csv",
+          "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+          "sheet": "CSV",
+          "row": 17,
+          "raw": {
+            "Member/Node/Case": "102/ 13/203 (C) (CQC)",
+            "FX (kN)": "430",
+            "MY (kNm)": "12",
+            "MZ (kNm)": "-9",
+            "AX (cm2)": "1800",
+            "IY (cm4)": "540000",
+            "IZ (cm4)": "135000",
+            "HY (cm)": "30",
+            "HZ (cm)": "60",
+            "Name": "P01",
+            "Story": "Piso 2"
+          }
+        }
+      },
+      "choice": "",
+      "reference": "",
+      "draft": {
+        "project": "",
+        "support": "P01 / Piso 2",
+        "combination": "203 (C) (CQC)",
+        "laje_d": "",
+        "laje_dx": "",
+        "laje_dy": "",
+        "betão_fck": "",
+        "aço_fyk": "500",
+        "aço_fywk": "500",
+        "pilar_tipo": "",
+        "pilar_forma": "retangular",
+        "pilar_c1": "0.3",
+        "pilar_c2": "0.6",
+        "edge_distance_m": "0",
+        "V_Ed": "",
+        "M_Edx": "",
+        "M_Edy": "",
+        "sigma_cp": "0",
+        "gamma_C": "1.5",
+        "gamma_S": "1.15",
+        "beta_mode": "ec2",
+        "beta_manual": "",
+        "beta_reference": "",
+        "laje_As_lx_cm2pm": "",
+        "laje_As_ly_cm2pm": "",
+        "interior_beta_method": "ec2_643",
+        "allow_biaxial_envelope": false,
+        "is_sapata": false,
+        "sigma_gd_kpa": "0",
+        "edge_perp_interior": true,
+        "corner_interior": true,
+        "simplified_applicable": false,
+        "opening_sectors": "",
+        "openings": "[]",
+        "reinforcement_diameter_mm": "10",
+        "reinforcement_sr_m": "",
+        "reinforcement_s0_m": "",
+        "cover_mm": "30",
+        "anchorage_confirmed": false,
+        "aggregate_mm": "20",
+        "footing_shape": "retangular",
+        "footing_bx": "",
+        "footing_by": "",
+        "footing_diameter": ""
+      },
+      "last_status": null,
+      "automated": true
+    },
+    "[\"Piso 2\",\"P02\",\"201 (C)\"]": {
+      "floor": "Piso 2",
+      "support": "P02",
+      "combination": "201 (C)",
+      "candidates": {
+        "columns": {
+          "adapter": "Modelo.model-ref/1",
+          "node": "23",
+          "turn": 0
+        }
+      },
+      "geometry": {
+        "floor": "Piso 2",
+        "support": "P02",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.6,
+          "pilar_c2": 0.3
+        },
+        "source": {
+          "file": "Modelo_Pilares.csv",
+          "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+          "sheet": "CSV",
+          "row": 35,
+          "raw": {
+            "Member/Node/Case": "202/ 23/203 (C) (CQC)",
+            "FX (kN)": "430",
+            "MY (kNm)": "12",
+            "MZ (kNm)": "-9",
+            "AX (cm2)": "1800",
+            "IY (cm4)": "540000",
+            "IZ (cm4)": "135000",
+            "HY (cm)": "30",
+            "HZ (cm)": "60",
+            "Name": "P02",
+            "Story": "Piso 2"
+          }
+        }
+      },
+      "choice": "columns",
+      "reference": "Modelo fictício de edifício de escritórios: pilares verticais P01 e P02, pisos às cotas 3 e 6 m. x local = +Z; y local P01 = +X, P02 = +Y. Sem outras transferências no nó. A combinação 203 (CQC) permanece pendente. MODELO_POR_PISO.md.",
+      "draft": {
+        "project": "",
+        "support": "P02 / Piso 2",
+        "combination": "201 (C)",
+        "laje_d": "",
+        "laje_dx": "",
+        "laje_dy": "",
+        "betão_fck": "",
+        "aço_fyk": "500",
+        "aço_fywk": "500",
+        "pilar_tipo": "",
+        "pilar_forma": "retangular",
+        "pilar_c1": "0.6",
+        "pilar_c2": "0.3",
+        "edge_distance_m": "0",
+        "V_Ed": "280",
+        "M_Edx": "6",
+        "M_Edy": "-8",
+        "sigma_cp": "0",
+        "gamma_C": "1.5",
+        "gamma_S": "1.15",
+        "beta_mode": "ec2",
+        "beta_manual": "",
+        "beta_reference": "",
+        "laje_As_lx_cm2pm": "",
+        "laje_As_ly_cm2pm": "",
+        "interior_beta_method": "ec2_643",
+        "allow_biaxial_envelope": false,
+        "is_sapata": false,
+        "sigma_gd_kpa": "0",
+        "edge_perp_interior": true,
+        "corner_interior": false,
+        "simplified_applicable": false,
+        "opening_sectors": "",
+        "openings": "[]",
+        "reinforcement_diameter_mm": "10",
+        "reinforcement_sr_m": "",
+        "reinforcement_s0_m": "",
+        "cover_mm": "30",
+        "anchorage_confirmed": false,
+        "aggregate_mm": "20",
+        "footing_shape": "retangular",
+        "footing_bx": "",
+        "footing_by": "",
+        "footing_diameter": ""
+      },
+      "last_status": null,
+      "automated": true
+    },
+    "[\"Piso 2\",\"P02\",\"202 (C)\"]": {
+      "floor": "Piso 2",
+      "support": "P02",
+      "combination": "202 (C)",
+      "candidates": {
+        "columns": {
+          "adapter": "Modelo.model-ref/1",
+          "node": "23",
+          "turn": 0
+        }
+      },
+      "geometry": {
+        "floor": "Piso 2",
+        "support": "P02",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.6,
+          "pilar_c2": 0.3
+        },
+        "source": {
+          "file": "Modelo_Pilares.csv",
+          "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+          "sheet": "CSV",
+          "row": 35,
+          "raw": {
+            "Member/Node/Case": "202/ 23/203 (C) (CQC)",
+            "FX (kN)": "430",
+            "MY (kNm)": "12",
+            "MZ (kNm)": "-9",
+            "AX (cm2)": "1800",
+            "IY (cm4)": "540000",
+            "IZ (cm4)": "135000",
+            "HY (cm)": "30",
+            "HZ (cm)": "60",
+            "Name": "P02",
+            "Story": "Piso 2"
+          }
+        }
+      },
+      "choice": "columns",
+      "reference": "Modelo fictício de edifício de escritórios: pilares verticais P01 e P02, pisos às cotas 3 e 6 m. x local = +Z; y local P01 = +X, P02 = +Y. Sem outras transferências no nó. A combinação 203 (CQC) permanece pendente. MODELO_POR_PISO.md.",
+      "draft": {
+        "project": "",
+        "support": "P02 / Piso 2",
+        "combination": "202 (C)",
+        "laje_d": "",
+        "laje_dx": "",
+        "laje_dy": "",
+        "betão_fck": "",
+        "aço_fyk": "500",
+        "aço_fywk": "500",
+        "pilar_tipo": "",
+        "pilar_forma": "retangular",
+        "pilar_c1": "0.6",
+        "pilar_c2": "0.3",
+        "edge_distance_m": "0",
+        "V_Ed": "290",
+        "M_Edx": "6",
+        "M_Edy": "-8",
+        "sigma_cp": "0",
+        "gamma_C": "1.5",
+        "gamma_S": "1.15",
+        "beta_mode": "ec2",
+        "beta_manual": "",
+        "beta_reference": "",
+        "laje_As_lx_cm2pm": "",
+        "laje_As_ly_cm2pm": "",
+        "interior_beta_method": "ec2_643",
+        "allow_biaxial_envelope": false,
+        "is_sapata": false,
+        "sigma_gd_kpa": "0",
+        "edge_perp_interior": true,
+        "corner_interior": false,
+        "simplified_applicable": false,
+        "opening_sectors": "",
+        "openings": "[]",
+        "reinforcement_diameter_mm": "10",
+        "reinforcement_sr_m": "",
+        "reinforcement_s0_m": "",
+        "cover_mm": "30",
+        "anchorage_confirmed": false,
+        "aggregate_mm": "20",
+        "footing_shape": "retangular",
+        "footing_bx": "",
+        "footing_by": "",
+        "footing_diameter": ""
+      },
+      "last_status": null,
+      "automated": true
+    },
+    "[\"Piso 2\",\"P02\",\"203 (C) (CQC)\"]": {
+      "floor": "Piso 2",
+      "support": "P02",
+      "combination": "203 (C) (CQC)",
+      "candidates": {
+        "columns": {
+          "adapter": "Modelo.model-ref/1",
+          "node": "23",
+          "turn": 0
+        }
+      },
+      "geometry": {
+        "floor": "Piso 2",
+        "support": "P02",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.6,
+          "pilar_c2": 0.3
+        },
+        "source": {
+          "file": "Modelo_Pilares.csv",
+          "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+          "sheet": "CSV",
+          "row": 35,
+          "raw": {
+            "Member/Node/Case": "202/ 23/203 (C) (CQC)",
+            "FX (kN)": "430",
+            "MY (kNm)": "12",
+            "MZ (kNm)": "-9",
+            "AX (cm2)": "1800",
+            "IY (cm4)": "540000",
+            "IZ (cm4)": "135000",
+            "HY (cm)": "30",
+            "HZ (cm)": "60",
+            "Name": "P02",
+            "Story": "Piso 2"
+          }
+        }
+      },
+      "choice": "",
+      "reference": "",
+      "draft": {
+        "project": "",
+        "support": "P02 / Piso 2",
+        "combination": "203 (C) (CQC)",
+        "laje_d": "",
+        "laje_dx": "",
+        "laje_dy": "",
+        "betão_fck": "",
+        "aço_fyk": "500",
+        "aço_fywk": "500",
+        "pilar_tipo": "",
+        "pilar_forma": "retangular",
+        "pilar_c1": "0.6",
+        "pilar_c2": "0.3",
+        "edge_distance_m": "0",
+        "V_Ed": "",
+        "M_Edx": "",
+        "M_Edy": "",
+        "sigma_cp": "0",
+        "gamma_C": "1.5",
+        "gamma_S": "1.15",
+        "beta_mode": "ec2",
+        "beta_manual": "",
+        "beta_reference": "",
+        "laje_As_lx_cm2pm": "",
+        "laje_As_ly_cm2pm": "",
+        "interior_beta_method": "ec2_643",
+        "allow_biaxial_envelope": false,
+        "is_sapata": false,
+        "sigma_gd_kpa": "0",
+        "edge_perp_interior": true,
+        "corner_interior": true,
+        "simplified_applicable": false,
+        "opening_sectors": "",
+        "openings": "[]",
+        "reinforcement_diameter_mm": "10",
+        "reinforcement_sr_m": "",
+        "reinforcement_s0_m": "",
+        "cover_mm": "30",
+        "anchorage_confirmed": false,
+        "aggregate_mm": "20",
+        "footing_shape": "retangular",
+        "footing_bx": "",
+        "footing_by": "",
+        "footing_diameter": ""
+      },
+      "last_status": null,
+      "automated": true
+    }
+  },
+  "geometries": {
+    "[\"Piso 1\",\"P01\"]": {
+      "floor": "Piso 1",
+      "support": "P01",
+      "inputs": {
+        "pilar_forma": "retangular",
+        "pilar_c1": 0.3,
+        "pilar_c2": 0.6
+      },
+      "source": {
+        "file": "Modelo_Pilares.csv",
+        "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+        "sheet": "CSV",
+        "row": 15,
+        "raw": {
+          "Member/Node/Case": "101/ 12/203 (C) (CQC)",
+          "FX (kN)": "740",
+          "MY (kNm)": "18",
+          "MZ (kNm)": "-15",
+          "AX (cm2)": "1800",
+          "IY (cm4)": "540000",
+          "IZ (cm4)": "135000",
+          "HY (cm)": "30",
+          "HZ (cm)": "60",
+          "Name": "P01",
+          "Story": "Piso 1"
+        }
+      }
+    },
+    "[\"Piso 1\",\"P02\"]": {
+      "floor": "Piso 1",
+      "support": "P02",
+      "inputs": {
+        "pilar_forma": "retangular",
+        "pilar_c1": 0.6,
+        "pilar_c2": 0.3
+      },
+      "source": {
+        "file": "Modelo_Pilares.csv",
+        "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+        "sheet": "CSV",
+        "row": 33,
+        "raw": {
+          "Member/Node/Case": "201/ 22/203 (C) (CQC)",
+          "FX (kN)": "740",
+          "MY (kNm)": "18",
+          "MZ (kNm)": "-15",
+          "AX (cm2)": "1800",
+          "IY (cm4)": "540000",
+          "IZ (cm4)": "135000",
+          "HY (cm)": "30",
+          "HZ (cm)": "60",
+          "Name": "P02",
+          "Story": "Piso 1"
+        }
+      }
+    },
+    "[\"Piso 2\",\"P01\"]": {
+      "floor": "Piso 2",
+      "support": "P01",
+      "inputs": {
+        "pilar_forma": "retangular",
+        "pilar_c1": 0.3,
+        "pilar_c2": 0.6
+      },
+      "source": {
+        "file": "Modelo_Pilares.csv",
+        "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+        "sheet": "CSV",
+        "row": 17,
+        "raw": {
+          "Member/Node/Case": "102/ 13/203 (C) (CQC)",
+          "FX (kN)": "430",
+          "MY (kNm)": "12",
+          "MZ (kNm)": "-9",
+          "AX (cm2)": "1800",
+          "IY (cm4)": "540000",
+          "IZ (cm4)": "135000",
+          "HY (cm)": "30",
+          "HZ (cm)": "60",
+          "Name": "P01",
+          "Story": "Piso 2"
+        }
+      }
+    },
+    "[\"Piso 2\",\"P02\"]": {
+      "floor": "Piso 2",
+      "support": "P02",
+      "inputs": {
+        "pilar_forma": "retangular",
+        "pilar_c1": 0.6,
+        "pilar_c2": 0.3
+      },
+      "source": {
+        "file": "Modelo_Pilares.csv",
+        "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+        "sheet": "CSV",
+        "row": 35,
+        "raw": {
+          "Member/Node/Case": "202/ 23/203 (C) (CQC)",
+          "FX (kN)": "430",
+          "MY (kNm)": "12",
+          "MZ (kNm)": "-9",
+          "AX (cm2)": "1800",
+          "IY (cm4)": "540000",
+          "IZ (cm4)": "135000",
+          "HY (cm)": "30",
+          "HZ (cm)": "60",
+          "Name": "P02",
+          "Story": "Piso 2"
+        }
+      }
+    }
+  },
+  "active": null,
+  "model_setup": {
+    "config": {
+      "analysis_3d": true,
+      "same_combination": true,
+      "isolated_joint": true,
+      "at_joint": true,
+      "axes_confirmed": true,
+      "axes": {
+        "x": "+Z",
+        "y": "+X"
+      },
+      "member_axes": {
+        "201": {
+          "x": "+Z",
+          "y": "+Y"
+        },
+        "202": {
+          "x": "+Z",
+          "y": "+Y"
+        },
+        "203": {
+          "x": "+Z",
+          "y": "+Y"
+        }
+      },
+      "combinations": "",
+      "reference": "Modelo fictício de edifício de escritórios: pilares verticais P01 e P02, pisos às cotas 3 e 6 m. x local = +Z; y local P01 = +X, P02 = +Y. Sem outras transferências no nó. A combinação 203 (CQC) permanece pendente. MODELO_POR_PISO.md."
+    },
+    "joints": [
+      {
+        "node": "12",
+        "floor": "Piso 1",
+        "support": "P01",
+        "below": "101",
+        "above": "102",
+        "upper_absent": false,
+        "enabled": true,
+        "z": 3.0,
+        "members": [
+          "101",
+          "102"
+        ],
+        "issue": ""
+      },
+      {
+        "node": "22",
+        "floor": "Piso 1",
+        "support": "P02",
+        "below": "201",
+        "above": "202",
+        "upper_absent": false,
+        "enabled": true,
+        "z": 3.0,
+        "members": [
+          "201",
+          "202"
+        ],
+        "issue": ""
+      },
+      {
+        "node": "13",
+        "floor": "Piso 2",
+        "support": "P01",
+        "below": "102",
+        "above": "103",
+        "upper_absent": false,
+        "enabled": true,
+        "z": 6.0,
+        "members": [
+          "102",
+          "103"
+        ],
+        "issue": ""
+      },
+      {
+        "node": "23",
+        "floor": "Piso 2",
+        "support": "P02",
+        "below": "202",
+        "above": "203",
+        "upper_absent": false,
+        "enabled": true,
+        "z": 6.0,
+        "members": [
+          "202",
+          "203"
+        ],
+        "issue": ""
+      }
+    ]
+  },
+  "analysis_tables": [
+    {
+      "file": "Modelo_Pilares.csv",
+      "sha256": "b43d985ab79f3be941263da03dbe4b1bde87404a702c112446e15ce4b364fccf",
+      "sheet": "CSV",
+      "headers": [
+        "Member/Node/Case",
+        "FX (kN)",
+        "MY (kNm)",
+        "MZ (kNm)",
+        "AX (cm2)",
+        "IY (cm4)",
+        "IZ (cm4)",
+        "HY (cm)",
+        "HZ (cm)",
+        "Name",
+        "Story"
+      ],
+      "rows": [
+        [
+          2,
+          [
+            "101/ 11/201 (C)",
+            "900",
+            "15",
+            "-12",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Piso 1"
+          ]
+        ],
+        [
+          3,
+          [
+            "101/ 12/201 (C)",
+            "890",
+            "18",
+            "-15",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Piso 1"
+          ]
+        ],
+        [
+          4,
+          [
+            "102/ 12/201 (C)",
+            "590",
+            "6",
+            "-4",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Piso 2"
+          ]
+        ],
+        [
+          5,
+          [
+            "102/ 13/201 (C)",
+            "580",
+            "12",
+            "-9",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Piso 2"
+          ]
+        ],
+        [
+          6,
+          [
+            "103/ 13/201 (C)",
+            "300",
+            "4",
+            "-3",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Cobertura"
+          ]
+        ],
+        [
+          7,
+          [
+            "103/ 14/201 (C)",
+            "290",
+            "8",
+            "-5",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Cobertura"
+          ]
+        ],
+        [
+          8,
+          [
+            "101/ 11/202 (C)",
+            "950",
+            "15",
+            "-12",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Piso 1"
+          ]
+        ],
+        [
+          9,
+          [
+            "101/ 12/202 (C)",
+            "940",
+            "18",
+            "-15",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Piso 1"
+          ]
+        ],
+        [
+          10,
+          [
+            "102/ 12/202 (C)",
+            "600",
+            "6",
+            "-4",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Piso 2"
+          ]
+        ],
+        [
+          11,
+          [
+            "102/ 13/202 (C)",
+            "590",
+            "12",
+            "-9",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Piso 2"
+          ]
+        ],
+        [
+          12,
+          [
+            "103/ 13/202 (C)",
+            "300",
+            "4",
+            "-3",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Cobertura"
+          ]
+        ],
+        [
+          13,
+          [
+            "103/ 14/202 (C)",
+            "290",
+            "8",
+            "-5",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Cobertura"
+          ]
+        ],
+        [
+          14,
+          [
+            "101/ 11/203 (C) (CQC)",
+            "750",
+            "15",
+            "-12",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Piso 1"
+          ]
+        ],
+        [
+          15,
+          [
+            "101/ 12/203 (C) (CQC)",
+            "740",
+            "18",
+            "-15",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Piso 1"
+          ]
+        ],
+        [
+          16,
+          [
+            "102/ 12/203 (C) (CQC)",
+            "440",
+            "6",
+            "-4",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Piso 2"
+          ]
+        ],
+        [
+          17,
+          [
+            "102/ 13/203 (C) (CQC)",
+            "430",
+            "12",
+            "-9",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Piso 2"
+          ]
+        ],
+        [
+          18,
+          [
+            "103/ 13/203 (C) (CQC)",
+            "250",
+            "4",
+            "-3",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Cobertura"
+          ]
+        ],
+        [
+          19,
+          [
+            "103/ 14/203 (C) (CQC)",
+            "240",
+            "8",
+            "-5",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P01",
+            "Cobertura"
+          ]
+        ],
+        [
+          20,
+          [
+            "201/ 21/201 (C)",
+            "900",
+            "15",
+            "-12",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Piso 1"
+          ]
+        ],
+        [
+          21,
+          [
+            "201/ 22/201 (C)",
+            "890",
+            "18",
+            "-15",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Piso 1"
+          ]
+        ],
+        [
+          22,
+          [
+            "202/ 22/201 (C)",
+            "590",
+            "6",
+            "-4",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Piso 2"
+          ]
+        ],
+        [
+          23,
+          [
+            "202/ 23/201 (C)",
+            "580",
+            "12",
+            "-9",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Piso 2"
+          ]
+        ],
+        [
+          24,
+          [
+            "203/ 23/201 (C)",
+            "300",
+            "4",
+            "-3",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Cobertura"
+          ]
+        ],
+        [
+          25,
+          [
+            "203/ 24/201 (C)",
+            "290",
+            "8",
+            "-5",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Cobertura"
+          ]
+        ],
+        [
+          26,
+          [
+            "201/ 21/202 (C)",
+            "950",
+            "15",
+            "-12",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Piso 1"
+          ]
+        ],
+        [
+          27,
+          [
+            "201/ 22/202 (C)",
+            "940",
+            "18",
+            "-15",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Piso 1"
+          ]
+        ],
+        [
+          28,
+          [
+            "202/ 22/202 (C)",
+            "600",
+            "6",
+            "-4",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Piso 2"
+          ]
+        ],
+        [
+          29,
+          [
+            "202/ 23/202 (C)",
+            "590",
+            "12",
+            "-9",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Piso 2"
+          ]
+        ],
+        [
+          30,
+          [
+            "203/ 23/202 (C)",
+            "300",
+            "4",
+            "-3",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Cobertura"
+          ]
+        ],
+        [
+          31,
+          [
+            "203/ 24/202 (C)",
+            "290",
+            "8",
+            "-5",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Cobertura"
+          ]
+        ],
+        [
+          32,
+          [
+            "201/ 21/203 (C) (CQC)",
+            "750",
+            "15",
+            "-12",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Piso 1"
+          ]
+        ],
+        [
+          33,
+          [
+            "201/ 22/203 (C) (CQC)",
+            "740",
+            "18",
+            "-15",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Piso 1"
+          ]
+        ],
+        [
+          34,
+          [
+            "202/ 22/203 (C) (CQC)",
+            "440",
+            "6",
+            "-4",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Piso 2"
+          ]
+        ],
+        [
+          35,
+          [
+            "202/ 23/203 (C) (CQC)",
+            "430",
+            "12",
+            "-9",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Piso 2"
+          ]
+        ],
+        [
+          36,
+          [
+            "203/ 23/203 (C) (CQC)",
+            "250",
+            "4",
+            "-3",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Cobertura"
+          ]
+        ],
+        [
+          37,
+          [
+            "203/ 24/203 (C) (CQC)",
+            "240",
+            "8",
+            "-5",
+            "1800",
+            "540000",
+            "135000",
+            "30",
+            "60",
+            "P02",
+            "Cobertura"
+          ]
+        ]
+      ],
+      "formulas": []
+    }
+  ],
+  "analysis_nodes": {
+    "file": "Modelo_Nos.csv",
+    "sha256": "78d27ccb4f008a39cc07125f3436ea5e28eabae98a93814a5a4dc8e224836433",
+    "sheet": "CSV",
+    "headers": [
+      "Node",
+      "X (m)",
+      "Y (m)",
+      "Z (m)"
+    ],
+    "rows": [
+      [
+        2,
+        [
+          "11",
+          "0",
+          "0",
+          "0"
+        ]
+      ],
+      [
+        3,
+        [
+          "12",
+          "0",
+          "0",
+          "3"
+        ]
+      ],
+      [
+        4,
+        [
+          "13",
+          "0",
+          "0",
+          "6"
+        ]
+      ],
+      [
+        5,
+        [
+          "14",
+          "0",
+          "0",
+          "9"
+        ]
+      ],
+      [
+        6,
+        [
+          "21",
+          "5",
+          "0",
+          "0"
+        ]
+      ],
+      [
+        7,
+        [
+          "22",
+          "5",
+          "0",
+          "3"
+        ]
+      ],
+      [
+        8,
+        [
+          "23",
+          "5",
+          "0",
+          "6"
+        ]
+      ],
+      [
+        9,
+        [
+          "24",
+          "5",
+          "0",
+          "9"
+        ]
+      ]
+    ],
+    "formulas": []
+  }
+}

@@ -1,1001 +1,398 @@
 # -*- coding: utf-8 -*-
-from __future__ import annotations
-
-from datetime import datetime
+"""Interface Tkinter: dados da execução, resultados e exportações consistentes."""
+import json
 import math
+from pathlib import Path
 import tkinter as tk
-from tkinter import filedialog, messagebox, ttk
+from tkinter import ttk,filedialog,messagebox
+from punching.core import PuncoamentoEC2,number
+from punching import geometry as geo
+from punching.openings import normalize_openings,derive_openings,dimensions
+from punching.version import VERSION
+from punching.ui_app import DesktopUI
+from punching.ui import COLORS
+from punching.reports import export_pdf,export_xlsx,export_txt,export_json,sections,text_report
+from punching.connection_ui import ConnectionUI,write_json_atomic
+from punching.connections import case_from_payload
+from copy import deepcopy
+from punching.longitudinal import DEFAULTS as LONG_DEFAULTS, refresh_draft, draft_from_layout
 
-from Punching_EC2 import PuncoamentoEC2
+DEFAULTS={
+    'project':'','support':'','combination':'','laje_d':'0.20','laje_dx':'','laje_dy':'',
+    'betão_fck':'30','aço_fyk':'500','aço_fywk':'500','pilar_tipo':'interior','pilar_forma':'retangular',
+    'pilar_c1':'0.40','pilar_c2':'0.40','edge_distance_m':'0','V_Ed':'300','M_Edx':'0','M_Edy':'0','sigma_cp':'0',
+    'gamma_C':'1.5','gamma_S':'1.15','beta_mode':'ec2','beta_manual':'','beta_reference':'','laje_As_lx_cm2pm':'10','laje_As_ly_cm2pm':'10',
+    'interior_beta_method':'ec2_643','allow_biaxial_envelope':False,
+    'is_sapata':False,'sigma_gd_kpa':'0','edge_perp_interior':True,'corner_interior':True,
+    'simplified_applicable':False,'opening_sectors':'','openings':'[]','reinforcement_diameter_mm':'10',
+    'reinforcement_sr_m':'','reinforcement_s0_m':'','cover_mm':'30','anchorage_confirmed':False,'aggregate_mm':'20',
+    'footing_shape':'retangular','footing_bx':'','footing_by':'','footing_diameter':''}
+DEFAULTS.update(LONG_DEFAULTS)
 
-try:
-    from openpyxl import Workbook
-    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
-    from openpyxl.utils import get_column_letter
-    OPENPYXL_OK = True
-except Exception:
-    OPENPYXL_OK = False
-
-try:
-    from reportlab.lib.pagesizes import A4
-    from reportlab.lib.units import cm
-    from reportlab.pdfbase.pdfmetrics import stringWidth
-    from reportlab.pdfgen import canvas as pdf_canvas
-    REPORTLAB_OK = True
-except Exception:
-    REPORTLAB_OK = False
-
-APP_TITLE = "PunchingShearEC2"
-BG = "#f5f7fb"
-CARD = "#ffffff"
-ACCENT = "#2563eb"
-TEXT = "#0f172a"
-MUTED = "#475569"
-OK = "#15803d"
-WARN = "#b45309"
-FAIL = "#b91c1c"
-
-EXEMPLOS = {
-    "Pilar interior retangular": {
-        "fck": "30", "fyk": "500", "fywk": "500", "d": "0.22", "asx": "12.57", "asy": "12.57",
-        "sigma_cp": "0", "tipo": "interior", "forma": "retangular", "c1": "0.40", "c2": "0.40",
-        "ved": "600", "medx": "0", "medy": "0", "is_sapata": False, "sigma_gd": "150",
-        "has_abertura": False, "u1_inef": "0", "beta": "simplificado", "edge_interior": True,
-        "corner_interior": True,
-    },
-    "Pilar de bordo com momento": {
-        "fck": "30", "fyk": "500", "fywk": "500", "d": "0.22", "asx": "10.50", "asy": "12.57",
-        "sigma_cp": "0", "tipo": "bordo", "forma": "retangular", "c1": "0.40", "c2": "0.30",
-        "ved": "550", "medx": "60", "medy": "25", "is_sapata": False, "sigma_gd": "150",
-        "has_abertura": False, "u1_inef": "0", "beta": "ec2", "edge_interior": True,
-        "corner_interior": True,
-    },
-    "Pilar de canto": {
-        "fck": "35", "fyk": "500", "fywk": "500", "d": "0.24", "asx": "14.14", "asy": "14.14",
-        "sigma_cp": "0", "tipo": "canto", "forma": "retangular", "c1": "0.40", "c2": "0.40",
-        "ved": "450", "medx": "35", "medy": "20", "is_sapata": False, "sigma_gd": "150",
-        "has_abertura": False, "u1_inef": "0", "beta": "ec2", "edge_interior": True,
-        "corner_interior": True,
-    },
-    "Pilar circular": {
-        "fck": "30", "fyk": "500", "fywk": "500", "d": "0.22", "asx": "12.57", "asy": "12.57",
-        "sigma_cp": "0", "tipo": "interior", "forma": "circular", "c1": "0.40", "c2": "0.40",
-        "ved": "600", "medx": "0", "medy": "0", "is_sapata": False, "sigma_gd": "150",
-        "has_abertura": False, "u1_inef": "0", "beta": "fib", "edge_interior": True,
-        "corner_interior": True,
-    },
-}
+def _read_examples():
+    """One catalogue supplies the GUI and the distributable JSON cases."""
+    directory=Path(__file__).resolve().parent/'examples'
+    catalog=json.loads((directory/'catalog.json').read_text(encoding='utf-8'))
+    examples={};descriptions={}
+    for entry in catalog:
+        values=json.loads((directory/entry['file']).read_text(encoding='utf-8'))
+        converted={}
+        for key,value in values.items():
+            if key not in DEFAULTS:continue
+            if key in ('V_Ed','M_Edx','M_Edy'):value=float(value)/1000
+            if key=='opening_sectors':value=' | '.join(f'{a:g};{b:g}' for a,b in (value or []))
+            if key=='openings':value=json.dumps(value or [],ensure_ascii=False)
+            converted[key]=value if isinstance(value,bool) else ('' if value is None else str(value))
+        if values.get('longitudinal_layout') is not None:converted.update(draft_from_layout(values['longitudinal_layout']))
+        examples[entry['title']]=converted
+        descriptions[entry['title']]=entry['description']
+    return examples,descriptions
 
 
-class PuncoamentoApp(tk.Tk):
+EXAMPLES,EXAMPLE_DESCRIPTIONS=_read_examples()
+
+
+class PuncoamentoApp(ConnectionUI, DesktopUI, tk.Tk):
     def __init__(self):
-        super().__init__()
-        self.title(APP_TITLE)
-        self.geometry("1180x760")
-        self.minsize(960, 640)
-        self.configure(bg=BG)
-        self.last_report = ""
-        self.last_verif = None
-        self.drag_mode = None
-        self._apply_theme()
-        self._build_variables()
-        self._build_ui()
-        self._apply_visibility_rules()
-        self._update_rho_label()
-        self._draw_scheme()
-
-    def _apply_theme(self):
-        style = ttk.Style(self)
-        try:
-            style.theme_use("clam")
-        except Exception:
-            pass
-        style.configure("TFrame", background=BG)
-        style.configure("Card.TFrame", background=CARD)
-        style.configure("TLabelframe", background=CARD, foreground=TEXT)
-        style.configure("TLabelframe.Label", background=CARD, foreground=TEXT, font=("Segoe UI", 10, "bold"))
-        style.configure("TLabel", background=BG, foreground=TEXT, font=("Segoe UI", 10))
-        style.configure("Card.TLabel", background=CARD, foreground=TEXT)
-        style.configure("Muted.TLabel", background=CARD, foreground=MUTED, font=("Segoe UI", 9))
-        style.configure("Header.TLabel", background=BG, foreground=TEXT, font=("Segoe UI", 15, "bold"))
-        style.configure("TButton", padding=(10, 7), font=("Segoe UI", 10))
-        style.configure("Accent.TButton", padding=(10, 7), font=("Segoe UI", 10, "bold"))
-        style.map("Accent.TButton", background=[("!disabled", ACCENT)], foreground=[("!disabled", "white")])
-        style.configure("TNotebook", background=BG, borderwidth=0)
-        style.configure("TNotebook.Tab", padding=(12, 8), font=("Segoe UI", 10))
-        style.configure("Treeview.Heading", font=("Segoe UI", 10, "bold"))
-        style.configure("Treeview", rowheight=24, font=("Segoe UI", 10))
-        style.configure("TCombobox", padding=4)
-        style.configure("TEntry", padding=4)
-        style.configure("Horizontal.TScale", background=CARD)
-
-    def _build_variables(self):
-        self.var_fck = tk.StringVar(value="30")
-        self.var_fyk = tk.StringVar(value="500")
-        self.var_fywk = tk.StringVar(value="500")
-        self.var_d = tk.StringVar(value="0.22")
-        self.var_asx = tk.StringVar(value="10.0")
-        self.var_asy = tk.StringVar(value="10.0")
-        self.var_sigma_cp = tk.StringVar(value="0")
-        self.var_tipo_pilar = tk.StringVar(value="interior")
-        self.var_forma_pilar = tk.StringVar(value="retangular")
-        self.var_c1 = tk.StringVar(value="0.40")
-        self.var_c2 = tk.StringVar(value="0.40")
-        self.var_ved = tk.StringVar(value="600")
-        self.var_medx = tk.StringVar(value="0")
-        self.var_medy = tk.StringVar(value="0")
-        self.var_is_sapata = tk.BooleanVar(value=False)
-        self.var_sigma_gd = tk.StringVar(value="150")
-        self.var_has_abertura = tk.BooleanVar(value=False)
-        self.var_u1_inef = tk.StringVar(value="0")
-        self.var_beta = tk.StringVar(value="simplificado")
-        self.var_exemplo = tk.StringVar(value="Pilar interior retangular")
-        self.var_edge_interior = tk.BooleanVar(value=True)
-        self.var_corner_interior = tk.BooleanVar(value=True)
-        self.var_rho_calc = tk.StringVar(value="ρl = -")
-        self.var_status = tk.StringVar(value="Pronto.")
-        self.var_resultado = tk.StringVar(value="Aguardando cálculo")
-        self.var_pdf_state = tk.StringVar(value="PDF disponível" if REPORTLAB_OK else "PDF indisponível")
-        self.var_excel_state = tk.StringVar(value="Excel disponível" if OPENPYXL_OK else "Excel indisponível")
-        for var in (self.var_d, self.var_asx, self.var_asy, self.var_tipo_pilar, self.var_forma_pilar,
-                    self.var_c1, self.var_c2, self.var_has_abertura, self.var_is_sapata):
-            var.trace_add("write", self._on_geometry_change)
-        for var in (self.var_d, self.var_asx, self.var_asy):
-            var.trace_add("write", self._update_rho_label)
-
-    def _build_ui(self):
-        self.columnconfigure(0, weight=0)
-        self.columnconfigure(1, weight=1)
-        self.rowconfigure(0, weight=1)
-        left = ttk.Frame(self, style="TFrame", padding=12)
-        left.grid(row=0, column=0, sticky="nsew")
-        left.rowconfigure(2, weight=1)
-        right = ttk.Frame(self, style="TFrame", padding=(0, 12, 12, 12))
-        right.grid(row=0, column=1, sticky="nsew")
-        right.rowconfigure(2, weight=1)
-        right.columnconfigure(0, weight=1)
-
-        ttk.Label(left, text=APP_TITLE, style="Header.TLabel").grid(row=0, column=0, sticky="w", pady=(0, 10))
-        self._build_toolbar(left)
-        self._build_left_notebook(left)
-        self._build_right_panel(right)
-        status = ttk.Label(self, textvariable=self.var_status, anchor="w", padding=(10, 6))
-        status.grid(row=1, column=0, columnspan=2, sticky="ew")
-
-    def _build_toolbar(self, parent):
-        frm = ttk.Frame(parent, style="Card.TFrame", padding=10)
-        frm.grid(row=1, column=0, sticky="ew", pady=(0, 10))
-        frm.columnconfigure(1, weight=1)
-        ttk.Label(frm, text="Exemplo", style="Card.TLabel").grid(row=0, column=0, sticky="w", padx=(0, 8))
-        ttk.Combobox(frm, textvariable=self.var_exemplo, values=list(EXEMPLOS.keys()), state="readonly").grid(row=0, column=1, sticky="ew", padx=(0, 8))
-        ttk.Button(frm, text="Aplicar exemplo", command=self.carregar_exemplo).grid(row=0, column=2, padx=(0, 6))
-        ttk.Button(frm, text="Calcular", command=self.calcular, style="Accent.TButton").grid(row=0, column=3, padx=(0, 6))
-        ttk.Button(frm, text="Limpar", command=self.limpar).grid(row=0, column=4)
-
-    def _build_left_notebook(self, parent):
-        nb = ttk.Notebook(parent)
-        nb.grid(row=2, column=0, sticky="nsew")
-        tab_dados = self._make_scrollable_tab(nb, "Dados")
-        tab_opcoes = self._make_scrollable_tab(nb, "Opções")
-        tab_esquema = ttk.Frame(nb, padding=10)
-        nb.add(tab_esquema, text="Geometria")
-        self._build_tab_dados(tab_dados)
-        self._build_tab_opcoes(tab_opcoes)
-        self._build_tab_esquema(tab_esquema)
-
-    def _make_scrollable_tab(self, notebook, title):
-        outer = ttk.Frame(notebook)
-        notebook.add(outer, text=title)
-        outer.rowconfigure(0, weight=1)
-        outer.columnconfigure(0, weight=1)
-        canvas = tk.Canvas(outer, bg=BG, highlightthickness=0, bd=0)
-        vsb = ttk.Scrollbar(outer, orient="vertical", command=canvas.yview)
-        canvas.configure(yscrollcommand=vsb.set)
-        canvas.grid(row=0, column=0, sticky="nsew")
-        vsb.grid(row=0, column=1, sticky="ns")
-        inner = ttk.Frame(canvas, padding=10)
-        window_id = canvas.create_window((0, 0), window=inner, anchor="nw")
-
-        def _on_inner_configure(event):
-            canvas.configure(scrollregion=canvas.bbox("all"))
-
-        def _on_canvas_configure(event):
-            canvas.itemconfigure(window_id, width=event.width)
-
-        def _on_mousewheel(event):
-            if canvas.winfo_height() < inner.winfo_reqheight():
-                canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
-
-        inner.bind("<Configure>", _on_inner_configure)
-        canvas.bind("<Configure>", _on_canvas_configure)
-        canvas.bind_all("<MouseWheel>", _on_mousewheel)
-
-        return inner
-
-    def _build_tab_dados(self, parent):
-        parent.columnconfigure(0, weight=1)
-        frm_mat = ttk.LabelFrame(parent, text="Materiais", padding=10)
-        frm_mat.grid(row=0, column=0, sticky="ew", pady=(0, 8))
-        self._add_labeled_entry(frm_mat, "fck (MPa)", self.var_fck, 0)
-        self._add_labeled_entry(frm_mat, "fyk (MPa)", self.var_fyk, 1)
-        self._add_labeled_entry(frm_mat, "fywk (MPa)", self.var_fywk, 2)
-
-        frm_laje = ttk.LabelFrame(parent, text="Laje", padding=10)
-        frm_laje.grid(row=1, column=0, sticky="ew", pady=(0, 8))
-        self._add_labeled_entry(frm_laje, "Altura útil d (m)", self.var_d, 0)
-        self._add_labeled_entry(frm_laje, "As,lx (cm²/m)", self.var_asx, 1)
-        self._add_labeled_entry(frm_laje, "As,ly (cm²/m)", self.var_asy, 2)
-        self._add_labeled_entry(frm_laje, "σcp (MPa)", self.var_sigma_cp, 3)
-        ttk.Label(frm_laje, textvariable=self.var_rho_calc, style="Muted.TLabel").grid(row=4, column=0, columnspan=2, sticky="w", pady=(6, 0))
-
-        frm_pilar = ttk.LabelFrame(parent, text="Pilar", padding=10)
-        frm_pilar.grid(row=2, column=0, sticky="ew", pady=(0, 8))
-        self.frm_pilar = frm_pilar
-        ttk.Label(frm_pilar, text="Tipo", style="Card.TLabel").grid(row=0, column=0, sticky="w", padx=(0, 8), pady=2)
-        ttk.Combobox(frm_pilar, textvariable=self.var_tipo_pilar, values=["interior", "bordo", "canto"], state="readonly").grid(row=0, column=1, sticky="ew", pady=2)
-        ttk.Label(frm_pilar, text="Forma", style="Card.TLabel").grid(row=1, column=0, sticky="w", padx=(0, 8), pady=2)
-        ttk.Combobox(frm_pilar, textvariable=self.var_forma_pilar, values=["retangular", "circular"], state="readonly").grid(row=1, column=1, sticky="ew", pady=2)
-        self.lbl_c1 = ttk.Label(frm_pilar, text="c1 (m)", style="Card.TLabel")
-        self.lbl_c1.grid(row=2, column=0, sticky="w", padx=(0, 8), pady=2)
-        self.ent_c1 = ttk.Entry(frm_pilar, textvariable=self.var_c1)
-        self.ent_c1.grid(row=2, column=1, sticky="ew", pady=2)
-        self.lbl_c2 = ttk.Label(frm_pilar, text="c2 (m)", style="Card.TLabel")
-        self.lbl_c2.grid(row=3, column=0, sticky="w", padx=(0, 8), pady=2)
-        self.ent_c2 = ttk.Entry(frm_pilar, textvariable=self.var_c2)
-        self.ent_c2.grid(row=3, column=1, sticky="ew", pady=2)
-
-        frm_esf = ttk.LabelFrame(parent, text="Esforços de cálculo (ELU)", padding=10)
-        frm_esf.grid(row=3, column=0, sticky="ew", pady=(0, 8))
-        self._add_labeled_entry(frm_esf, "VEd (kN)", self.var_ved, 0)
-        self._add_labeled_entry(frm_esf, "MEdx (kN·m)", self.var_medx, 1)
-        self._add_labeled_entry(frm_esf, "MEdy (kN·m)", self.var_medy, 2)
-        ttk.Label(frm_esf, text="Convenção em planta: e_x = MEdy/VEd e e_y = MEdx/VEd.", style="Muted.TLabel").grid(row=3, column=0, columnspan=2, sticky="w", pady=(6, 0))
-
-    def _build_tab_opcoes(self, parent):
-        parent.columnconfigure(0, weight=1)
-        frm_extra = ttk.LabelFrame(parent, text="Condições adicionais", padding=10)
-        frm_extra.grid(row=0, column=0, sticky="ew", pady=(0, 8))
-        ttk.Checkbutton(frm_extra, text="Elemento é sapata", variable=self.var_is_sapata, command=self._apply_visibility_rules).grid(row=0, column=0, columnspan=2, sticky="w", pady=2)
-        self.lbl_sigma_gd = ttk.Label(frm_extra, text="σgd (kPa)", style="Card.TLabel")
-        self.lbl_sigma_gd.grid(row=1, column=0, sticky="w", padx=(0, 8), pady=2)
-        self.ent_sigma_gd = ttk.Entry(frm_extra, textvariable=self.var_sigma_gd)
-        self.ent_sigma_gd.grid(row=1, column=1, sticky="ew", pady=2)
-        ttk.Checkbutton(frm_extra, text="Existem aberturas próximas", variable=self.var_has_abertura, command=self._apply_visibility_rules).grid(row=2, column=0, columnspan=2, sticky="w", pady=(8, 2))
-        self.lbl_u1_inef = ttk.Label(frm_extra, text="u1 ineficaz (m)", style="Card.TLabel")
-        self.lbl_u1_inef.grid(row=3, column=0, sticky="w", padx=(0, 8), pady=2)
-        self.ent_u1_inef = ttk.Entry(frm_extra, textvariable=self.var_u1_inef)
-        self.ent_u1_inef.grid(row=3, column=1, sticky="ew", pady=2)
-
-        frm_beta = ttk.LabelFrame(parent, text="Modo de avaliação de β", padding=10)
-        frm_beta.grid(row=1, column=0, sticky="ew", pady=(0, 8))
-        ttk.Radiobutton(frm_beta, text="Simplificado", value="simplificado", variable=self.var_beta).grid(row=0, column=0, sticky="w")
-        ttk.Radiobutton(frm_beta, text="EC2", value="ec2", variable=self.var_beta).grid(row=1, column=0, sticky="w")
-        ttk.Radiobutton(frm_beta, text="fib Model Code 2010", value="fib", variable=self.var_beta).grid(row=2, column=0, sticky="w")
-
-        frm_orient = ttk.LabelFrame(parent, text="Direção da excentricidade para EC2", padding=10)
-        frm_orient.grid(row=2, column=0, sticky="ew", pady=(0, 8))
-        self.chk_edge_interior = ttk.Checkbutton(frm_orient, text="No pilar de bordo, a excentricidade perpendicular ao bordo é dirigida para o interior", variable=self.var_edge_interior)
-        self.chk_edge_interior.grid(row=0, column=0, sticky="w")
-        self.chk_corner_interior = ttk.Checkbutton(frm_orient, text="No pilar de canto, a excentricidade resultante é dirigida para o interior", variable=self.var_corner_interior)
-        self.chk_corner_interior.grid(row=1, column=0, sticky="w", pady=(6, 0))
-
-        frm_notes = ttk.LabelFrame(parent, text="Notas", padding=10)
-        frm_notes.grid(row=3, column=0, sticky="nsew")
-        parent.rowconfigure(3, weight=1)
-        txt = (
-            "• Para pilares retangulares de bordo, o programa usa a expressão (6.44), o W1 da expressão (6.45) e k com c1/(2c2).\n"
-            "• Para pilares de canto com excentricidade para o interior, o programa usa β = u1/u1*.\n"
-            "• Se a excentricidade relevante for para o exterior, o programa aplica a expressão geral do EC2.\n"
-            f"• {self.var_pdf_state.get()} | {self.var_excel_state.get()}."
-        )
-        ttk.Label(frm_notes, text=txt, justify="left", style="Muted.TLabel").grid(row=0, column=0, sticky="nw")
-
-    def _build_tab_esquema(self, parent):
-        parent.columnconfigure(0, weight=1)
-        parent.rowconfigure(1, weight=1)
-        ttk.Label(parent, text="Desenho técnico da zona de punçoamento e editor gráfico das dimensões", style="Header.TLabel").grid(row=0, column=0, sticky="w", pady=(0, 8))
-        box = ttk.Frame(parent, style="Card.TFrame", padding=10)
-        box.grid(row=1, column=0, sticky="nsew")
-        box.columnconfigure(0, weight=1)
-        box.rowconfigure(0, weight=1)
-        self.canvas_scheme = tk.Canvas(box, bg="white", height=420, highlightthickness=1, highlightbackground="#cbd5e1")
-        self.canvas_scheme.grid(row=0, column=0, sticky="nsew")
-        self.canvas_scheme.bind("<Button-1>", self._on_canvas_press)
-        self.canvas_scheme.bind("<B1-Motion>", self._on_canvas_drag)
-        controls = ttk.Frame(box, style="Card.TFrame")
-        controls.grid(row=1, column=0, sticky="ew", pady=(10, 0))
-        controls.columnconfigure(1, weight=1)
-        controls.columnconfigure(3, weight=1)
-        controls.columnconfigure(5, weight=1)
-        ttk.Label(controls, text="c1/D", style="Card.TLabel").grid(row=0, column=0, sticky="w")
-        self.scale_c1 = tk.Scale(controls, from_=0.20, to=1.50, resolution=0.01, orient="horizontal", bg=CARD, highlightthickness=0, command=lambda v: self._set_var_from_scale(self.var_c1, v))
-        self.scale_c1.grid(row=0, column=1, sticky="ew", padx=(6, 18))
-        ttk.Label(controls, text="c2", style="Card.TLabel").grid(row=0, column=2, sticky="w")
-        self.scale_c2 = tk.Scale(controls, from_=0.20, to=1.50, resolution=0.01, orient="horizontal", bg=CARD, highlightthickness=0, command=lambda v: self._set_var_from_scale(self.var_c2, v))
-        self.scale_c2.grid(row=0, column=3, sticky="ew", padx=(6, 18))
-        ttk.Label(controls, text="d", style="Card.TLabel").grid(row=0, column=4, sticky="w")
-        self.scale_d = tk.Scale(controls, from_=0.12, to=0.60, resolution=0.005, orient="horizontal", bg=CARD, highlightthickness=0, command=lambda v: self._set_var_from_scale(self.var_d, v))
-        self.scale_d.grid(row=0, column=5, sticky="ew", padx=(6, 0))
-        ttk.Label(box, text="Arraste os puxadores azuis para alterar c1 e c2; o anel vermelho representa u1 a 2d.", style="Muted.TLabel").grid(row=2, column=0, sticky="w", pady=(8, 0))
-
-    def _build_right_panel(self, parent):
-        top = ttk.Frame(parent, style="Card.TFrame", padding=10)
-        top.grid(row=0, column=0, sticky="ew", pady=(0, 8))
-        top.columnconfigure(1, weight=1)
-        ttk.Label(top, text="Estado", style="Card.TLabel").grid(row=0, column=0, sticky="w", padx=(0, 8))
-        ttk.Label(top, textvariable=self.var_resultado, style="Card.TLabel").grid(row=0, column=1, sticky="w")
-        self.lbl_badge = ttk.Label(top, text="—", style="Card.TLabel")
-        self.lbl_badge.grid(row=0, column=2, sticky="e")
-        cols = ("parâmetro", "valor")
-        self.tree_summary = ttk.Treeview(top, columns=cols, show="headings", height=8)
-        self.tree_summary.grid(row=1, column=0, columnspan=3, sticky="ew", pady=(8, 0))
-        self.tree_summary.heading("parâmetro", text="Parâmetro")
-        self.tree_summary.heading("valor", text="Valor")
-        self.tree_summary.column("parâmetro", width=220, anchor="w")
-        self.tree_summary.column("valor", width=160, anchor="center")
-
-        actions = ttk.Frame(parent, style="TFrame")
-        actions.grid(row=1, column=0, sticky="ew", pady=(0, 8))
-        for i in range(2):
-            actions.rowconfigure(i, weight=1)
-        for i in range(2):
-            actions.columnconfigure(i, weight=1)
-        ttk.Button(actions, text="Guardar TXT", command=self.guardar_relatorio_txt).grid(row=0, column=0, sticky="ew", padx=(0, 6), pady=(0, 6))
-        ttk.Button(actions, text="Exportar PDF", command=self.guardar_relatorio_pdf).grid(row=0, column=1, sticky="ew", padx=(0, 0), pady=(0, 6))
-        ttk.Button(actions, text="Exportar Excel", command=self.guardar_relatorio_excel).grid(row=1, column=0, sticky="ew", padx=(0, 6))
-        ttk.Button(actions, text="Copiar relatório", command=self.copiar_relatorio).grid(row=1, column=1, sticky="ew")
-
-        nb = ttk.Notebook(parent)
-        nb.grid(row=2, column=0, sticky="nsew")
-        tab_rel = ttk.Frame(nb, padding=6)
-        tab_diag = ttk.Frame(nb, padding=6)
-        nb.add(tab_rel, text="Relatório técnico")
-        nb.add(tab_diag, text="Diagnóstico")
-        tab_rel.rowconfigure(0, weight=1)
-        tab_rel.columnconfigure(0, weight=1)
-        self.txt_output = tk.Text(tab_rel, wrap="word", font=("Consolas", 10), bg="#fbfdff", fg=TEXT)
-        self.txt_output.grid(row=0, column=0, sticky="nsew")
-        sc1 = ttk.Scrollbar(tab_rel, orient="vertical", command=self.txt_output.yview)
-        sc1.grid(row=0, column=1, sticky="ns")
-        self.txt_output.configure(yscrollcommand=sc1.set)
-        tab_diag.rowconfigure(0, weight=1)
-        tab_diag.columnconfigure(0, weight=1)
-        self.txt_diag = tk.Text(tab_diag, wrap="word", font=("Segoe UI", 10), state="disabled", bg="#fbfdff", fg=TEXT)
-        self.txt_diag.grid(row=0, column=0, sticky="nsew")
+        super().__init__(DEFAULTS, EXAMPLES, VERSION)
 
     @staticmethod
-    def _add_labeled_entry(parent, label, variable, row):
-        ttk.Label(parent, text=label, style="Card.TLabel").grid(row=row, column=0, sticky="w", padx=(0, 8), pady=2)
-        ttk.Entry(parent, textvariable=variable).grid(row=row, column=1, sticky="ew", pady=2)
-
-    def _parse_float(self, value, field_name, min_value=None):
-        try:
-            number = float(str(value).replace(",", ".").strip())
-        except Exception as exc:
-            raise ValueError(f"Valor inválido em '{field_name}'.") from exc
-        if min_value is not None and number < min_value:
-            raise ValueError(f"O campo '{field_name}' deve ser ≥ {min_value}.")
-        return number
-
-    def _safe_float(self, value, default):
-        try:
-            return float(str(value).replace(",", ".").strip())
-        except Exception:
-            return default
-
-    def _apply_visibility_rules(self):
-        forma = self.var_forma_pilar.get().lower()
-        tipo = self.var_tipo_pilar.get().lower()
-        self.lbl_c1.configure(text="Diâmetro D (m)" if forma == "circular" else ("c1 (m) ‖ bordo" if tipo == "bordo" else "c1 (m)"))
-        if forma == "circular":
-            self.lbl_c2.grid_remove(); self.ent_c2.grid_remove(); self.scale_c2.configure(state="disabled")
-        else:
-            self.lbl_c2.configure(text="c2 (m) ⟂ bordo" if tipo == "bordo" else "c2 (m)")
-            self.lbl_c2.grid(); self.ent_c2.grid(); self.scale_c2.configure(state="normal")
-        if self.var_is_sapata.get():
-            self.lbl_sigma_gd.grid(); self.ent_sigma_gd.grid()
-        else:
-            self.lbl_sigma_gd.grid_remove(); self.ent_sigma_gd.grid_remove()
-        if self.var_has_abertura.get():
-            self.lbl_u1_inef.grid(); self.ent_u1_inef.grid()
-        else:
-            self.lbl_u1_inef.grid_remove(); self.ent_u1_inef.grid_remove()
-        if tipo == "bordo":
-            self.chk_edge_interior.state(["!disabled"])
-            self.chk_corner_interior.state(["disabled"])
-        elif tipo == "canto":
-            self.chk_edge_interior.state(["disabled"])
-            self.chk_corner_interior.state(["!disabled"])
-        else:
-            self.chk_edge_interior.state(["disabled"])
-            self.chk_corner_interior.state(["disabled"])
-        self._sync_scales()
-        self._draw_scheme()
-
-    def _sync_scales(self):
-        self.scale_c1.set(self._safe_float(self.var_c1.get(), 0.40))
-        self.scale_c2.set(self._safe_float(self.var_c2.get(), 0.40))
-        self.scale_d.set(self._safe_float(self.var_d.get(), 0.22))
-
-    def _update_rho_label(self, *_):
-        try:
-            d = self._parse_float(self.var_d.get(), "d", 1e-9)
-            asx = self._parse_float(self.var_asx.get(), "As,lx", 0.0)
-            asy = self._parse_float(self.var_asy.get(), "As,ly", 0.0)
-            rho = min(math.sqrt(((asx / 10000) / d) * ((asy / 10000) / d)), 0.02) if asx > 0 and asy > 0 else None
-            self.var_rho_calc.set(f"ρl = {rho * 100:.3f} %" if rho is not None else "ρl = -")
-        except Exception:
-            self.var_rho_calc.set("ρl = -")
-
-    def _on_geometry_change(self, *_):
-        self.after_idle(self._apply_visibility_rules)
+    def _parse_sectors(text):
+        if not text.strip():return []
+        pairs=[]
+        for part in text.replace('\n','|').split('|'):
+            bits=part.strip().split(';')
+            if len(bits)!=2:raise ValueError('Setores: use início;fim, separados por |. Exemplo: -20;20 | 100;125.')
+            pairs.append([number(x.replace(',','.'),'Ângulo') for x in bits])
+        geo.sectors_normalized(pairs);return pairs
 
     def _collect_inputs(self):
-        forma = self.var_forma_pilar.get().lower()
-        data = {
-            "betão_fck": self._parse_float(self.var_fck.get(), "fck", 12.0),
-            "aço_fyk": self._parse_float(self.var_fyk.get(), "fyk", 1.0),
-            "aço_fywk": self._parse_float(self.var_fywk.get(), "fywk", 1.0),
-            "laje_d": self._parse_float(self.var_d.get(), "d", 1e-6),
-            "laje_As_lx_cm2pm": self._parse_float(self.var_asx.get(), "As,lx", 0.0),
-            "laje_As_ly_cm2pm": self._parse_float(self.var_asy.get(), "As,ly", 0.0),
-            "sigma_cp": self._parse_float(self.var_sigma_cp.get(), "σcp", 0.0),
-            "pilar_tipo": self.var_tipo_pilar.get().lower(),
-            "pilar_forma": forma,
-            "V_Ed": self._parse_float(self.var_ved.get(), "VEd", 0.0) * 1000.0,
-            "pilar_c1": self._parse_float(self.var_c1.get(), "c1 / D", 1e-6),
-            "pilar_c2": None,
-            "M_Edx": self._parse_float(self.var_medx.get(), "MEdx") * 1000.0,
-            "M_Edy": self._parse_float(self.var_medy.get(), "MEdy") * 1000.0,
-            "is_sapata": bool(self.var_is_sapata.get()),
-            "sigma_gd_kpa": self._parse_float(self.var_sigma_gd.get(), "σgd", 0.0) if self.var_is_sapata.get() else 0.0,
-            "u1_ineffective": self._parse_float(self.var_u1_inef.get(), "u1 ineficaz", 0.0) if self.var_has_abertura.get() else 0.0,
-            "beta_mode": self.var_beta.get().lower(),
-            "edge_perp_interior": bool(self.var_edge_interior.get()),
-            "corner_interior": bool(self.var_corner_interior.get()),
-        }
-        if forma == "retangular":
-            data["pilar_c2"] = self._parse_float(self.var_c2.get(), "c2", 1e-6)
-        return data
+        from punching.input_data import collect_inputs
+        return collect_inputs(self._raw_draft(), DEFAULTS)
+
+    def _opening_context(self):
+        def num(key):return number(self.vars[key].get().replace(',','.'),key)
+        shape=self.vars['pilar_forma'].get();c1=num('pilar_c1')
+        return dict(c1=c1,c2=c1 if shape=='circular' else num('pilar_c2'),shape=shape,d=num('laje_d'),
+                    position=self.vars['pilar_tipo'].get(),edge_distance=num('edge_distance_m'))
+
+    def _edit_openings(self):
+        try:
+            if self.vars['is_sapata'].get():raise ValueError('O módulo de sapatas admite apenas casos sem aberturas.')
+            self._update_derived();context=self._opening_context()
+            items=normalize_openings(json.loads(self.vars['openings'].get() or '[]'))
+            manual=self._parse_sectors(self.vars['opening_sectors'].get())
+            from punching.opening_editor import OpeningEditor
+            editor=OpeningEditor(self,items,context,manual)
+            self.wait_window(editor)
+            if editor.result is not None:self.vars['openings'].set(json.dumps(editor.result,ensure_ascii=False))
+        except (ValueError,TypeError) as exc:messagebox.showerror('Definir aberturas',str(exc),parent=self)
+
+    def _update_derived(self):
+        if self.vars['long_mode'].get()=='automatic':
+            try:
+                draft, trace = refresh_draft(self._raw_draft())
+                for key in ('laje_d','laje_dx','laje_dy','laje_As_lx_cm2pm','laje_As_ly_cm2pm'):
+                    if self.vars[key].get()!=draft[key]:self.vars[key].set(draft[key])
+                labels=[]
+                for axis in ('x','y'):
+                    item=trace['axes'][axis]
+                    labels.append(axis.upper()+': '+item['label']+((' = '+item['equivalent']) if item['equivalent'] else ''))
+                if 'var_longitudinal' in self.__dict__:self.var_longitudinal.set('\n'.join(labels)+'\nAs e alturas úteis calculadas automaticamente.')
+            except (ValueError,KeyError,TypeError) as exc:
+                for key in ('laje_d','laje_dx','laje_dy','laje_As_lx_cm2pm','laje_As_ly_cm2pm'):
+                    if self.vars[key].get():self.vars[key].set('')
+                self.var_rho.set('Armadura automática: '+str(exc))
+                if 'var_longitudinal' in self.__dict__:self.var_longitudinal.set(str(exc))
+                return
+        elif 'var_longitudinal' in self.__dict__:self.var_longitudinal.set('Modo manual: introduza d ou dx/dy e as áreas médias de armadura.')
+        try:
+            dx=self.vars['laje_dx'].get();dy=self.vars['laje_dy'].get()
+            if dx and dy:
+                d=(float(dx.replace(',','.'))+float(dy.replace(',','.')))/2
+                if self.vars['long_mode'].get()!='automatic' and math.isfinite(d) and self.vars['laje_d'].get()!=f'{d:.6g}':self.vars['laje_d'].set(f'{d:.6g}')
+            else:d=float(self.vars['laje_d'].get().replace(',','.'))
+            ax=float(self.vars['laje_As_lx_cm2pm'].get().replace(',','.'));ay=float(self.vars['laje_As_ly_cm2pm'].get().replace(',','.'))
+            ddx=float(dx.replace(',','.')) if dx else d;ddy=float(dy.replace(',','.')) if dy else d
+            rho=min(.02,math.sqrt(ax*ay/(ddx*ddy))/10000)
+            self.var_rho.set(f'Taxa média rho_l = {rho*100:.3f} %' if d>0 and math.isfinite(rho) else 'Taxa não calculada')
+        except (ValueError,ZeroDivisionError):self.var_rho.set('Taxa não calculada: reveja d e as armaduras.')
+
+    def _mark_dirty(self,*_):
+        if self._loading:return
+        case=self._current_connection()
+        if case is not None:
+            from punching.collection_workflow import invalidate
+            if case['draft']!=self._raw_draft():invalidate(case)
+        self._sync_origin()
+        self.dirty=True;self.lbl_badge.configure(text='DADOS ALTERADOS',foreground='#956315')
+        self._result_tools(False)
+        for tree in (self.tree_summary,self.tree_steel):
+            for item in tree.get_children():tree.delete(item)
+        self._set_text(self.txt_output,'Dados alterados. Execute novamente o cálculo para atualizar a memória.')
+        self._set_text(self.txt_diag,'')
+        self.var_resultado.set('Execute novamente a verificação. As exportações ficam indisponíveis até ao novo cálculo.')
+        self.var_steel.set('Dados alterados: recalcule para atualizar as fiadas.')
+        if self._redraw_job is not None:self.after_cancel(self._redraw_job)
+        self._redraw_job=self.after_idle(self._refresh)
+
+    def _refresh(self):
+        self._redraw_job=None;self._update_derived();self._sync_controls();self._draw_scheme()
 
     def calcular(self):
+        if self.__dict__.get('_workflow_busy'):return
+        case=self._current_connection()
+        if case and case.get('automated') and self._book.active and not self.__dict__.get('_rendering_group_case'):
+            self._calculate_active_group();return
         try:
-            inputs = self._collect_inputs()
-            verif = PuncoamentoEC2(**inputs)
-            report = verif.verificar_puncoamento()
-            self.last_verif = verif
-            self.last_report = report
-            self.txt_output.delete("1.0", tk.END)
-            self.txt_output.insert(tk.END, report)
-            self._fill_summary(verif)
-            self._fill_diagnostic(verif)
-            self._draw_scheme(verif)
-            self.var_status.set("Cálculo concluído com sucesso.")
+            # Synchronize derived d before freezing this execution. A queued idle
+            # redraw must not mark a freshly calculated result as out of date.
+            self._update_derived()
+            trace=self._connection_trace()
+            inputs=self._collect_inputs();verif=PuncoamentoEC2(**inputs)
+            report=verif.verificar_puncoamento();self.last_verif=verif;self._last_load_trace=deepcopy(trace);self.dirty=False
+            if trace is not None:
+                result=verif.snapshot();result['load_trace']=trace;report=text_report(result)
+            self.last_report=report
+            case=self._current_connection()
+            if case is not None:
+                from punching.collection_workflow import case_signature
+                case['draft']=self._raw_draft();case['last_status']=verif.snapshot()['badge']
+                snapshot=verif.snapshot();snapshot['load_trace']=deepcopy(trace)
+                case['_calculation']={'floor':case['floor'],'support':case['support'],'combination':case['combination'],'status':snapshot['status'],'error':'','snapshot':snapshot}
+                case['_calculation_hash']=case_signature(case)
+            self._fill_summary(verif);self._set_text(self.txt_output,report)
+            self._set_text(self.txt_diag,'\n\n'.join(verif.snapshot()['notes']))
+            self._sync_controls();self._result_tools(True);self._result_cards(verif.snapshot())
+            self._draw_scheme(verif);self.var_status.set('Verificação concluída. Consulte os resultados e a memória de cálculo.')
         except Exception as exc:
-            self.var_status.set("Erro no cálculo.")
-            messagebox.showerror("Erro", str(exc))
-
-    def _fill_summary(self, verif):
-        for item in self.tree_summary.get_children():
-            self.tree_summary.delete(item)
-        rows = [
-            ("β", f"{verif.beta:.3f}"), ("u0", f"{verif.u0:.3f} m"), ("u1", f"{verif.u1:.3f} m"),
-            ("u1,ef", f"{verif.u1_eff:.3f} m"), ("vEd(u0)", f"{verif.v_Ed_u0:.3f} MPa"),
-            ("vRd,max", f"{verif.v_Rd_max:.3f} MPa"), ("vEd(u1)", f"{verif.v_Ed_u1:.3f} MPa"),
-            ("vRd,c", f"{verif.v_Rd_c:.3f} MPa"),
-        ]
-        for r in rows:
-            self.tree_summary.insert("", tk.END, values=r)
-        ok = (verif.v_Ed_u0 <= verif.v_Rd_max) and (verif.v_Ed_u1 <= verif.v_Rd_c)
-        self.var_resultado.set("Não é necessária armadura de punçoamento" if ok else ("É necessária armadura de punçoamento" if verif.v_Ed_u0 <= verif.v_Rd_max else "Falha no perímetro u0"))
-        self.lbl_badge.configure(text="OK" if ok else ("ATENÇÃO" if verif.v_Ed_u0 <= verif.v_Rd_max else "FALHA"), foreground=(OK if ok else (WARN if verif.v_Ed_u0 <= verif.v_Rd_max else FAIL)))
-
-    def _fill_diagnostic(self, verif):
-        ratio_u0 = verif.v_Ed_u0 / verif.v_Rd_max if verif.v_Rd_max else float("inf")
-        ratio_u1 = verif.v_Ed_u1 / verif.v_Rd_c if verif.v_Rd_c else float("inf")
-        lines = [
-            "Leitura rápida do resultado\n",
-            f"• Utilização em u0 = {ratio_u0:.3f}",
-            f"• Utilização em u1 = {ratio_u1:.3f}",
-            f"• Modo de β = {self.var_beta.get()}",
-            "",
-        ]
-        if ratio_u0 > 1.0:
-            lines += ["A verificação em u0 falha.", "Reveja d, fck ou a geometria da zona de apoio."]
-        elif ratio_u1 > 1.0:
-            lines += ["A verificação sem armadura de punçoamento não satisfaz.", "É necessário prever armadura específica de punçoamento."]
-        else:
-            lines += ["A verificação sem armadura de punçoamento satisfaz."]
-        if self.var_tipo_pilar.get() == "bordo":
-            lines.append("Para bordo, o EC2 usa u1*, a expressão (6.44) e W1 pela expressão (6.45) quando a excentricidade perpendicular é interior.")
-        if self.var_tipo_pilar.get() == "canto":
-            lines.append("Para canto, com excentricidade para o interior, o EC2 admite β = u1/u1*.")
-        self.txt_diag.configure(state="normal")
-        self.txt_diag.delete("1.0", tk.END)
-        self.txt_diag.insert(tk.END, "\n".join(lines))
-        self.txt_diag.configure(state="disabled")
-
-    def _set_var_from_scale(self, var, value):
-        var.set(f"{float(value):.3f}")
-
-    def _draw_scheme(self, verif=None):
-        if not hasattr(self, "canvas_scheme"):
-            return
-        cv = self.canvas_scheme
-        cv.delete("all")
-        w = max(cv.winfo_width(), 700)
-        h = max(cv.winfo_height(), 420)
-        pad = 35
-        slab_left, slab_top, slab_right, slab_bottom = pad, pad, w - pad, h - pad
-        cv.create_rectangle(slab_left, slab_top, slab_right, slab_bottom, outline="#cbd5e1", width=1, dash=(6, 4))
-        cv.create_text(slab_left + 10, slab_top + 12, anchor="w", text="Contorno da laje / zona representativa", fill=MUTED, font=("Segoe UI", 9))
-        forma = self.var_forma_pilar.get().lower()
-        tipo = self.var_tipo_pilar.get().lower()
-        c1 = self._safe_float(self.var_c1.get(), 0.40)
-        c2 = self._safe_float(self.var_c2.get(), 0.40) if forma == "retangular" else self._safe_float(self.var_c1.get(), 0.40)
-        d = self._safe_float(self.var_d.get(), 0.22)
-        scale = min((w - 160) / max(c1 + 8 * d, c2 + 8 * d, 1.0), (h - 110) / max(c1 + 8 * d, c2 + 8 * d, 1.0))
-        scale = max(scale, 120)
-        pw, ph = c1 * scale, c2 * scale
-        cx, cy = (slab_left + slab_right) / 2, (slab_top + slab_bottom) / 2
-        if tipo == "bordo":
-            cy = slab_top + ph / 2
-        elif tipo == "canto":
-            cx, cy = slab_left + pw / 2, slab_top + ph / 2
-        px1, py1, px2, py2 = cx - pw / 2, cy - ph / 2, cx + pw / 2, cy + ph / 2
-        # pilar
-        if forma == "retangular":
-            cv.create_rectangle(px1, py1, px2, py2, fill="#dbeafe", outline=ACCENT, width=2)
-        else:
-            cv.create_oval(px1, py1, px2, py2, fill="#dbeafe", outline=ACCENT, width=2)
-        cv.create_text(cx, cy, text="Pilar", font=("Segoe UI", 10, "bold"), fill=TEXT)
-        # u0 técnico
-        self._draw_u0(cv, tipo, forma, px1, py1, px2, py2, d * scale)
-        # u1 técnico
-        self._draw_u1(cv, tipo, forma, px1, py1, px2, py2, 2 * d * scale)
-        # handles
-        if forma == "retangular":
-            self.handle_c1 = (px2, cy)
-            self.handle_c2 = (cx, py2)
-            cv.create_oval(px2 - 6, cy - 6, px2 + 6, cy + 6, fill=ACCENT, outline=ACCENT, tags=("handle_c1",))
-            cv.create_oval(cx - 6, py2 - 6, cx + 6, py2 + 6, fill=ACCENT, outline=ACCENT, tags=("handle_c2",))
-        else:
-            self.handle_c1 = (px2, cy)
-            self.handle_c2 = None
-            cv.create_oval(px2 - 6, cy - 6, px2 + 6, cy + 6, fill=ACCENT, outline=ACCENT, tags=("handle_c1",))
-        # cotas
-        self._dim_line(cv, px1, py2 + 24, px2, py2 + 24, f"c1 = {c1:.3f} m")
-        if forma == "retangular":
-            self._dim_line(cv, px2 + 24, py1, px2 + 24, py2, f"c2 = {c2:.3f} m", vertical=True)
-        self._dim_line(cv, px2 + 62, py2 - 2 * d * scale, px2 + 62, py2, f"2d = {2*d:.3f} m", vertical=True, color="#dc2626")
-        if self.var_has_abertura.get():
-            ax, ay = px2 + 90, py1 + 20
-            cv.create_rectangle(ax, ay, ax + 64, ay + 28, outline="#f59e0b", fill="#fef3c7")
-            cv.create_text(ax + 32, ay + 14, text="Abertura", fill=WARN, font=("Segoe UI", 8, "bold"))
-            cv.create_line(px2 + 2 * d * scale, cy, ax, ay + 14, arrow="last", fill="#f59e0b")
-        if verif is not None:
-            cv.create_text(slab_left + 10, slab_bottom - 10, anchor="sw", text=f"β = {verif.beta:.3f} | u0 = {verif.u0:.3f} m | u1 = {verif.u1:.3f} m", fill=TEXT, font=("Segoe UI", 10, "bold"))
-        legend = "u0 junto ao pilar" if tipo == "interior" else "u0 limitado por bordo livre"
-        cv.create_text(slab_left + 10, slab_top + 32, anchor="w", text=f"Azul: pilar | Roxo: u0 | Vermelho: u1 a 2d | {legend}", fill=MUTED, font=("Segoe UI", 9))
-
-    def _draw_u0(self, cv, tipo, forma, x1, y1, x2, y2, doff):
-        col = "#7c3aed"
-        if tipo == "interior":
-            if forma == "retangular":
-                cv.create_rectangle(x1, y1, x2, y2, outline=col, width=2)
-            else:
-                cv.create_oval(x1, y1, x2, y2, outline=col, width=2)
-            cv.create_text(x2 + 10, y1 - 8, anchor="w", text="u0", fill=col, font=("Segoe UI", 9, "bold"))
-        elif tipo == "bordo":
-            cv.create_line(x1, y2 + doff * 1.5, x2, y2 + doff * 1.5, fill=col, width=2)
-            cv.create_line(x2, y1, x2, y2 + doff * 1.5, fill=col, width=2)
-            cv.create_arc(x1 - 2 * doff, y2 - doff * 0.5, x1 + doff, y2 + doff * 2.0, start=90, extent=90, style="arc", outline=col, width=2)
-            cv.create_text(x2 + 10, y2 + doff * 1.5, anchor="w", text="u0", fill=col, font=("Segoe UI", 9, "bold"))
-        else:
-            cv.create_arc(x2 - doff * 1.5, y2 - doff * 1.5, x2 + doff * 1.5, y2 + doff * 1.5, start=180, extent=90, style="arc", outline=col, width=2)
-            cv.create_text(x2 + 10, y2 + 10, anchor="w", text="u0", fill=col, font=("Segoe UI", 9, "bold"))
-
-    def _draw_u1(self, cv, tipo, forma, x1, y1, x2, y2, off):
-        col = "#dc2626"
-        if forma == "circular":
-            if tipo == "interior":
-                cv.create_oval(x1 - off, y1 - off, x2 + off, y2 + off, outline=col, width=2)
-            elif tipo == "bordo":
-                cv.create_arc(x1 - off, y1 - off, x2 + off, y2 + off, start=180, extent=180, style="arc", outline=col, width=2)
-                cv.create_line(x1 - off, y2, x2 + off, y2, fill=col, width=2)
-            else:
-                cv.create_arc(x1 - off, y1 - off, x2 + off, y2 + off, start=180, extent=90, style="arc", outline=col, width=2)
-                cv.create_line(x1, y2 + off, x2 + off * 0.5, y2 + off, fill=col, width=2)
-                cv.create_line(x2 + off, y1, x2 + off, y2 + off * 0.5, fill=col, width=2)
-        else:
-            if tipo == "interior":
-                cv.create_rectangle(x1 - off, y1 - off, x2 + off, y2 + off, outline=col, width=2)
-            elif tipo == "bordo":
-                cv.create_line(x1 - off, y2 + off, x2 + off, y2 + off, fill=col, width=2)
-                cv.create_line(x2 + off, y1, x2 + off, y2 + off, fill=col, width=2)
-                cv.create_line(x1 - off, y1, x1 - off, y2 + off, fill=col, width=2)
-                cv.create_arc(x1 - 2*off, y2, x1, y2 + 2*off, start=90, extent=90, style="arc", outline=col, width=2)
-                cv.create_arc(x2, y2, x2 + 2*off, y2 + 2*off, start=0, extent=90, style="arc", outline=col, width=2)
-            else:
-                cv.create_line(x1, y2 + off, x2 + off, y2 + off, fill=col, width=2)
-                cv.create_line(x2 + off, y1, x2 + off, y2 + off, fill=col, width=2)
-                cv.create_arc(x2, y2, x2 + 2*off, y2 + 2*off, start=180, extent=90, style="arc", outline=col, width=2)
-        cv.create_text(x2 + off + 10, y1 - off, anchor="w", text="u1", fill=col, font=("Segoe UI", 9, "bold"))
-
-    def _dim_line(self, cv, x1, y1, x2, y2, text, vertical=False, color="#334155"):
-        cv.create_line(x1, y1, x2, y2, fill=color)
-        if vertical:
-            cv.create_line(x1 - 6, y1, x1 + 6, y1, fill=color)
-            cv.create_line(x2 - 6, y2, x2 + 6, y2, fill=color)
-            cv.create_text(x1 + 8, (y1 + y2) / 2, anchor="w", text=text, fill=color, font=("Segoe UI", 9))
-        else:
-            cv.create_line(x1, y1 - 6, x1, y1 + 6, fill=color)
-            cv.create_line(x2, y2 - 6, x2, y2 + 6, fill=color)
-            cv.create_text((x1 + x2) / 2, y1 - 12, text=text, fill=color, font=("Segoe UI", 9))
-
-    def _on_canvas_press(self, event):
-        item = self.canvas_scheme.find_closest(event.x, event.y)
-        tags = self.canvas_scheme.gettags(item)
-        self.drag_mode = "c1" if "handle_c1" in tags else ("c2" if "handle_c2" in tags else None)
-
-    def _on_canvas_drag(self, event):
-        if self.drag_mode is None or self.var_forma_pilar.get().lower() not in ("retangular", "circular"):
-            return
-        w = max(self.canvas_scheme.winfo_width(), 700)
-        h = max(self.canvas_scheme.winfo_height(), 420)
-        c1 = self._safe_float(self.var_c1.get(), 0.40)
-        c2 = self._safe_float(self.var_c2.get(), 0.40)
-        d = self._safe_float(self.var_d.get(), 0.22)
-        scale = min((w - 160) / max(c1 + 8 * d, c2 + 8 * d, 1.0), (h - 110) / max(c1 + 8 * d, c2 + 8 * d, 1.0))
-        scale = max(scale, 120)
-        cx, cy = (35 + w - 35) / 2, (35 + h - 35) / 2
-        if self.var_tipo_pilar.get() == "bordo":
-            cy = 35 + c2 * scale / 2
-        elif self.var_tipo_pilar.get() == "canto":
-            cx, cy = 35 + c1 * scale / 2, 35 + c2 * scale / 2
-        if self.drag_mode == "c1":
-            new_c1 = max(0.20, min(1.50, 2 * abs(event.x - cx) / scale))
-            self.var_c1.set(f"{new_c1:.3f}")
-            if self.var_forma_pilar.get().lower() == "circular":
-                self.var_c2.set(f"{new_c1:.3f}")
-        elif self.drag_mode == "c2" and self.var_forma_pilar.get().lower() == "retangular":
-            new_c2 = max(0.20, min(1.50, 2 * abs(event.y - cy) / scale))
-            self.var_c2.set(f"{new_c2:.3f}")
-        self._draw_scheme()
-
-    def guardar_relatorio_txt(self):
-        content = self.txt_output.get("1.0", tk.END).strip()
-        if not content:
-            messagebox.showinfo("Guardar relatório", "Não existe relatório para guardar.")
-            return
-        filepath = filedialog.asksaveasfilename(title="Guardar relatório TXT", defaultextension=".txt", filetypes=[("Texto", "*.txt")])
-        if not filepath:
-            return
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(content)
-        self.var_status.set(f"Relatório TXT guardado em: {filepath}")
-
-    def guardar_relatorio_pdf(self):
-        content = self.txt_output.get("1.0", tk.END).strip()
-        if not content:
-            messagebox.showinfo("Exportar PDF", "Não existe relatório para exportar.")
-            return
-        if not REPORTLAB_OK:
-            messagebox.showerror("Exportar PDF", "A biblioteca ReportLab não está disponível neste ambiente.")
-            return
-        filepath = filedialog.asksaveasfilename(title="Exportar relatório PDF", defaultextension=".pdf", filetypes=[("PDF", "*.pdf")])
-        if not filepath:
-            return
-        self._create_pdf(filepath, content)
-        self.var_status.set(f"Relatório PDF guardado em: {filepath}")
-
-    def _create_pdf(self, filepath, content):
-        emitted_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        c = pdf_canvas.Canvas(filepath, pagesize=A4)
-        width, height = A4
-        x0 = 2.0 * cm
-        top_margin = 2.2 * cm
-        bottom_margin = 1.8 * cm
-        usable_w = width - 4.0 * cm
-        body_font = "Courier"
-        body_bold = "Courier-Bold"
-        body_size = 10
-        subtitle_size = 12
-        footer_size = 8
-        body_leading = body_size * 1.5
-        section_gap = body_size * 2.0
-        subtitle_gap = body_size * 2.0
-        repo_url = "https://github.com/lutondatomalela/PunchingShearEC2"
-
-        sections = self._build_professional_report_sections(emitted_at)
-        first_page = True
-
-        def draw_footer():
-            c.setFont(body_font, footer_size)
-            footer = f"PunchingShearEC2 | {emitted_at}"
-            footer_w = stringWidth(footer, body_font, footer_size)
-            footer_x = (width - footer_w) / 2
-            footer_y = 1.0 * cm
-            c.drawString(footer_x, footer_y, footer)
-            c.linkURL(repo_url, (footer_x, footer_y-2, footer_x + footer_w, footer_y + footer_size), relative=0)
-
-        def new_page():
-            nonlocal first_page
-            if not first_page:
-                c.showPage()
-            y = height - top_margin
-            if first_page:
-                c.setTitle("PunchingShearEC2 - Relatório de Verificação de Punçoamento")
-                c.setFont(body_bold, 14)
-                c.drawString(x0, y, "Relatório de verificação de punçoamento")
-                y -= 0.9 * cm
-                c.setFont(body_font, body_size)
-                prog_text = "Programa: PunchingShearEC2"
-                c.drawString(x0, y, prog_text)
-                c.linkURL("https://github.com/lutondatomalela/PunchingShearEC2", (x0, y-2, x0 + stringWidth(prog_text, body_font, body_size), y + body_size), relative=0)
-                y -= 0.55 * cm
-                c.drawString(x0, y, "Norma de referência principal: NP EN 1992-1-1")
-                y -= 0.8 * cm
-                first_page = False
-            return y
-
-        y = new_page()
-        c.setFont(body_font, body_size)
-        for section in sections:
-            title = section.get("title", "")
-            lines = section.get("lines", [])
-            if title:
-                needed = subtitle_size + subtitle_gap + body_leading * max(1, len(lines)) + section_gap
-                if y < bottom_margin + needed:
-                    draw_footer()
-                    y = new_page()
-                c.setFont(body_bold, subtitle_size)
-                c.drawString(x0, y, title)
-                y -= subtitle_gap
-            c.setFont(body_font, body_size)
-            for line in lines:
-                wrapped_lines = self._wrap_text(line if line else " ", body_font, body_size, usable_w)
-                for wrapped in wrapped_lines:
-                    if y < bottom_margin + body_leading:
-                        draw_footer()
-                        y = new_page()
-                        c.setFont(body_font, body_size)
-                    c.drawString(x0, y, wrapped)
-                    y -= body_leading
-            y -= section_gap
-
-        draw_footer()
-        c.save()
-
-    def _build_professional_report_sections(self, emitted_at):
-        v = self.last_verif
-        if v is None:
-            return [{"title": "", "lines": [self.txt_output.get("1.0", tk.END).strip()]}]
-
-        def fmt(num, nd=3):
-            try:
-                return f"{float(num):.{nd}f}"
-            except Exception:
-                return "-"
-
-        def yesno(flag):
-            return "Sim" if flag else "Não"
-
-        tipo = self.var_tipo_pilar.get().capitalize()
-        forma = self.var_forma_pilar.get().capitalize()
-        c2_label = "Diâmetro do pilar D [m]" if self.var_forma_pilar.get().lower() == "circular" else "Dimensão do pilar c2 [m]"
-        ratio_u0 = v.v_Ed_u0 / v.v_Rd_max if getattr(v, 'v_Rd_max', 0) else float('inf')
-        ratio_u1 = v.v_Ed_u1 / v.v_Rd_c if getattr(v, 'v_Rd_c', 0) else float('inf')
-
-        sections = [
-            {"title": "1. Info", "lines": [
-                "Verificação de punçoamento de ligação laje-pilar segundo a NP EN 1992-1-1, com avaliação da resistência na face do pilar e da resistência sem armadura de punçoamento no perímetro de controlo básico.",
-            ]},
-            {"title": "2. Dados de entrada", "lines": [
-                f"Resistência característica do betão fck [MPa]: {fmt(v.fck)}",
-                f"Tensão característica de cedência das armaduras longitudinais fyk [MPa]: {fmt(v.fyk)}",
-                f"Tensão característica de cedência das armaduras de punçoamento fywk [MPa]: {fmt(v.fywk)}",
-                f"Altura útil da laje d [m]: {fmt(v.d)}",
-                f"Armadura longitudinal As,lx [cm²/m]: {self.var_asx.get()}",
-                f"Armadura longitudinal As,ly [cm²/m]: {self.var_asy.get()}",
-                f"Taxa média de armadura ρl [%]: {fmt(v.rho_l * 100)}",
-                f"Tensão média de compressão σcp [MPa]: {fmt(v.sigma_cp)}",
-                f"Tipo de pilar: {tipo}",
-                f"Forma do pilar: {forma}",
-                f"Dimensão do pilar c1 [m]: {fmt(v.c1)}",
-                f"{c2_label}: {fmt(v.c2 if getattr(v,'c2',None) is not None else getattr(v,'D',None))}",
-                f"Esforço transverso de cálculo VEd [kN]: {fmt(v.V_Ed / 1000)}",
-                f"Momento fletor de cálculo MEdx [kN·m]: {fmt(v.M_Edx / 1000)}",
-                f"Momento fletor de cálculo MEdy [kN·m]: {fmt(v.M_Edy / 1000)}",
-                f"Elemento de fundação tipo sapata: {yesno(v.is_sapata)}",
-                f"Existem aberturas próximas consideradas na redução de perímetro: {yesno(v.u1_ineffective > 0)}",
-                f"Perímetro ineficaz devido a aberturas u1,inef [m]: {fmt(v.u1_ineffective)}",
-                f"Modo de avaliação do coeficiente β: {self.var_beta.get().upper()}",
-            ]},
-            {"title": "3. Parâmetros geométricos e mecânicos", "lines": [
-                f"Perímetro na face do pilar u0 [m]: {fmt(v.u0)}",
-                f"Perímetro de controlo básico u1 [m]: {fmt(v.u1)}",
-                f"Perímetro de controlo efetivo u1,ef [m]: {fmt(v.u1_eff)}",
-                f"Esforço transverso reduzido VEd,red [kN]: {fmt(v.V_Ed_red / 1000)}",
-                f"Coeficiente β [-]: {fmt(v.beta)}",
-                f"Coeficiente k [-]: {fmt(getattr(v, 'k_val', None))}",
-                f"Tensão de cálculo v_Ed(u0) [MPa]: {fmt(v.v_Ed_u0)}",
-                f"Tensão resistente máxima v_Rd,max [MPa]: {fmt(v.v_Rd_max)}",
-                f"Tensão de cálculo v_Ed(u1) [MPa]: {fmt(v.v_Ed_u1)}",
-                f"Tensão resistente do betão v_Rd,c [MPa]: {fmt(v.v_Rd_c)}",
-                f"Índice de utilização em u0 [-]: {fmt(ratio_u0)}",
-                f"Índice de utilização em u1 [-]: {fmt(ratio_u1)}",
-            ]},
-            {"title": "4. Referências normativas adotadas", "lines": [
-                "Determinação do perímetro de controlo básico conforme 6.4.2 da NP EN 1992-1-1.",
-                "Avaliação do coeficiente β conforme 6.4.3, incluindo expressões (6.39), (6.41), (6.44), (6.45) e (6.46), conforme aplicável ao tipo de pilar e à direção da excentricidade.",
-                "Resistência ao punçoamento sem armadura conforme 6.4.4, com v_Rd,c pela expressão (6.47).",
-                "Resistência máxima junto ao pilar conforme 6.4.5 e respetiva nota nacional adotada no programa para v_Rd,max.",
-                "Dimensionamento da armadura de punçoamento, quando necessária, conforme 6.4.5 e expressão (6.52).",
-            ]},
-            {"title": "5. Verificações realizadas", "lines": [
-                f"Verificação na face do pilar: v_Ed(u0) = {fmt(v.v_Ed_u0)} MPa {'≤' if v.v_Ed_u0 <= v.v_Rd_max else '>'} v_Rd,max = {fmt(v.v_Rd_max)} MPa.",
-                f"Verificação no perímetro de controlo básico: v_Ed(u1) = {fmt(v.v_Ed_u1)} MPa {'≤' if v.v_Ed_u1 <= v.v_Rd_c else '>'} v_Rd,c = {fmt(v.v_Rd_c)} MPa.",
-            ]},
-            {"title": "6. Conclusão", "lines": [
-                self.var_resultado.get() + ".",
-            ]},
-        ]
-
-        det_lines = []
-        if getattr(v, 'armadura_necessaria', False):
-            det_lines.extend([
-                f"Tensão resistente máxima com armadura v_Rd,cs,max [MPa]: {fmt(getattr(v, 'v_Rd_cs_max', None))}",
-                f"Tensão efetiva de cálculo do aço de punçoamento f_ywd,ef [MPa]: {fmt(getattr(v, 'f_ywd_ef', None))}",
-                f"Armadura calculada Asw/sr [cm²/m]: {fmt(getattr(v, 'Asw_sr_calc', 0) * 1e4)}",
-                f"Armadura mínima Asw/sr [cm²/m]: {fmt(getattr(v, 'Asw_sr_min', 0) * 1e4)}",
-                f"Armadura adotada Asw/sr [cm²/m]: {fmt(getattr(v, 'Asw_sr_req', 0) * 1e4)}",
-                f"Perímetro exterior efetivo u_out,ef [m]: {fmt(getattr(v, 'u_out_ef', None))}",
-                f"Extensão radial a armar a partir da face do pilar [m]: {fmt(getattr(v, 'dist_zona_armar', None))}",
-                f"Posição máxima do primeiro perímetro s0,max [m]: {fmt(getattr(v, 's0_max', None))}",
-                f"Espaçamento radial máximo entre perímetros sr,max [m]: {fmt(getattr(v, 'sr_max', None))}",
-                f"Número estimado de perímetros de armadura: {getattr(v, 'n_perimetros', '-')}",
-                f"Área de armadura por perímetro Asw [cm²]: {fmt(getattr(v, 'Asw_por_perimetro', 0) * 1e4)}",
-                "Pormenorização resultante: dispor o primeiro perímetro a uma distância não superior a 0,5d da face do pilar e os perímetros seguintes com espaçamento radial não superior a 0,75d, prolongando a armadura até ao limite definido por u_out,ef.",
-            ])
-        else:
-            det_lines.append("Pormenorização resultante: não é necessária armadura específica de punçoamento para a situação verificada.")
-        sections.append({"title": "7. Recomendação de pormenorização", "lines": det_lines})
-
-        note_lines = []
-        if self.var_tipo_pilar.get() == 'bordo':
-            note_lines.append("Nota: para pilar de bordo, o programa adota a formulação do EC2 com u1*, β pela expressão (6.44), quando aplicável, e W1 pela expressão (6.45).")
-        elif self.var_tipo_pilar.get() == 'canto':
-            note_lines.append("Nota: para pilar de canto com excentricidade dirigida para o interior da laje, o programa adota β = u1/u1* conforme a expressão (6.46).")
-        if note_lines:
-            sections.append({"title": "", "lines": note_lines})
-
-        return sections
-
-    def guardar_relatorio_excel(self):
-        if not OPENPYXL_OK:
-            messagebox.showerror("Exportar Excel", "A biblioteca openpyxl não está disponível neste ambiente.")
-            return
-        if self.last_verif is None:
-            messagebox.showinfo("Exportar Excel", "Não existe cálculo concluído para exportar.")
-            return
-        filepath = filedialog.asksaveasfilename(title="Exportar relatório Excel", defaultextension=".xlsx", filetypes=[("Excel", "*.xlsx")])
-        if not filepath:
-            return
-        wb = Workbook()
-        ws1 = wb.active
-        ws1.title = "Resumo"
-        ws2 = wb.create_sheet("Relatorio")
-        ws3 = wb.create_sheet("Entradas")
-        bold = Font(bold=True, color="FFFFFF")
-        fill = PatternFill("solid", fgColor="1D4ED8")
-        thin = Side(style="thin", color="CBD5E1")
-        border = Border(bottom=thin)
-        # resumo
-        ws1["A1"] = "Verificação de punçoamento"
-        ws1["A1"].font = Font(bold=True, size=14)
-        ws1["A3"] = "Parâmetro"; ws1["B3"] = "Valor"
-        for c in ("A3", "B3"):
-            ws1[c].font = bold; ws1[c].fill = fill; ws1[c].alignment = Alignment(horizontal="center")
-        rows = [
-            ("Resultado", self.var_resultado.get()), ("β", self.last_verif.beta), ("u0 (m)", self.last_verif.u0),
-            ("u1 (m)", self.last_verif.u1), ("u1,ef (m)", self.last_verif.u1_eff), ("vEd(u0) (MPa)", self.last_verif.v_Ed_u0),
-            ("vRd,max (MPa)", self.last_verif.v_Rd_max), ("vEd(u1) (MPa)", self.last_verif.v_Ed_u1), ("vRd,c (MPa)", self.last_verif.v_Rd_c),
-        ]
-        for i, (k, v) in enumerate(rows, start=4):
-            ws1[f"A{i}"] = k; ws1[f"B{i}"] = v
-            ws1[f"A{i}"].border = border; ws1[f"B{i}"].border = border
-        ws1.column_dimensions["A"].width = 24
-        ws1.column_dimensions["B"].width = 24
-        # relatorio
-        ws2["A1"] = "Relatório técnico"
-        ws2["A1"].font = Font(bold=True, size=14)
-        for i, line in enumerate(self.last_report.splitlines(), start=3):
-            ws2[f"A{i}"] = line
-        ws2.column_dimensions["A"].width = 120
-        # entradas
-        ws3["A1"] = "Entradas do cálculo"; ws3["A1"].font = Font(bold=True, size=14)
-        ws3["A3"] = "Campo"; ws3["B3"] = "Valor"
-        for c in ("A3", "B3"):
-            ws3[c].font = bold; ws3[c].fill = fill
-        entries = [
-            ("fck (MPa)", self.var_fck.get()), ("fyk (MPa)", self.var_fyk.get()), ("fywk (MPa)", self.var_fywk.get()),
-            ("d (m)", self.var_d.get()), ("As,lx (cm²/m)", self.var_asx.get()), ("As,ly (cm²/m)", self.var_asy.get()),
-            ("σcp (MPa)", self.var_sigma_cp.get()), ("Tipo", self.var_tipo_pilar.get()), ("Forma", self.var_forma_pilar.get()),
-            ("c1/D (m)", self.var_c1.get()), ("c2 (m)", self.var_c2.get()), ("VEd (kN)", self.var_ved.get()),
-            ("MEdx (kN·m)", self.var_medx.get()), ("MEdy (kN·m)", self.var_medy.get()), ("Modo β", self.var_beta.get()),
-        ]
-        for i, (k, v) in enumerate(entries, start=4):
-            ws3[f"A{i}"] = k; ws3[f"B{i}"] = v
-        ws3.column_dimensions["A"].width = 28
-        ws3.column_dimensions["B"].width = 20
-        for ws in (ws1, ws2, ws3):
-            ws.freeze_panes = "A4"
-            for col in range(1, ws.max_column + 1):
-                ws.column_dimensions[get_column_letter(col)].bestFit = True
-        wb.save(filepath)
-        self.var_status.set(f"Relatório Excel guardado em: {filepath}")
+            self.last_verif=None;self.last_report='';self.dirty=True;self._last_load_trace=None
+            self._result_tools(False)
+            self.lbl_badge.configure(text='DADOS INVÁLIDOS',foreground='#b12732');self.var_resultado.set(str(exc))
+            self._set_text(self.txt_output,'Cálculo não executado.\n'+str(exc));self._set_text(self.txt_diag,'')
+            for item in self.tree_summary.get_children():self.tree_summary.delete(item)
+            for item in self.tree_steel.get_children():self.tree_steel.delete(item)
+            self.var_steel.set('Sem proposta: dados inválidos.')
+            self.var_status.set('Corrija os dados para executar a verificação.')
+            messagebox.showerror('Não foi possível calcular',str(exc),parent=self)
 
     @staticmethod
-    def _wrap_text(text, font_name, font_size, max_width):
-        words = text.split()
-        if not words:
-            return [""]
-        lines, current = [], words[0]
-        for word in words[1:]:
-            test = current + " " + word
-            if stringWidth(test, font_name, font_size) <= max_width:
-                current = test
-            else:
-                lines.append(current); current = word
-        lines.append(current)
-        return lines
+    def _set_text(widget,text):
+        widget.configure(state='normal');widget.delete('1.0',tk.END);widget.insert(tk.END,text);widget.configure(state='disabled')
+
+    def _fill_summary(self,verif):
+        r=verif.snapshot();v=r['values']
+        for item in self.tree_summary.get_children():self.tree_summary.delete(item)
+        for name,key,unit in [('Beta','beta',''),('u0','u0','m'),('u1 geométrico','u1','m'),('u1 efetivo','u1_eff','m'),('u1*','u1_star','m'),('vRd,c','v_Rd_c','MPa'),('Limite com armadura','v_Rd_cs_max','MPa')]:
+            value='Não calculado' if v[key] is None else f'{v[key]:.3f} {unit}'
+            self.tree_summary.insert('',tk.END,values=(name,value),tags=('alternate',) if len(self.tree_summary.get_children())%2 else ())
+        if r['inputs'].get('edge_distance_m',0)>0:
+            self.tree_summary.insert('',tk.END,values=('Afastamento ao bordo',f"{r['inputs']['edge_distance_m']:.3f} m"))
+            for c in r['contour_comparison']:
+                name='Contorno fechado' if c['kind']=='fechado' else 'Contorno aberto ao bordo'
+                desc=f"{c['effective_length']:.3f} m"
+                if not c['admissible']:desc+=' | toca/ultrapassa bordo'
+                elif c['selected']:desc+=' | mínimo adotado'
+                self.tree_summary.insert('',tk.END,values=(name,desc))
+        for c in r['checks']:
+            self.tree_summary.insert('',tk.END,values=(c['name'],f"{'Verifica' if c['passed'] else 'Não verifica'} | {c['utilization']:.3f}"),tags=('pass' if c['passed'] else 'fail',))
+        for c in r.get('detail_checks',[]):
+            value='Não calculado' if c['value'] is None else f"{c['value']:.3f} {c['rule']} {c['limit']:.3f} {c['unit']}"
+            if c['id'] in ('paths','families','radii'):value='Conferência das posições'
+            self.tree_summary.insert('',tk.END,values=(c['name'],f"{'OK' if c['passed'] else 'Rever'} | {value}"))
+        for item in self.tree_steel.get_children():self.tree_steel.delete(item)
+        if r['reinforcement_rows']:
+            rows=r['reinforcement_rows'];first=rows[0]
+            self.var_steel.set(f"{len(rows)} fiadas | Ø{first['phi_mm']:.0f} | s0 = {first['r']:.3f} m | sr = {first['sr']:.3f} m\n{sum(x['n_legs'] for x in rows)} ramos verticais no total.")
+            for row in rows:
+                self.tree_steel.insert('',tk.END,values=(row['row'],f"{row['r']:.3f}",row['n_legs'],f"{row['Asw_m2']*1e4:.3f}",f"{row['st']:.3f}",'OK' if row['passed'] else 'Rever'))
+        else:self.var_steel.set('Sem armadura específica necessária.' if r['status']=='PASS_WITHOUT' else 'Não foi obtida uma distribuição de ramos.')
+        color='#16734a' if r['status'] in ('PASS_WITH','PASS_WITHOUT') else ('#956315' if r['status'] in ('BETA_PENDING','DETAIL_PENDING','EDGE_DETAIL_PENDING') else '#b12732')
+        self.var_resultado.set(r['conclusion']);self.lbl_badge.configure(text=r['badge'],foreground=color)
+
+    def _fresh_result(self):
+        if self.last_verif is None or self.dirty:
+            messagebox.showinfo('Resultado indisponível','Execute o cálculo com os dados atuais antes de exportar ou copiar.',parent=self);return None
+        r=self.last_verif.snapshot()
+        if self.__dict__.get('_last_load_trace') is not None:r['load_trace']=deepcopy(self._last_load_trace)
+        return r
+
+    def _export(self,kind):
+        r=self._fresh_result()
+        if r is None:return
+        target=filedialog.asksaveasfilename(parent=self,defaultextension='.'+kind,filetypes=[(kind.upper(),'*.'+kind)],initialfile='Puncoamento_'+kind+'.'+kind)
+        if not target:return
+        try:
+            {'pdf':export_pdf,'xlsx':export_xlsx,'txt':export_txt,'json':export_json}[kind](r,target)
+            self.var_status.set('Relatório exportado: '+Path(target).name)
+        except Exception as exc:messagebox.showerror('Exportação',str(exc)+'\nVerifique a instalação de requirements.txt.',parent=self)
+
+    def guardar_relatorio_pdf(self):self._export('pdf')
+    def guardar_relatorio_xlsx(self):self._export('xlsx')
+    def guardar_relatorio_txt(self):self._export('txt')
+    def _build_professional_report_sections(self,emitted_at=None):
+        r=self._fresh_result()
+        if r is None:raise ValueError('Não existe resultado atualizado para exportar.')
+        return sections(r)
+
+    def _create_pdf(self,filepath,content=None):
+        r=self._fresh_result()
+        if r is None:raise ValueError('Não existe resultado atualizado para exportar.')
+        export_pdf(r,filepath)
 
     def copiar_relatorio(self):
-        content = self.txt_output.get("1.0", tk.END).strip()
-        if not content:
-            messagebox.showinfo("Copiar relatório", "Não existe relatório para copiar.")
-            return
-        self.clipboard_clear(); self.clipboard_append(content)
-        self.var_status.set("Relatório copiado para a área de transferência.")
+        if self._fresh_result() is not None:
+            self.clipboard_clear();self.clipboard_append(self.last_report);self.var_status.set('Memória copiada.')
+
+    def guardar_caso(self):
+        try:
+            p=self._collect_inputs();PuncoamentoEC2(**p)
+            case=self._current_connection()
+            if case is not None:
+                self._commit_connection();p={'schema':'PunchingShearEC2.case/1','inputs':p,'import_case':deepcopy(case)}
+        except Exception as exc:messagebox.showerror('Guardar caso',str(exc),parent=self);return
+        path=filedialog.asksaveasfilename(parent=self,defaultextension='.json',filetypes=[('Caso JSON','*.json')])
+        if path:
+            try:
+                write_json_atomic(path,p)
+                self.var_status.set('Caso guardado: '+Path(path).name)
+            except OSError as exc:messagebox.showerror('Guardar caso',str(exc),parent=self)
+
+    def abrir_caso(self):
+        path=filedialog.askopenfilename(parent=self,filetypes=[('Caso JSON','*.json')])
+        if not path:return
+        try:
+            data=json.loads(Path(path).read_text(encoding='utf-8-sig'))
+            imported=case_from_payload(data,DEFAULTS)
+            if 'inputs' in data:data=data['inputs']
+            PuncoamentoEC2(**data)
+            if data.get('laje_rho_l') is not None and data.get('laje_As_lx_cm2pm') is None:
+                raise ValueError('Este caso usa rho diretamente. Execute-o pela API/CLI ou introduza as áreas de armadura na interface.')
+            self.limpar();self._loading=True
+            self._standalone_case=deepcopy(imported)
+            for k,v in draft_from_layout(data.get('longitudinal_layout')).items():self.vars[k].set(v)
+            for k,v in data.items():
+                if k not in self.vars:continue
+                if k in ('V_Ed','M_Edx','M_Edy'):v=float(v)/1000
+                if k=='opening_sectors':v=' | '.join(f'{a:g};{b:g}' for a,b in (v or []))
+                if k=='openings':v=json.dumps(v or [],ensure_ascii=False)
+                self.vars[k].set(v if v is not None else '')
+        except Exception as exc:messagebox.showerror('Abrir caso',str(exc),parent=self)
+        finally:self._loading=False;self._mark_dirty();self._sync_origin()
 
     def limpar(self):
-        self.__init_reset__()
-
-    def __init_reset__(self):
-        vals = {
-            self.var_fck: "30", self.var_fyk: "500", self.var_fywk: "500", self.var_d: "0.22", self.var_asx: "10.0", self.var_asy: "10.0",
-            self.var_sigma_cp: "0", self.var_tipo_pilar: "interior", self.var_forma_pilar: "retangular", self.var_c1: "0.40", self.var_c2: "0.40",
-            self.var_ved: "600", self.var_medx: "0", self.var_medy: "0", self.var_sigma_gd: "150", self.var_u1_inef: "0", self.var_beta: "simplificado"
-        }
-        for var, val in vals.items(): var.set(val)
-        self.var_is_sapata.set(False); self.var_has_abertura.set(False); self.var_edge_interior.set(True); self.var_corner_interior.set(True)
-        self.last_report = ""; self.last_verif = None
-        self.txt_output.delete("1.0", tk.END)
-        self.txt_diag.configure(state="normal"); self.txt_diag.delete("1.0", tk.END); self.txt_diag.configure(state="disabled")
-        for item in self.tree_summary.get_children(): self.tree_summary.delete(item)
-        self.var_resultado.set("Aguardando cálculo")
-        self.var_status.set("Campos repostos.")
-        self._apply_visibility_rules(); self._update_rho_label(); self._draw_scheme()
+        self._detach_connection()
+        self._loading=True
+        for k,v in DEFAULTS.items():self.vars[k].set(v)
+        self.last_verif=None;self.last_report='';self.dirty=True;self._loading=False
+        self._set_text(self.txt_output,'');self._set_text(self.txt_diag,'')
+        for item in self.tree_summary.get_children():self.tree_summary.delete(item)
+        for item in self.tree_steel.get_children():self.tree_steel.delete(item)
+        self.var_steel.set('Execute a verificação para obter as fiadas.')
+        self.lbl_badge.configure(text='NÃO CALCULADO',foreground='#526773');self.var_resultado.set('Aguardando cálculo')
+        self._result_tools(False);self._sync_controls()
+        self._update_derived();self._draw_scheme();self.var_status.set('Novo caso. Introduza os dados ou carregue um exemplo.')
 
     def carregar_exemplo(self):
-        ex = EXEMPLOS.get(self.var_exemplo.get())
-        if not ex:
+        self.limpar();self._loading=True
+        for k,v in EXAMPLES[self.var_exemplo.get()].items():self.vars[k].set(v)
+        self._loading=False;self._mark_dirty();self.var_status.set(EXAMPLE_DESCRIPTIONS[self.var_exemplo.get()]+' Execute a verificação.')
+
+    def _draw_scheme(self,verif=None):
+        if not hasattr(self,'canvas_scheme'):return
+        cv=self.canvas_scheme;cv.delete('all');w=cv.winfo_width();h=cv.winfo_height()
+        if w<160 or h<150:
+            self._transform=None
+            if w>40:cv.create_text(w/2,h/2,text='Aumente o painel para ver a planta.',width=max(40,w-20),fill=COLORS['muted'])
             return
-        self.var_fck.set(ex["fck"]); self.var_fyk.set(ex["fyk"]); self.var_fywk.set(ex["fywk"])
-        self.var_d.set(ex["d"]); self.var_asx.set(ex["asx"]); self.var_asy.set(ex["asy"]); self.var_sigma_cp.set(ex["sigma_cp"])
-        self.var_tipo_pilar.set(ex["tipo"]); self.var_forma_pilar.set(ex["forma"]); self.var_c1.set(ex["c1"]); self.var_c2.set(ex["c2"])
-        self.var_ved.set(ex["ved"]); self.var_medx.set(ex["medx"]); self.var_medy.set(ex["medy"])
-        self.var_is_sapata.set(ex["is_sapata"]); self.var_sigma_gd.set(ex["sigma_gd"]); self.var_has_abertura.set(ex["has_abertura"])
-        self.var_u1_inef.set(ex["u1_inef"]); self.var_beta.set(ex["beta"]); self.var_edge_interior.set(ex["edge_interior"]); self.var_corner_interior.set(ex["corner_interior"])
-        self.var_status.set(f"Exemplo '{self.var_exemplo.get()}' carregado.")
-        self._apply_visibility_rules(); self._update_rho_label(); self._draw_scheme()
+        try:
+            if not self.dirty and self.last_verif is not None:
+                result=self.last_verif.snapshot();g=result['geometry'];rows=result['reinforcement_rows']
+            else:
+                c1=number(self.vars['pilar_c1'].get().replace(',','.'),'c1',.01,20)
+                shape=self.vars['pilar_forma'].get();c2=c1 if shape=='circular' else number(self.vars['pilar_c2'].get().replace(',','.'),'c2',.01,20)
+                d=number(self.vars['laje_d'].get().replace(',','.'),'d',.01,5);pos=self.vars['pilar_tipo'].get()
+                gap=number(self.vars['edge_distance_m'].get().replace(',','.'),'g (m)',0,100)
+                if gap>0 and (pos!='bordo' or shape!='retangular'):
+                    raise ValueError('Afastamento ao bordo: selecione pilar retangular de bordo.')
+                _,opening_records,automatic=derive_openings(json.loads(self.vars['openings'].get() or '[]'),**self._opening_context())
+                sectors=geo.sectors_normalized(self._parse_sectors(self.vars['opening_sectors'].get())+automatic)
+                seg=geo.select_edge_contour(c1,c2,2*d,gap,sectors)[0]['segments'] if gap>0 else geo.trim_sectors(geo.contour(c1,c2,shape,pos,2*d,d),sectors)
+                g={'column':{'c1':c1,'c2':c2,'shape':shape,'position':pos,'edge_distance_m':gap},'u1':geo.polylines(seg),'openings':opening_records};rows=[]
+            c=g['column'];layers=[('u0','#7442a3'),('u1','#c53030'),('u1_star','#ad741c'),('u_out','#19835b'),('governing','#176eaa')]
+            pts=[p for key,_ in layers for path in g.get(key,[]) for p in path]+[(-c['c1']/2,-c['c2']/2),(c['c1']/2,c['c2']/2)]
+            for opening in g.get('openings',[]):pts.extend(opening['outline']+opening['equivalent_outline'])
+            if c['position']=='bordo':pts.append((0,-c['c2']/2-c.get('edge_distance_m',0)))
+            if g.get('footing'):
+                f=g['footing'];pts.extend([(-f['bx']/2,-f['by']/2),(f['bx']/2,f['by']/2)])
+            xmin=min(x for x,y in pts);xmax=max(x for x,y in pts);ymin=min(y for x,y in pts);ymax=max(y for x,y in pts)
+            scale=min((w-90)/max(xmax-xmin,.1),(h-85)/max(ymax-ymin,.1))
+            ox=w/2-(xmin+xmax)/2*scale;oy=(h-30)/2+(ymin+ymax)/2*scale
+            def pt(x,y):return ox+x*scale,oy-y*scale
+            if self.drag_mode and getattr(self,'_drag_transform',None):ox,oy,scale=self._drag_transform
+            self._transform=(ox,oy,scale)
+            if g.get('footing'):
+                f=g['footing'];coords=(*pt(-f['bx']/2,f['by']/2),*pt(f['bx']/2,-f['by']/2))
+                (cv.create_oval if f['shape']=='circular' else cv.create_rectangle)(*coords,outline='#9cabb4')
+            if c['position'] in ('bordo','canto'):
+                gap=c.get('edge_distance_m',0)
+                yy=pt(0,-c['c2']/2-gap)[1];cv.create_line(12,yy,w-12,yy,fill='#7c858b',width=2)
+                if gap>0:
+                    x,y=pt(0,-c['c2']/2)
+                    cv.create_line(x,y,x,yy,fill='#176eaa',arrow='both')
+                    cv.create_text(x+9,(y+yy)/2,anchor='w',text=f'g = {gap:.3f} m',fill='#176eaa',font=('Segoe UI',10))
+            if c['position']=='canto':
+                xx=pt(-c['c1']/2,0)[0];cv.create_line(xx,10,xx,h-45,fill='#7c858b',width=2)
+            coords=(*pt(-c['c1']/2,c['c2']/2),*pt(c['c1']/2,-c['c2']/2))
+            (cv.create_oval if c['shape']=='circular' else cv.create_rectangle)(*coords,fill='#e1ebf0',outline='#173c4b',width=2)
+            for key,color in layers:
+                for path in g.get(key,[]):cv.create_line(*[z for x,y in path for z in pt(x,y)],fill=color,width=2)
+            for opening in g.get('openings',[]):
+                for end in opening['tangent_points']:cv.create_line(*pt(0,0),*pt(*end),fill='#bd8b49',dash=(4,4))
+                eq=opening['equivalent_outline']
+                if eq:cv.create_line(*[v for p in eq for v in pt(*p)],fill='#a35d05',dash=(3,3))
+                ow,oh=dimensions(opening);x,y=opening['x'],opening['y'];box=(*pt(x-ow/2,y+oh/2),*pt(x+ow/2,y-oh/2))
+                (cv.create_oval if opening['shape']=='circular' else cv.create_rectangle)(*box,fill='#fff3df' if opening['active'] else '#f0f2f4',outline='#a35d05' if opening['active'] else '#697781',width=2)
+                cv.create_text(*pt(x,y),text=opening['id'] if len(opening['id'])<=12 else opening['id'][:9]+'...',fill='#173c4b')
+            for row in rows:
+                for x,y in row['coordinates']:
+                    xx,yy=pt(x,y);cv.create_oval(xx-2,yy-2,xx+2,yy+2,fill='#173c4b',outline='')
+            handles=[(c['c1']/2,0,'c1'),(0,c['c2']/2,'c2')] if self.var_edit_column.get() else []
+            for x,y,key in handles:
+                if key=='c2' and c['shape']=='circular':continue
+                xx,yy=pt(x,y);cv.create_oval(xx-5,yy-5,xx+5,yy+5,fill='#2563eb',outline='white',tags=('handle_'+key,))
+            cv.create_text(12,h-32,anchor='w',text='u0 roxo | u1 vermelho | u1* ocre | u_out verde',font=('Segoe UI',9),fill='#526773')
+            cv.create_text(w-15,15,anchor='ne',text='+X →  +Y ↑',font=('Segoe UI',10))
+        except (ValueError,KeyError,TypeError) as exc:cv.create_text(18,30,anchor='nw',text=str(exc),width=w-36,fill='#956315',font=('Segoe UI',10))
+
+    def _on_canvas_press(self,event):
+        self.drag_mode=None
+        if not self.var_edit_column.get():return
+        items=self.canvas_scheme.find_overlapping(event.x-7,event.y-7,event.x+7,event.y+7)
+        for item in reversed(items):
+            tags=self.canvas_scheme.gettags(item)
+            if 'handle_c1' in tags:self.drag_mode='c1';break
+            if 'handle_c2' in tags:self.drag_mode='c2';break
+        if self.drag_mode:self._drag_transform=self._transform
+
+    def _on_canvas_drag(self,event):
+        if not self.var_edit_column.get() or self.drag_mode is None or not getattr(self,'_transform',None):return
+        ox,oy,scale=self._transform
+        value=2*abs((event.x-ox) if self.drag_mode=='c1' else (oy-event.y))/scale
+        self.vars['pilar_'+self.drag_mode].set(f'{max(.05,min(10.,value)):.3f}')
+
+    def _mousewheel(self,event):
+        widget=self.winfo_containing(event.x_root,event.y_root)
+        for tab in self.scroll_tabs:
+            if widget is not None and str(widget).startswith(str(tab)):
+                num=getattr(event,'num',None);delta=getattr(event,'delta',0)
+                step=(-1 if num==4 else 1) if num in (4,5) else (-1 if delta>0 else 1) if delta else 0
+                if step:tab.canvas.yview_scroll(step*max(1,int(abs(delta)/120)),'units')
+                return 'break'
 
 
 def main():
-    app = PuncoamentoApp()
-    app.mainloop()
+    app=PuncoamentoApp();app.mainloop()
 
 
-if __name__ == "__main__":
-    main()
+if __name__=='__main__':main()

@@ -1,0 +1,1001 @@
+{
+  "schema": "PunchingShearEC2.connections/1",
+  "cases": {
+    "[\"Piso 1\",\"P01\",\"ELU 01\"]": {
+      "floor": "Piso 1",
+      "support": "P01",
+      "combination": "ELU 01",
+      "candidates": {
+        "columns": {
+          "floor": "Piso 1",
+          "support": "P01",
+          "combination": "ELU 01",
+          "kind": "columns",
+          "adopted": {
+            "V_Ed": 450.0,
+            "M_Edx": 12.0,
+            "M_Edy": 16.0
+          },
+          "method": "Equilíbrio no nó: VEd=Ninf-Nsup; MEdx=Mx,inf+Mx,sup; MEdy=-(My,inf+My,sup). N normalizado positivo em compressão; momentos vetoriais de ações dos pilares sobre o nó.",
+          "issues": [],
+          "records": [
+            {
+              "floor": "Piso 1",
+              "support": "P01",
+              "combination": "ELU 01",
+              "geometry": null,
+              "source": {
+                "file": "esforcos_pilares.csv",
+                "sha256": "9e163a95aa365a895641a93ba9e6ba4433d86d50c59061da1fe99a149d2af715",
+                "sheet": "CSV",
+                "row": 2,
+                "raw": {
+                  "piso": "Piso 1",
+                  "pilar": "P01",
+                  "combinacao": "ELU 01",
+                  "barra": "B101",
+                  "tramo": "inferior",
+                  "extremo": "topo",
+                  "sem_superior": "nao",
+                  "n": "1800",
+                  "mx_no": "18",
+                  "my_no": "-24"
+                },
+                "mapping": {
+                  "floor": "piso",
+                  "support": "pilar",
+                  "combination": "combinacao",
+                  "member": "barra",
+                  "role": "tramo",
+                  "end": "extremo",
+                  "upper_absent": "sem_superior",
+                  "n": "n",
+                  "mx": "mx_no",
+                  "my": "my_no"
+                },
+                "config": {
+                  "mode": "columns",
+                  "length_unit": "m",
+                  "force_unit": "kN",
+                  "moment_unit": "kN.m",
+                  "decimal": ".",
+                  "compression": "positive",
+                  "resultant_convention": "program",
+                  "same_combination": true,
+                  "axes_at_column": true,
+                  "isolated_joint": true,
+                  "full_connection": true,
+                  "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+                }
+              },
+              "mx": 18.0,
+              "my": -24.0,
+              "n": 1800.0,
+              "role": "below",
+              "end": "top",
+              "member": "B101",
+              "upper_absent": false
+            },
+            {
+              "floor": "Piso 1",
+              "support": "P01",
+              "combination": "ELU 01",
+              "geometry": null,
+              "source": {
+                "file": "esforcos_pilares.csv",
+                "sha256": "9e163a95aa365a895641a93ba9e6ba4433d86d50c59061da1fe99a149d2af715",
+                "sheet": "CSV",
+                "row": 3,
+                "raw": {
+                  "piso": "Piso 1",
+                  "pilar": "P01",
+                  "combinacao": "ELU 01",
+                  "barra": "B201",
+                  "tramo": "superior",
+                  "extremo": "base",
+                  "sem_superior": "nao",
+                  "n": "1350",
+                  "mx_no": "-6",
+                  "my_no": "8"
+                },
+                "mapping": {
+                  "floor": "piso",
+                  "support": "pilar",
+                  "combination": "combinacao",
+                  "member": "barra",
+                  "role": "tramo",
+                  "end": "extremo",
+                  "upper_absent": "sem_superior",
+                  "n": "n",
+                  "mx": "mx_no",
+                  "my": "my_no"
+                },
+                "config": {
+                  "mode": "columns",
+                  "length_unit": "m",
+                  "force_unit": "kN",
+                  "moment_unit": "kN.m",
+                  "decimal": ".",
+                  "compression": "positive",
+                  "resultant_convention": "program",
+                  "same_combination": true,
+                  "axes_at_column": true,
+                  "isolated_joint": true,
+                  "full_connection": true,
+                  "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+                }
+              },
+              "mx": -6.0,
+              "my": 8.0,
+              "n": 1350.0,
+              "role": "above",
+              "end": "bottom",
+              "member": "B201",
+              "upper_absent": false
+            }
+          ],
+          "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+        },
+        "resultants": {
+          "floor": "Piso 1",
+          "support": "P01",
+          "combination": "ELU 01",
+          "kind": "resultants",
+          "adopted": {
+            "V_Ed": 450.0,
+            "M_Edx": 12.0,
+            "M_Edy": 16.0
+          },
+          "method": "Resultante integral no centro do pilar; VEd=V; MEdx=Mx; MEdy=My.",
+          "issues": [],
+          "records": [
+            {
+              "floor": "Piso 1",
+              "support": "P01",
+              "combination": "ELU 01",
+              "geometry": null,
+              "source": {
+                "file": "resultantes_ligacao.csv",
+                "sha256": "38cd8e35a5dd88e10358e135d5166383a5987dad0f0ae3b5439656175dc33e6e",
+                "sheet": "CSV",
+                "row": 2,
+                "raw": {
+                  "piso": "Piso 1",
+                  "pilar": "P01",
+                  "combinacao": "ELU 01",
+                  "v": "450",
+                  "mx": "12",
+                  "my": "16"
+                },
+                "mapping": {
+                  "floor": "piso",
+                  "support": "pilar",
+                  "combination": "combinacao",
+                  "v": "v",
+                  "mx": "mx",
+                  "my": "my"
+                },
+                "config": {
+                  "mode": "resultants",
+                  "length_unit": "m",
+                  "force_unit": "kN",
+                  "moment_unit": "kN.m",
+                  "decimal": ".",
+                  "compression": "positive",
+                  "resultant_convention": "program",
+                  "same_combination": true,
+                  "axes_at_column": true,
+                  "isolated_joint": true,
+                  "full_connection": true,
+                  "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+                }
+              },
+              "mx": 12.0,
+              "my": 16.0,
+              "v": 450.0
+            }
+          ],
+          "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+        }
+      },
+      "geometry": {
+        "floor": "Piso 1",
+        "support": "P01",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.4,
+          "pilar_c2": 0.4
+        },
+        "source": {
+          "file": "geometria_pilares.csv",
+          "sha256": "beb80384de8cdd29ffa119a7f8a976a8f5224ff935bd84ffb3eac989c55d8e00",
+          "sheet": "CSV",
+          "row": 2,
+          "raw": {
+            "piso": "Piso 1",
+            "pilar": "P01",
+            "forma": "retangular",
+            "c1": "0.40",
+            "c2": "0.40"
+          },
+          "mapping": {
+            "floor": "piso",
+            "support": "pilar",
+            "shape": "forma",
+            "c1": "c1",
+            "c2": "c2"
+          },
+          "config": {
+            "mode": "geometry",
+            "length_unit": "m",
+            "force_unit": "kN",
+            "moment_unit": "kN.m",
+            "decimal": ".",
+            "compression": "positive",
+            "resultant_convention": "program",
+            "same_combination": true,
+            "axes_at_column": true,
+            "isolated_joint": true,
+            "full_connection": true,
+            "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+          }
+        }
+      },
+      "choice": "",
+      "reference": "",
+      "draft": null,
+      "last_status": null
+    },
+    "[\"Piso 1\",\"P01\",\"ELU 02\"]": {
+      "floor": "Piso 1",
+      "support": "P01",
+      "combination": "ELU 02",
+      "candidates": {
+        "columns": {
+          "floor": "Piso 1",
+          "support": "P01",
+          "combination": "ELU 02",
+          "kind": "columns",
+          "adopted": {
+            "V_Ed": 400.0,
+            "M_Edx": 18.0,
+            "M_Edy": 26.0
+          },
+          "method": "Equilíbrio no nó: VEd=Ninf-Nsup; MEdx=Mx,inf+Mx,sup; MEdy=-(My,inf+My,sup). N normalizado positivo em compressão; momentos vetoriais de ações dos pilares sobre o nó.",
+          "issues": [],
+          "records": [
+            {
+              "floor": "Piso 1",
+              "support": "P01",
+              "combination": "ELU 02",
+              "geometry": null,
+              "source": {
+                "file": "esforcos_pilares.csv",
+                "sha256": "9e163a95aa365a895641a93ba9e6ba4433d86d50c59061da1fe99a149d2af715",
+                "sheet": "CSV",
+                "row": 4,
+                "raw": {
+                  "piso": "Piso 1",
+                  "pilar": "P01",
+                  "combinacao": "ELU 02",
+                  "barra": "B101",
+                  "tramo": "inferior",
+                  "extremo": "topo",
+                  "sem_superior": "nao",
+                  "n": "1700",
+                  "mx_no": "22",
+                  "my_no": "-31"
+                },
+                "mapping": {
+                  "floor": "piso",
+                  "support": "pilar",
+                  "combination": "combinacao",
+                  "member": "barra",
+                  "role": "tramo",
+                  "end": "extremo",
+                  "upper_absent": "sem_superior",
+                  "n": "n",
+                  "mx": "mx_no",
+                  "my": "my_no"
+                },
+                "config": {
+                  "mode": "columns",
+                  "length_unit": "m",
+                  "force_unit": "kN",
+                  "moment_unit": "kN.m",
+                  "decimal": ".",
+                  "compression": "positive",
+                  "resultant_convention": "program",
+                  "same_combination": true,
+                  "axes_at_column": true,
+                  "isolated_joint": true,
+                  "full_connection": true,
+                  "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+                }
+              },
+              "mx": 22.0,
+              "my": -31.0,
+              "n": 1700.0,
+              "role": "below",
+              "end": "top",
+              "member": "B101",
+              "upper_absent": false
+            },
+            {
+              "floor": "Piso 1",
+              "support": "P01",
+              "combination": "ELU 02",
+              "geometry": null,
+              "source": {
+                "file": "esforcos_pilares.csv",
+                "sha256": "9e163a95aa365a895641a93ba9e6ba4433d86d50c59061da1fe99a149d2af715",
+                "sheet": "CSV",
+                "row": 5,
+                "raw": {
+                  "piso": "Piso 1",
+                  "pilar": "P01",
+                  "combinacao": "ELU 02",
+                  "barra": "B201",
+                  "tramo": "superior",
+                  "extremo": "base",
+                  "sem_superior": "nao",
+                  "n": "1300",
+                  "mx_no": "-4",
+                  "my_no": "5"
+                },
+                "mapping": {
+                  "floor": "piso",
+                  "support": "pilar",
+                  "combination": "combinacao",
+                  "member": "barra",
+                  "role": "tramo",
+                  "end": "extremo",
+                  "upper_absent": "sem_superior",
+                  "n": "n",
+                  "mx": "mx_no",
+                  "my": "my_no"
+                },
+                "config": {
+                  "mode": "columns",
+                  "length_unit": "m",
+                  "force_unit": "kN",
+                  "moment_unit": "kN.m",
+                  "decimal": ".",
+                  "compression": "positive",
+                  "resultant_convention": "program",
+                  "same_combination": true,
+                  "axes_at_column": true,
+                  "isolated_joint": true,
+                  "full_connection": true,
+                  "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+                }
+              },
+              "mx": -4.0,
+              "my": 5.0,
+              "n": 1300.0,
+              "role": "above",
+              "end": "bottom",
+              "member": "B201",
+              "upper_absent": false
+            }
+          ],
+          "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+        },
+        "resultants": {
+          "floor": "Piso 1",
+          "support": "P01",
+          "combination": "ELU 02",
+          "kind": "resultants",
+          "adopted": {
+            "V_Ed": 405.0,
+            "M_Edx": 18.0,
+            "M_Edy": 26.0
+          },
+          "method": "Resultante integral no centro do pilar; VEd=V; MEdx=Mx; MEdy=My.",
+          "issues": [],
+          "records": [
+            {
+              "floor": "Piso 1",
+              "support": "P01",
+              "combination": "ELU 02",
+              "geometry": null,
+              "source": {
+                "file": "resultantes_ligacao.csv",
+                "sha256": "38cd8e35a5dd88e10358e135d5166383a5987dad0f0ae3b5439656175dc33e6e",
+                "sheet": "CSV",
+                "row": 3,
+                "raw": {
+                  "piso": "Piso 1",
+                  "pilar": "P01",
+                  "combinacao": "ELU 02",
+                  "v": "405",
+                  "mx": "18",
+                  "my": "26"
+                },
+                "mapping": {
+                  "floor": "piso",
+                  "support": "pilar",
+                  "combination": "combinacao",
+                  "v": "v",
+                  "mx": "mx",
+                  "my": "my"
+                },
+                "config": {
+                  "mode": "resultants",
+                  "length_unit": "m",
+                  "force_unit": "kN",
+                  "moment_unit": "kN.m",
+                  "decimal": ".",
+                  "compression": "positive",
+                  "resultant_convention": "program",
+                  "same_combination": true,
+                  "axes_at_column": true,
+                  "isolated_joint": true,
+                  "full_connection": true,
+                  "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+                }
+              },
+              "mx": 18.0,
+              "my": 26.0,
+              "v": 405.0
+            }
+          ],
+          "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+        }
+      },
+      "geometry": {
+        "floor": "Piso 1",
+        "support": "P01",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.4,
+          "pilar_c2": 0.4
+        },
+        "source": {
+          "file": "geometria_pilares.csv",
+          "sha256": "beb80384de8cdd29ffa119a7f8a976a8f5224ff935bd84ffb3eac989c55d8e00",
+          "sheet": "CSV",
+          "row": 2,
+          "raw": {
+            "piso": "Piso 1",
+            "pilar": "P01",
+            "forma": "retangular",
+            "c1": "0.40",
+            "c2": "0.40"
+          },
+          "mapping": {
+            "floor": "piso",
+            "support": "pilar",
+            "shape": "forma",
+            "c1": "c1",
+            "c2": "c2"
+          },
+          "config": {
+            "mode": "geometry",
+            "length_unit": "m",
+            "force_unit": "kN",
+            "moment_unit": "kN.m",
+            "decimal": ".",
+            "compression": "positive",
+            "resultant_convention": "program",
+            "same_combination": true,
+            "axes_at_column": true,
+            "isolated_joint": true,
+            "full_connection": true,
+            "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+          }
+        }
+      },
+      "choice": "",
+      "reference": "",
+      "draft": null,
+      "last_status": null
+    },
+    "[\"Piso 1\",\"P02\",\"ELU 01\"]": {
+      "floor": "Piso 1",
+      "support": "P02",
+      "combination": "ELU 01",
+      "candidates": {
+        "columns": {
+          "floor": "Piso 1",
+          "support": "P02",
+          "combination": "ELU 01",
+          "kind": "columns",
+          "adopted": null,
+          "method": "Equilíbrio no nó: VEd=Ninf-Nsup; MEdx=Mx,inf+Mx,sup; MEdy=-(My,inf+My,sup). N normalizado positivo em compressão; momentos vetoriais de ações dos pilares sobre o nó.",
+          "issues": [
+            "Tramo superior em falta. Falta de dados não equivale a ausência física."
+          ],
+          "records": [
+            {
+              "floor": "Piso 1",
+              "support": "P02",
+              "combination": "ELU 01",
+              "geometry": null,
+              "source": {
+                "file": "esforcos_pilares.csv",
+                "sha256": "9e163a95aa365a895641a93ba9e6ba4433d86d50c59061da1fe99a149d2af715",
+                "sheet": "CSV",
+                "row": 6,
+                "raw": {
+                  "piso": "Piso 1",
+                  "pilar": "P02",
+                  "combinacao": "ELU 01",
+                  "barra": "B102",
+                  "tramo": "inferior",
+                  "extremo": "topo",
+                  "sem_superior": "nao",
+                  "n": "1500",
+                  "mx_no": "12",
+                  "my_no": "-8"
+                },
+                "mapping": {
+                  "floor": "piso",
+                  "support": "pilar",
+                  "combination": "combinacao",
+                  "member": "barra",
+                  "role": "tramo",
+                  "end": "extremo",
+                  "upper_absent": "sem_superior",
+                  "n": "n",
+                  "mx": "mx_no",
+                  "my": "my_no"
+                },
+                "config": {
+                  "mode": "columns",
+                  "length_unit": "m",
+                  "force_unit": "kN",
+                  "moment_unit": "kN.m",
+                  "decimal": ".",
+                  "compression": "positive",
+                  "resultant_convention": "program",
+                  "same_combination": true,
+                  "axes_at_column": true,
+                  "isolated_joint": true,
+                  "full_connection": true,
+                  "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+                }
+              },
+              "mx": 12.0,
+              "my": -8.0,
+              "n": 1500.0,
+              "role": "below",
+              "end": "top",
+              "member": "B102",
+              "upper_absent": false
+            }
+          ],
+          "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+        },
+        "resultants": {
+          "floor": "Piso 1",
+          "support": "P02",
+          "combination": "ELU 01",
+          "kind": "resultants",
+          "adopted": {
+            "V_Ed": 360.0,
+            "M_Edx": 4.0,
+            "M_Edy": 6.0
+          },
+          "method": "Resultante integral no centro do pilar; VEd=V; MEdx=Mx; MEdy=My.",
+          "issues": [],
+          "records": [
+            {
+              "floor": "Piso 1",
+              "support": "P02",
+              "combination": "ELU 01",
+              "geometry": null,
+              "source": {
+                "file": "resultantes_ligacao.csv",
+                "sha256": "38cd8e35a5dd88e10358e135d5166383a5987dad0f0ae3b5439656175dc33e6e",
+                "sheet": "CSV",
+                "row": 4,
+                "raw": {
+                  "piso": "Piso 1",
+                  "pilar": "P02",
+                  "combinacao": "ELU 01",
+                  "v": "360",
+                  "mx": "4",
+                  "my": "6"
+                },
+                "mapping": {
+                  "floor": "piso",
+                  "support": "pilar",
+                  "combination": "combinacao",
+                  "v": "v",
+                  "mx": "mx",
+                  "my": "my"
+                },
+                "config": {
+                  "mode": "resultants",
+                  "length_unit": "m",
+                  "force_unit": "kN",
+                  "moment_unit": "kN.m",
+                  "decimal": ".",
+                  "compression": "positive",
+                  "resultant_convention": "program",
+                  "same_combination": true,
+                  "axes_at_column": true,
+                  "isolated_joint": true,
+                  "full_connection": true,
+                  "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+                }
+              },
+              "mx": 4.0,
+              "my": 6.0,
+              "v": 360.0
+            }
+          ],
+          "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+        }
+      },
+      "geometry": {
+        "floor": "Piso 1",
+        "support": "P02",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.3,
+          "pilar_c2": 0.6
+        },
+        "source": {
+          "file": "geometria_pilares.csv",
+          "sha256": "beb80384de8cdd29ffa119a7f8a976a8f5224ff935bd84ffb3eac989c55d8e00",
+          "sheet": "CSV",
+          "row": 3,
+          "raw": {
+            "piso": "Piso 1",
+            "pilar": "P02",
+            "forma": "retangular",
+            "c1": "0.30",
+            "c2": "0.60"
+          },
+          "mapping": {
+            "floor": "piso",
+            "support": "pilar",
+            "shape": "forma",
+            "c1": "c1",
+            "c2": "c2"
+          },
+          "config": {
+            "mode": "geometry",
+            "length_unit": "m",
+            "force_unit": "kN",
+            "moment_unit": "kN.m",
+            "decimal": ".",
+            "compression": "positive",
+            "resultant_convention": "program",
+            "same_combination": true,
+            "axes_at_column": true,
+            "isolated_joint": true,
+            "full_connection": true,
+            "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+          }
+        }
+      },
+      "choice": "",
+      "reference": "",
+      "draft": null,
+      "last_status": null
+    },
+    "[\"Cobertura\",\"P01\",\"ELU 01\"]": {
+      "floor": "Cobertura",
+      "support": "P01",
+      "combination": "ELU 01",
+      "candidates": {
+        "columns": {
+          "floor": "Cobertura",
+          "support": "P01",
+          "combination": "ELU 01",
+          "kind": "columns",
+          "adopted": {
+            "V_Ed": 280.0,
+            "M_Edx": 0.0,
+            "M_Edy": -0.0
+          },
+          "method": "Equilíbrio no nó: VEd=Ninf-Nsup; MEdx=Mx,inf+Mx,sup; MEdy=-(My,inf+My,sup). N normalizado positivo em compressão; momentos vetoriais de ações dos pilares sobre o nó.",
+          "issues": [],
+          "records": [
+            {
+              "floor": "Cobertura",
+              "support": "P01",
+              "combination": "ELU 01",
+              "geometry": null,
+              "source": {
+                "file": "esforcos_pilares.csv",
+                "sha256": "9e163a95aa365a895641a93ba9e6ba4433d86d50c59061da1fe99a149d2af715",
+                "sheet": "CSV",
+                "row": 7,
+                "raw": {
+                  "piso": "Cobertura",
+                  "pilar": "P01",
+                  "combinacao": "ELU 01",
+                  "barra": "B301",
+                  "tramo": "inferior",
+                  "extremo": "topo",
+                  "sem_superior": "sim",
+                  "n": "280",
+                  "mx_no": "0",
+                  "my_no": "0"
+                },
+                "mapping": {
+                  "floor": "piso",
+                  "support": "pilar",
+                  "combination": "combinacao",
+                  "member": "barra",
+                  "role": "tramo",
+                  "end": "extremo",
+                  "upper_absent": "sem_superior",
+                  "n": "n",
+                  "mx": "mx_no",
+                  "my": "my_no"
+                },
+                "config": {
+                  "mode": "columns",
+                  "length_unit": "m",
+                  "force_unit": "kN",
+                  "moment_unit": "kN.m",
+                  "decimal": ".",
+                  "compression": "positive",
+                  "resultant_convention": "program",
+                  "same_combination": true,
+                  "axes_at_column": true,
+                  "isolated_joint": true,
+                  "full_connection": true,
+                  "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+                }
+              },
+              "mx": 0.0,
+              "my": 0.0,
+              "n": 280.0,
+              "role": "below",
+              "end": "top",
+              "member": "B301",
+              "upper_absent": true
+            }
+          ],
+          "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+        },
+        "resultants": {
+          "floor": "Cobertura",
+          "support": "P01",
+          "combination": "ELU 01",
+          "kind": "resultants",
+          "adopted": {
+            "V_Ed": 280.0,
+            "M_Edx": 0.0,
+            "M_Edy": 0.0
+          },
+          "method": "Resultante integral no centro do pilar; VEd=V; MEdx=Mx; MEdy=My.",
+          "issues": [],
+          "records": [
+            {
+              "floor": "Cobertura",
+              "support": "P01",
+              "combination": "ELU 01",
+              "geometry": null,
+              "source": {
+                "file": "resultantes_ligacao.csv",
+                "sha256": "38cd8e35a5dd88e10358e135d5166383a5987dad0f0ae3b5439656175dc33e6e",
+                "sheet": "CSV",
+                "row": 5,
+                "raw": {
+                  "piso": "Cobertura",
+                  "pilar": "P01",
+                  "combinacao": "ELU 01",
+                  "v": "280",
+                  "mx": "0",
+                  "my": "0"
+                },
+                "mapping": {
+                  "floor": "piso",
+                  "support": "pilar",
+                  "combination": "combinacao",
+                  "v": "v",
+                  "mx": "mx",
+                  "my": "my"
+                },
+                "config": {
+                  "mode": "resultants",
+                  "length_unit": "m",
+                  "force_unit": "kN",
+                  "moment_unit": "kN.m",
+                  "decimal": ".",
+                  "compression": "positive",
+                  "resultant_convention": "program",
+                  "same_combination": true,
+                  "axes_at_column": true,
+                  "isolated_joint": true,
+                  "full_connection": true,
+                  "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+                }
+              },
+              "mx": 0.0,
+              "my": 0.0,
+              "v": 280.0
+            }
+          ],
+          "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+        }
+      },
+      "geometry": {
+        "floor": "Cobertura",
+        "support": "P01",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.4,
+          "pilar_c2": 0.4
+        },
+        "source": {
+          "file": "geometria_pilares.csv",
+          "sha256": "beb80384de8cdd29ffa119a7f8a976a8f5224ff935bd84ffb3eac989c55d8e00",
+          "sheet": "CSV",
+          "row": 4,
+          "raw": {
+            "piso": "Cobertura",
+            "pilar": "P01",
+            "forma": "retangular",
+            "c1": "0.40",
+            "c2": "0.40"
+          },
+          "mapping": {
+            "floor": "piso",
+            "support": "pilar",
+            "shape": "forma",
+            "c1": "c1",
+            "c2": "c2"
+          },
+          "config": {
+            "mode": "geometry",
+            "length_unit": "m",
+            "force_unit": "kN",
+            "moment_unit": "kN.m",
+            "decimal": ".",
+            "compression": "positive",
+            "resultant_convention": "program",
+            "same_combination": true,
+            "axes_at_column": true,
+            "isolated_joint": true,
+            "full_connection": true,
+            "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+          }
+        }
+      },
+      "choice": "",
+      "reference": "",
+      "draft": null,
+      "last_status": null
+    }
+  },
+  "geometries": {
+    "[\"Piso 1\",\"P01\"]": {
+      "floor": "Piso 1",
+      "support": "P01",
+      "inputs": {
+        "pilar_forma": "retangular",
+        "pilar_c1": 0.4,
+        "pilar_c2": 0.4
+      },
+      "source": {
+        "file": "geometria_pilares.csv",
+        "sha256": "beb80384de8cdd29ffa119a7f8a976a8f5224ff935bd84ffb3eac989c55d8e00",
+        "sheet": "CSV",
+        "row": 2,
+        "raw": {
+          "piso": "Piso 1",
+          "pilar": "P01",
+          "forma": "retangular",
+          "c1": "0.40",
+          "c2": "0.40"
+        },
+        "mapping": {
+          "floor": "piso",
+          "support": "pilar",
+          "shape": "forma",
+          "c1": "c1",
+          "c2": "c2"
+        },
+        "config": {
+          "mode": "geometry",
+          "length_unit": "m",
+          "force_unit": "kN",
+          "moment_unit": "kN.m",
+          "decimal": ".",
+          "compression": "positive",
+          "resultant_convention": "program",
+          "same_combination": true,
+          "axes_at_column": true,
+          "isolated_joint": true,
+          "full_connection": true,
+          "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+        }
+      }
+    },
+    "[\"Piso 1\",\"P02\"]": {
+      "floor": "Piso 1",
+      "support": "P02",
+      "inputs": {
+        "pilar_forma": "retangular",
+        "pilar_c1": 0.3,
+        "pilar_c2": 0.6
+      },
+      "source": {
+        "file": "geometria_pilares.csv",
+        "sha256": "beb80384de8cdd29ffa119a7f8a976a8f5224ff935bd84ffb3eac989c55d8e00",
+        "sheet": "CSV",
+        "row": 3,
+        "raw": {
+          "piso": "Piso 1",
+          "pilar": "P02",
+          "forma": "retangular",
+          "c1": "0.30",
+          "c2": "0.60"
+        },
+        "mapping": {
+          "floor": "piso",
+          "support": "pilar",
+          "shape": "forma",
+          "c1": "c1",
+          "c2": "c2"
+        },
+        "config": {
+          "mode": "geometry",
+          "length_unit": "m",
+          "force_unit": "kN",
+          "moment_unit": "kN.m",
+          "decimal": ".",
+          "compression": "positive",
+          "resultant_convention": "program",
+          "same_combination": true,
+          "axes_at_column": true,
+          "isolated_joint": true,
+          "full_connection": true,
+          "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+        }
+      }
+    },
+    "[\"Cobertura\",\"P01\"]": {
+      "floor": "Cobertura",
+      "support": "P01",
+      "inputs": {
+        "pilar_forma": "retangular",
+        "pilar_c1": 0.4,
+        "pilar_c2": 0.4
+      },
+      "source": {
+        "file": "geometria_pilares.csv",
+        "sha256": "beb80384de8cdd29ffa119a7f8a976a8f5224ff935bd84ffb3eac989c55d8e00",
+        "sheet": "CSV",
+        "row": 4,
+        "raw": {
+          "piso": "Cobertura",
+          "pilar": "P01",
+          "forma": "retangular",
+          "c1": "0.40",
+          "c2": "0.40"
+        },
+        "mapping": {
+          "floor": "piso",
+          "support": "pilar",
+          "shape": "forma",
+          "c1": "c1",
+          "c2": "c2"
+        },
+        "config": {
+          "mode": "geometry",
+          "length_unit": "m",
+          "force_unit": "kN",
+          "moment_unit": "kN.m",
+          "decimal": ".",
+          "compression": "positive",
+          "resultant_convention": "program",
+          "same_combination": true,
+          "axes_at_column": true,
+          "isolated_joint": true,
+          "full_connection": true,
+          "reference": "Dados fictícios de demonstração, nas convenções de IMPORTACAO.md."
+        }
+      }
+    }
+  },
+  "active": null
+}

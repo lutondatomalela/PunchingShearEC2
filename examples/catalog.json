@@ -1,0 +1,152 @@
+[
+  {
+    "file": "01_interior_carga_concentrica.json",
+    "title": "Pilar interior - carga concêntrica, 300 kN",
+    "description": "Ligação laje-pilar interior de secção quadrada, sujeita a esforço transverso sem transferência de momentos."
+  },
+  {
+    "file": "02_bordo_excentricidade_interior.json",
+    "title": "Pilar de bordo - excentricidade perpendicular interior",
+    "description": "Pilar encostado ao bordo livre, com momento de transferência perpendicular dirigido para o interior da laje. Aplicação de (6.44)."
+  },
+  {
+    "file": "03_interior_armadura_puncoamento.json",
+    "title": "Pilar interior - armadura de punçoamento, 600 kN",
+    "description": "Ligação interior com solicitação superior à resistência sem armadura específica; dimensionamento e distribuição de estribos verticais."
+  },
+  {
+    "file": "04_interior_limite_resistente.json",
+    "title": "Pilar interior - limite resistente com armadura",
+    "description": "Verificação do limite kmax vRd,c para uma ligação interior sujeita a 1000 kN."
+  },
+  {
+    "file": "05_circular_interior.json",
+    "title": "Pilar circular interior - esforço transverso, 450 kN",
+    "description": "Ligação interior com secção circular e perímetros concêntricos."
+  },
+  {
+    "file": "06_canto_excentricidades_interiores.json",
+    "title": "Pilar de canto - excentricidades interiores",
+    "description": "Pilar encostado a dois bordos livres, com ambas as excentricidades dirigidas para o interior. Aplicação de (6.46)."
+  },
+  {
+    "file": "07_sapata_carga_concentrica.json",
+    "title": "Sapata circular - carga concêntrica e pressão uniforme",
+    "description": "Sapata com apoio centrado e pressão líquida de equilíbrio uniforme; pesquisa do perímetro condicionante entre a face e 2d."
+  },
+  {
+    "file": "08_interior_setor_ineficaz_40graus.json",
+    "title": "Pilar interior - setor ineficaz de 40 graus",
+    "description": "Abertura representada por um setor de tangentes entre -20 e +20 graus. Geometria reduzida; o coeficiente beta requer fundamentação específica."
+  },
+  {
+    "file": "09_interior_resistencia_face.json",
+    "title": "Pilar interior - resistência máxima na face",
+    "description": "Verificação de u0 sob esforço transverso de 2000 kN, com aplicação da resistência máxima de AC:2012."
+  },
+  {
+    "file": "10_bordo_400mm_300kN.json",
+    "title": "Pilar de bordo - g = 400 mm, VEd = 300 kN",
+    "description": "Pilar de secção 0,25 x 0,70 m afastado 400 mm do bordo; comparação geométrica entre contorno aberto e fechado. Beta por fundamentar."
+  },
+  {
+    "file": "11_bordo_400mm_400kN.json",
+    "title": "Pilar de bordo - g = 400 mm, VEd = 400 kN",
+    "description": "Ligação com afastamento de 400 mm e esforço transverso de 400 kN. A verificação resistente depende da fundamentação de beta."
+  },
+  {
+    "file": "12_bordo_800mm_550kN.json",
+    "title": "Pilar de bordo - g = 800 mm, VEd = 550 kN",
+    "description": "Pilar com afastamento de 800 mm; avaliação dos comprimentos dos contornos de controlo. Beta por fundamentar."
+  },
+  {
+    "file": "13_bordo_400mm_flexao_biaxial.json",
+    "title": "Pilar de bordo - g = 400 mm, flexão biaxial",
+    "description": "Pilar de secção 0,25 x 0,70 m; d = 202 mm; VEd = 371 kN, MEdx = -10 kN.m e MEdy = -65 kN.m. Beta por fundamentar."
+  },
+  {
+    "file": "14_bordo_000mm_594kN.json",
+    "title": "Pilar de bordo - g = 0 mm, VEd = 594 kN",
+    "description": "Pilar de secção 0,70 x 0,25 m; d = 352 mm; MEdx = -23 kN.m e MEdy = -64 kN.m. Afastamento livre de 0 mm. Aplicação de (6.44) com excentricidade normal interior."
+  },
+  {
+    "file": "15_bordo_343mm_594kN.json",
+    "title": "Pilar de bordo - g = 343 mm, VEd = 594 kN",
+    "description": "Pilar de secção 0,70 x 0,25 m; d = 352 mm; MEdx = -23 kN.m e MEdy = -64 kN.m. Afastamento livre de 343 mm. Beta requer fundamentação para a geometria afastada."
+  },
+  {
+    "file": "16_bordo_001mm_594kN.json",
+    "title": "Pilar de bordo - g = 1 mm, VEd = 594 kN",
+    "description": "Pilar de secção 0,70 x 0,25 m; d = 352 mm; MEdx = -23 kN.m e MEdy = -64 kN.m. Afastamento livre de 1 mm. Beta requer fundamentação para a geometria afastada."
+  },
+  {
+    "file": "17_bordo_000mm_metodo_simplificado.json",
+    "title": "Pilar de bordo - g = 0 mm, beta simplificado",
+    "description": "VEd = 594 kN; d = 352 mm; secção 0,70 x 0,25 m. Exemplo didático com beta = 1,40: pressupõe estabilidade independente dos pórticos laje-pilar e diferença entre vãos adjacentes até 25%. Estas condições têm de ser confirmadas em cada projeto."
+  },
+  {
+    "file": "18_bordo_343mm_metodo_simplificado.json",
+    "title": "Pilar de bordo - g = 343 mm, beta simplificado",
+    "description": "VEd = 594 kN; d = 352 mm; secção 0,70 x 0,25 m. Exemplo didático com beta = 1,40: pressupõe estabilidade independente dos pórticos laje-pilar e diferença entre vãos adjacentes até 25%. Estas condições têm de ser confirmadas em cada projeto."
+  },
+  {
+    "file": "19_interior_flexao_biaxial_643.json",
+    "title": "Pilar interior - flexão biaxial, expressão (6.43)",
+    "description": "Pilar de secção 0,30 x 0,80 m; d = 200 mm; VEd = 300 kN, MEdx = 15 kN.m e MEdy = 40 kN.m. Aplicação da aproximação (6.43), com correspondência explícita entre os eixos da norma e da interface."
+  },
+  {
+    "file": "20_interior_flexao_uniaxial_639.json",
+    "title": "Pilar interior - flexão uniaxial, expressão (6.39)",
+    "description": "Pilar quadrado de 0,40 m; VEd = 300 kN e MEdy = 90 kN.m. Aplicação uniaxial de (6.39), com W de (6.40)-(6.41) e k do Quadro 6.1."
+  },
+  {
+    "file": "21_bordo_excentricidade_exterior_uniaxial.json",
+    "title": "Pilar de bordo - excentricidade exterior uniaxial",
+    "description": "Pilar quadrado encostado ao bordo; VEd = 200 kN e MEdx = -20 kN.m, dirigido para o exterior. Os momentos são introduzidos no centro do pilar e transportados uma única vez para o centro do perímetro; aplicação de (6.39)."
+  },
+  {
+    "file": "22_bordo_exterior_combinacao_biaxial.json",
+    "title": "Pilar de bordo - excentricidade exterior biaxial",
+    "description": "Pilar quadrado encostado ao bordo; VEd = 180 kN, MEdx = -15 kN.m e MEdy = 10 kN.m. Exemplo com a opção de soma conservadora das majorações de (6.39) selecionada; esta combinação é uma hipótese adicional do programa."
+  },
+  {
+    "file": "23_canto_exterior_combinacao_biaxial.json",
+    "title": "Pilar de canto - excentricidade exterior biaxial",
+    "description": "Pilar quadrado encostado a dois bordos; VEd = 60 kN, MEdx = -5 kN.m e MEdy = -7 kN.m. Exemplo com a opção de soma conservadora das majorações de (6.39) selecionada e k do Quadro 6.1 por direção."
+  },
+  {
+    "file": "24_canto_exterior_modelo_por_definir.json",
+    "title": "Pilar de canto - definição do modelo biaxial",
+    "description": "Mesma geometria e ações do exemplo 23, sem seleção da combinação conservadora. A determinação de beta fica pendente até definir o modelo de transferência biaxial."
+  },
+  {
+    "file": "25_abertura_quadrada_600mm.json",
+    "title": "Pilar interior - abertura quadrada a 600 mm",
+    "description": "Abertura quadrada de 0,40 m, centrada à direita de um pilar de 0,40 m, com 0,60 m livres entre faces. Tangentes calculadas a partir da geometria; beta por fundamentar."
+  },
+  {
+    "file": "26_abertura_circular_descentrada.json",
+    "title": "Pilar interior - abertura circular descentrada",
+    "description": "Abertura circular de 0,30 m, com centro em X = 0,80 m e Y = 0,60 m. Distância mínima e tangentes exatas ao círculo; beta por fundamentar."
+  },
+  {
+    "file": "27_abertura_retangular_alongada.json",
+    "title": "Pilar interior - abertura retangular alongada",
+    "description": "Abertura de 1,20 x 0,20 m, centrada no eixo +X. Largura equivalente da Figura 6.14 e respetivo setor calculados automaticamente; beta por fundamentar."
+  },
+  {
+    "file": "28_abertura_distancia_superior_6d.json",
+    "title": "Pilar interior - abertura além de 6d",
+    "description": "Abertura quadrada com distância livre de 1,60 m para d = 0,20 m. Mantida na planta e no registo, sem dedução do perímetro por 6.4.2(3)."
+  },
+  {
+    "file": "29_duas_aberturas_ortogonais.json",
+    "title": "Pilar interior - duas aberturas ortogonais",
+    "description": "Abertura quadrada no lado +X e circular no lado +Y, ambas com distância livre de 0,60 m. União dos setores de influência sem duplicar sobreposições; beta por fundamentar."
+  },
+  {
+    "file": "30_armadura_longitudinal_automatica.json",
+    "title": "Armadura longitudinal - base e reforço, altura útil automática",
+    "description": "Duas malhas Ø10 // 200 + Ø12 // 200 intercaladas em cada direção. Laje h = 250 mm, recobrimento longitudinal = 30 mm e X exterior; d = 208 mm. Dados fictícios."
+  }
+]

@@ -1,0 +1,846 @@
+{
+  "schema": "PunchingShearEC2.connections/1",
+  "cases": {
+    "[\"PISO 2\",\"P103\",\"101 (C)\"]": {
+      "floor": "PISO 2",
+      "support": "P103",
+      "combination": "101 (C)",
+      "candidates": {
+        "columns": {
+          "floor": "PISO 2",
+          "support": "P103",
+          "combination": "101 (C)",
+          "kind": "columns",
+          "adopted": {
+            "V_Ed": 450.0,
+            "M_Edx": 12.0,
+            "M_Edy": 16.0
+          },
+          "issues": [],
+          "records": [
+            {
+              "member": "2",
+              "node": "7460",
+              "combination": "101 (C)",
+              "support": "P103",
+              "story": "PISO 2",
+              "values": {
+                "fx": 1800.0,
+                "hy": 0.25,
+                "mz": -24.0,
+                "iy": 0.0071458332999999995,
+                "my": 18.0,
+                "ax": 0.17500000000000002,
+                "iz": 0.0009114583000000001,
+                "hz": 0.7000000000000001
+              },
+              "section": {
+                "shape": "retangular",
+                "hy": 0.25,
+                "hz": 0.7000000000000001
+              },
+              "section_issue": "",
+              "source": {
+                "file": "Modelo_Pilares_Exemplo.csv",
+                "sha256": "9fa0f659c1d40b41dfe41bb84cd1b8f3f0ba789ab057b06acc5c3f2ece96b61c",
+                "sheet": "CSV",
+                "row": 2,
+                "raw": {
+                  "Member/Node/Case": "2/7460/101 (C)",
+                  "FX (kN)": "1800,00",
+                  "MY (kNm)": "18,00",
+                  "MZ (kNm)": "-24,00",
+                  "AX (cm2)": "1750,00",
+                  "IY (cm4)": "714583,33",
+                  "IZ (cm4)": "91145,83",
+                  "HY (cm)": "25,0",
+                  "HZ (cm)": "70,0",
+                  "Name": "P103",
+                  "Story": "PISO 2"
+                }
+              },
+              "role": "below",
+              "endpoint": "end",
+              "joint_mx": 18.0,
+              "joint_my": -24.0,
+              "axes": {
+                "x": "+Z",
+                "y": "+X"
+              }
+            },
+            {
+              "member": "3",
+              "node": "7460",
+              "combination": "101 (C)",
+              "support": "P103",
+              "story": "PISO 3",
+              "values": {
+                "fx": 1350.0,
+                "hy": 0.25,
+                "mz": -8.0,
+                "iy": 0.0071458332999999995,
+                "my": 6.0,
+                "ax": 0.17500000000000002,
+                "iz": 0.0009114583000000001,
+                "hz": 0.7000000000000001
+              },
+              "section": {
+                "shape": "retangular",
+                "hy": 0.25,
+                "hz": 0.7000000000000001
+              },
+              "section_issue": "",
+              "source": {
+                "file": "Modelo_Pilares_Exemplo.csv",
+                "sha256": "9fa0f659c1d40b41dfe41bb84cd1b8f3f0ba789ab057b06acc5c3f2ece96b61c",
+                "sheet": "CSV",
+                "row": 4,
+                "raw": {
+                  "Member/Node/Case": "3/7460/101 (C)",
+                  "FX (kN)": "1350,00",
+                  "MY (kNm)": "6,00",
+                  "MZ (kNm)": "-8,00",
+                  "AX (cm2)": "1750,00",
+                  "IY (cm4)": "714583,33",
+                  "IZ (cm4)": "91145,83",
+                  "HY (cm)": "25,0",
+                  "HZ (cm)": "70,0",
+                  "Name": "P103",
+                  "Story": "PISO 3"
+                }
+              },
+              "role": "above",
+              "endpoint": "begin",
+              "joint_mx": -6.0,
+              "joint_my": 8.0,
+              "axes": {
+                "x": "+Z",
+                "y": "+X"
+              }
+            }
+          ],
+          "method": "Modelo 3D: VEd=FXinf-FXsup; momentos locais convertidos em ações sobre o mesmo nó (+ no fim, - no início); MEdx=ΣMx,nó; MEdy=-ΣMy,nó.",
+          "reference": "Dados fictícios de demonstração: pilar retangular 25 × 70 cm, tramos verticais, eixos x local = +Z e y local = +X. MODELO_IMPORTACAO.md.",
+          "adapter": "Modelo.bar-joint/1",
+          "analysis": {
+            "tables": [
+              {
+                "file": "Modelo_Pilares_Exemplo.csv",
+                "sha256": "9fa0f659c1d40b41dfe41bb84cd1b8f3f0ba789ab057b06acc5c3f2ece96b61c",
+                "sheet": "CSV",
+                "headers": [
+                  "Member/Node/Case",
+                  "FX (kN)",
+                  "MY (kNm)",
+                  "MZ (kNm)",
+                  "AX (cm2)",
+                  "IY (cm4)",
+                  "IZ (cm4)",
+                  "HY (cm)",
+                  "HZ (cm)",
+                  "Name",
+                  "Story"
+                ],
+                "rows": [
+                  [
+                    2,
+                    [
+                      "2/7460/101 (C)",
+                      "1800,00",
+                      "18,00",
+                      "-24,00",
+                      "1750,00",
+                      "714583,33",
+                      "91145,83",
+                      "25,0",
+                      "70,0",
+                      "P103",
+                      "PISO 2"
+                    ]
+                  ],
+                  [
+                    3,
+                    [
+                      "2/51520/101 (C)",
+                      "1820,00",
+                      "15,00",
+                      "-20,00",
+                      "1750,00",
+                      "714583,33",
+                      "91145,83",
+                      "25,0",
+                      "70,0",
+                      "P103",
+                      "PISO 2"
+                    ]
+                  ],
+                  [
+                    4,
+                    [
+                      "3/7460/101 (C)",
+                      "1350,00",
+                      "6,00",
+                      "-8,00",
+                      "1750,00",
+                      "714583,33",
+                      "91145,83",
+                      "25,0",
+                      "70,0",
+                      "P103",
+                      "PISO 3"
+                    ]
+                  ],
+                  [
+                    5,
+                    [
+                      "3/90000/101 (C)",
+                      "1330,00",
+                      "10,00",
+                      "-5,00",
+                      "1750,00",
+                      "714583,33",
+                      "91145,83",
+                      "25,0",
+                      "70,0",
+                      "P103",
+                      "PISO 3"
+                    ]
+                  ]
+                ],
+                "formulas": []
+              }
+            ],
+            "setup": {
+              "floor": "PISO 2",
+              "support": "P103",
+              "node": "7460",
+              "below": "2",
+              "above": "3",
+              "upper_absent": false,
+              "below_axes": {
+                "x": "+Z",
+                "y": "+X"
+              },
+              "above_axes": {
+                "x": "+Z",
+                "y": "+X"
+              },
+              "combination": "101 (C)",
+              "analysis_3d": true,
+              "same_combination": true,
+              "isolated_joint": true,
+              "at_joint": true,
+              "axes_confirmed": true,
+              "reference": "Dados fictícios de demonstração: pilar retangular 25 × 70 cm, tramos verticais, eixos x local = +Z e y local = +X. MODELO_IMPORTACAO.md."
+            },
+            "nodes": {
+              "file": "Modelo_Nos_Exemplo.csv",
+              "sha256": "2da407beeed14f9e28f16cbdccdcbe60c8b7c3cf38ec4a8fa25bd5b20fab3eed",
+              "sheet": "CSV",
+              "headers": [
+                "Node",
+                "X (m)",
+                "Y (m)",
+                "Z (m)"
+              ],
+              "rows": [
+                [
+                  2,
+                  [
+                    "51520",
+                    "0,00",
+                    "0,00",
+                    "0,00"
+                  ]
+                ],
+                [
+                  3,
+                  [
+                    "7460",
+                    "0,00",
+                    "0,00",
+                    "3,00"
+                  ]
+                ],
+                [
+                  4,
+                  [
+                    "90000",
+                    "0,00",
+                    "0,00",
+                    "6,00"
+                  ]
+                ]
+              ],
+              "formulas": []
+            }
+          }
+        }
+      },
+      "geometry": {
+        "floor": "PISO 2",
+        "support": "P103",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.25,
+          "pilar_c2": 0.7000000000000001
+        },
+        "source": {
+          "file": "Modelo_Pilares_Exemplo.csv",
+          "sha256": "9fa0f659c1d40b41dfe41bb84cd1b8f3f0ba789ab057b06acc5c3f2ece96b61c",
+          "sheet": "CSV",
+          "row": 6,
+          "raw": {
+            "Member/Node/Case": "2/7460/102 (C)",
+            "FX (kN)": "1700,00",
+            "MY (kNm)": "22,00",
+            "MZ (kNm)": "-31,00",
+            "AX (cm2)": "1750,00",
+            "IY (cm4)": "714583,33",
+            "IZ (cm4)": "91145,83",
+            "HY (cm)": "25,0",
+            "HZ (cm)": "70,0",
+            "Name": "P103",
+            "Story": "PISO 2"
+          }
+        }
+      },
+      "choice": "",
+      "reference": "",
+      "draft": null,
+      "last_status": null
+    },
+    "[\"PISO 2\",\"P103\",\"102 (C)\"]": {
+      "floor": "PISO 2",
+      "support": "P103",
+      "combination": "102 (C)",
+      "candidates": {
+        "columns": {
+          "floor": "PISO 2",
+          "support": "P103",
+          "combination": "102 (C)",
+          "kind": "columns",
+          "adopted": {
+            "V_Ed": 400.0,
+            "M_Edx": 18.0,
+            "M_Edy": 26.0
+          },
+          "issues": [],
+          "records": [
+            {
+              "member": "2",
+              "node": "7460",
+              "combination": "102 (C)",
+              "support": "P103",
+              "story": "PISO 2",
+              "values": {
+                "fx": 1700.0,
+                "hy": 0.25,
+                "mz": -31.0,
+                "iy": 0.0071458332999999995,
+                "my": 22.0,
+                "ax": 0.17500000000000002,
+                "iz": 0.0009114583000000001,
+                "hz": 0.7000000000000001
+              },
+              "section": {
+                "shape": "retangular",
+                "hy": 0.25,
+                "hz": 0.7000000000000001
+              },
+              "section_issue": "",
+              "source": {
+                "file": "Modelo_Pilares_Exemplo.csv",
+                "sha256": "9fa0f659c1d40b41dfe41bb84cd1b8f3f0ba789ab057b06acc5c3f2ece96b61c",
+                "sheet": "CSV",
+                "row": 6,
+                "raw": {
+                  "Member/Node/Case": "2/7460/102 (C)",
+                  "FX (kN)": "1700,00",
+                  "MY (kNm)": "22,00",
+                  "MZ (kNm)": "-31,00",
+                  "AX (cm2)": "1750,00",
+                  "IY (cm4)": "714583,33",
+                  "IZ (cm4)": "91145,83",
+                  "HY (cm)": "25,0",
+                  "HZ (cm)": "70,0",
+                  "Name": "P103",
+                  "Story": "PISO 2"
+                }
+              },
+              "role": "below",
+              "endpoint": "end",
+              "joint_mx": 22.0,
+              "joint_my": -31.0,
+              "axes": {
+                "x": "+Z",
+                "y": "+X"
+              }
+            },
+            {
+              "member": "3",
+              "node": "7460",
+              "combination": "102 (C)",
+              "support": "P103",
+              "story": "PISO 3",
+              "values": {
+                "fx": 1300.0,
+                "hy": 0.25,
+                "mz": -5.0,
+                "iy": 0.0071458332999999995,
+                "my": 4.0,
+                "ax": 0.17500000000000002,
+                "iz": 0.0009114583000000001,
+                "hz": 0.7000000000000001
+              },
+              "section": {
+                "shape": "retangular",
+                "hy": 0.25,
+                "hz": 0.7000000000000001
+              },
+              "section_issue": "",
+              "source": {
+                "file": "Modelo_Pilares_Exemplo.csv",
+                "sha256": "9fa0f659c1d40b41dfe41bb84cd1b8f3f0ba789ab057b06acc5c3f2ece96b61c",
+                "sheet": "CSV",
+                "row": 8,
+                "raw": {
+                  "Member/Node/Case": "3/7460/102 (C)",
+                  "FX (kN)": "1300,00",
+                  "MY (kNm)": "4,00",
+                  "MZ (kNm)": "-5,00",
+                  "AX (cm2)": "1750,00",
+                  "IY (cm4)": "714583,33",
+                  "IZ (cm4)": "91145,83",
+                  "HY (cm)": "25,0",
+                  "HZ (cm)": "70,0",
+                  "Name": "P103",
+                  "Story": "PISO 3"
+                }
+              },
+              "role": "above",
+              "endpoint": "begin",
+              "joint_mx": -4.0,
+              "joint_my": 5.0,
+              "axes": {
+                "x": "+Z",
+                "y": "+X"
+              }
+            }
+          ],
+          "method": "Modelo 3D: VEd=FXinf-FXsup; momentos locais convertidos em ações sobre o mesmo nó (+ no fim, - no início); MEdx=ΣMx,nó; MEdy=-ΣMy,nó.",
+          "reference": "Dados fictícios de demonstração: pilar retangular 25 × 70 cm, tramos verticais, eixos x local = +Z e y local = +X. MODELO_IMPORTACAO.md.",
+          "adapter": "Modelo.bar-joint/1",
+          "analysis": {
+            "tables": [
+              {
+                "file": "Modelo_Pilares_Exemplo.csv",
+                "sha256": "9fa0f659c1d40b41dfe41bb84cd1b8f3f0ba789ab057b06acc5c3f2ece96b61c",
+                "sheet": "CSV",
+                "headers": [
+                  "Member/Node/Case",
+                  "FX (kN)",
+                  "MY (kNm)",
+                  "MZ (kNm)",
+                  "AX (cm2)",
+                  "IY (cm4)",
+                  "IZ (cm4)",
+                  "HY (cm)",
+                  "HZ (cm)",
+                  "Name",
+                  "Story"
+                ],
+                "rows": [
+                  [
+                    6,
+                    [
+                      "2/7460/102 (C)",
+                      "1700,00",
+                      "22,00",
+                      "-31,00",
+                      "1750,00",
+                      "714583,33",
+                      "91145,83",
+                      "25,0",
+                      "70,0",
+                      "P103",
+                      "PISO 2"
+                    ]
+                  ],
+                  [
+                    7,
+                    [
+                      "2/51520/102 (C)",
+                      "1720,00",
+                      "19,00",
+                      "-25,00",
+                      "1750,00",
+                      "714583,33",
+                      "91145,83",
+                      "25,0",
+                      "70,0",
+                      "P103",
+                      "PISO 2"
+                    ]
+                  ],
+                  [
+                    8,
+                    [
+                      "3/7460/102 (C)",
+                      "1300,00",
+                      "4,00",
+                      "-5,00",
+                      "1750,00",
+                      "714583,33",
+                      "91145,83",
+                      "25,0",
+                      "70,0",
+                      "P103",
+                      "PISO 3"
+                    ]
+                  ],
+                  [
+                    9,
+                    [
+                      "3/90000/102 (C)",
+                      "1280,00",
+                      "9,00",
+                      "-2,00",
+                      "1750,00",
+                      "714583,33",
+                      "91145,83",
+                      "25,0",
+                      "70,0",
+                      "P103",
+                      "PISO 3"
+                    ]
+                  ]
+                ],
+                "formulas": []
+              }
+            ],
+            "setup": {
+              "floor": "PISO 2",
+              "support": "P103",
+              "node": "7460",
+              "below": "2",
+              "above": "3",
+              "upper_absent": false,
+              "below_axes": {
+                "x": "+Z",
+                "y": "+X"
+              },
+              "above_axes": {
+                "x": "+Z",
+                "y": "+X"
+              },
+              "combination": "102 (C)",
+              "analysis_3d": true,
+              "same_combination": true,
+              "isolated_joint": true,
+              "at_joint": true,
+              "axes_confirmed": true,
+              "reference": "Dados fictícios de demonstração: pilar retangular 25 × 70 cm, tramos verticais, eixos x local = +Z e y local = +X. MODELO_IMPORTACAO.md."
+            },
+            "nodes": {
+              "file": "Modelo_Nos_Exemplo.csv",
+              "sha256": "2da407beeed14f9e28f16cbdccdcbe60c8b7c3cf38ec4a8fa25bd5b20fab3eed",
+              "sheet": "CSV",
+              "headers": [
+                "Node",
+                "X (m)",
+                "Y (m)",
+                "Z (m)"
+              ],
+              "rows": [
+                [
+                  2,
+                  [
+                    "51520",
+                    "0,00",
+                    "0,00",
+                    "0,00"
+                  ]
+                ],
+                [
+                  3,
+                  [
+                    "7460",
+                    "0,00",
+                    "0,00",
+                    "3,00"
+                  ]
+                ],
+                [
+                  4,
+                  [
+                    "90000",
+                    "0,00",
+                    "0,00",
+                    "6,00"
+                  ]
+                ]
+              ],
+              "formulas": []
+            }
+          }
+        }
+      },
+      "geometry": {
+        "floor": "PISO 2",
+        "support": "P103",
+        "inputs": {
+          "pilar_forma": "retangular",
+          "pilar_c1": 0.25,
+          "pilar_c2": 0.7000000000000001
+        },
+        "source": {
+          "file": "Modelo_Pilares_Exemplo.csv",
+          "sha256": "9fa0f659c1d40b41dfe41bb84cd1b8f3f0ba789ab057b06acc5c3f2ece96b61c",
+          "sheet": "CSV",
+          "row": 6,
+          "raw": {
+            "Member/Node/Case": "2/7460/102 (C)",
+            "FX (kN)": "1700,00",
+            "MY (kNm)": "22,00",
+            "MZ (kNm)": "-31,00",
+            "AX (cm2)": "1750,00",
+            "IY (cm4)": "714583,33",
+            "IZ (cm4)": "91145,83",
+            "HY (cm)": "25,0",
+            "HZ (cm)": "70,0",
+            "Name": "P103",
+            "Story": "PISO 2"
+          }
+        }
+      },
+      "choice": "",
+      "reference": "",
+      "draft": null,
+      "last_status": null
+    }
+  },
+  "geometries": {
+    "[\"PISO 2\",\"P103\"]": {
+      "floor": "PISO 2",
+      "support": "P103",
+      "inputs": {
+        "pilar_forma": "retangular",
+        "pilar_c1": 0.25,
+        "pilar_c2": 0.7000000000000001
+      },
+      "source": {
+        "file": "Modelo_Pilares_Exemplo.csv",
+        "sha256": "9fa0f659c1d40b41dfe41bb84cd1b8f3f0ba789ab057b06acc5c3f2ece96b61c",
+        "sheet": "CSV",
+        "row": 6,
+        "raw": {
+          "Member/Node/Case": "2/7460/102 (C)",
+          "FX (kN)": "1700,00",
+          "MY (kNm)": "22,00",
+          "MZ (kNm)": "-31,00",
+          "AX (cm2)": "1750,00",
+          "IY (cm4)": "714583,33",
+          "IZ (cm4)": "91145,83",
+          "HY (cm)": "25,0",
+          "HZ (cm)": "70,0",
+          "Name": "P103",
+          "Story": "PISO 2"
+        }
+      }
+    }
+  },
+  "active": null,
+  "analysis_tables": [
+    {
+      "file": "Modelo_Pilares_Exemplo.csv",
+      "sha256": "9fa0f659c1d40b41dfe41bb84cd1b8f3f0ba789ab057b06acc5c3f2ece96b61c",
+      "sheet": "CSV",
+      "headers": [
+        "Member/Node/Case",
+        "FX (kN)",
+        "MY (kNm)",
+        "MZ (kNm)",
+        "AX (cm2)",
+        "IY (cm4)",
+        "IZ (cm4)",
+        "HY (cm)",
+        "HZ (cm)",
+        "Name",
+        "Story"
+      ],
+      "rows": [
+        [
+          2,
+          [
+            "2/7460/101 (C)",
+            "1800,00",
+            "18,00",
+            "-24,00",
+            "1750,00",
+            "714583,33",
+            "91145,83",
+            "25,0",
+            "70,0",
+            "P103",
+            "PISO 2"
+          ]
+        ],
+        [
+          3,
+          [
+            "2/51520/101 (C)",
+            "1820,00",
+            "15,00",
+            "-20,00",
+            "1750,00",
+            "714583,33",
+            "91145,83",
+            "25,0",
+            "70,0",
+            "P103",
+            "PISO 2"
+          ]
+        ],
+        [
+          4,
+          [
+            "3/7460/101 (C)",
+            "1350,00",
+            "6,00",
+            "-8,00",
+            "1750,00",
+            "714583,33",
+            "91145,83",
+            "25,0",
+            "70,0",
+            "P103",
+            "PISO 3"
+          ]
+        ],
+        [
+          5,
+          [
+            "3/90000/101 (C)",
+            "1330,00",
+            "10,00",
+            "-5,00",
+            "1750,00",
+            "714583,33",
+            "91145,83",
+            "25,0",
+            "70,0",
+            "P103",
+            "PISO 3"
+          ]
+        ],
+        [
+          6,
+          [
+            "2/7460/102 (C)",
+            "1700,00",
+            "22,00",
+            "-31,00",
+            "1750,00",
+            "714583,33",
+            "91145,83",
+            "25,0",
+            "70,0",
+            "P103",
+            "PISO 2"
+          ]
+        ],
+        [
+          7,
+          [
+            "2/51520/102 (C)",
+            "1720,00",
+            "19,00",
+            "-25,00",
+            "1750,00",
+            "714583,33",
+            "91145,83",
+            "25,0",
+            "70,0",
+            "P103",
+            "PISO 2"
+          ]
+        ],
+        [
+          8,
+          [
+            "3/7460/102 (C)",
+            "1300,00",
+            "4,00",
+            "-5,00",
+            "1750,00",
+            "714583,33",
+            "91145,83",
+            "25,0",
+            "70,0",
+            "P103",
+            "PISO 3"
+          ]
+        ],
+        [
+          9,
+          [
+            "3/90000/102 (C)",
+            "1280,00",
+            "9,00",
+            "-2,00",
+            "1750,00",
+            "714583,33",
+            "91145,83",
+            "25,0",
+            "70,0",
+            "P103",
+            "PISO 3"
+          ]
+        ]
+      ],
+      "formulas": []
+    }
+  ],
+  "analysis_nodes": {
+    "file": "Modelo_Nos_Exemplo.csv",
+    "sha256": "2da407beeed14f9e28f16cbdccdcbe60c8b7c3cf38ec4a8fa25bd5b20fab3eed",
+    "sheet": "CSV",
+    "headers": [
+      "Node",
+      "X (m)",
+      "Y (m)",
+      "Z (m)"
+    ],
+    "rows": [
+      [
+        2,
+        [
+          "51520",
+          "0,00",
+          "0,00",
+          "0,00"
+        ]
+      ],
+      [
+        3,
+        [
+          "7460",
+          "0,00",
+          "0,00",
+          "3,00"
+        ]
+      ],
+      [
+        4,
+        [
+          "90000",
+          "0,00",
+          "0,00",
+          "6,00"
+        ]
+      ]
+    ],
+    "formulas": []
+  }
+}

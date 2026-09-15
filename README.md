@@ -1,212 +1,126 @@
 # PunchingShearEC2
 
-**PunchingShearEC2** é uma ferramenta em Python para verificação do punçoamento em lajes maciças de betão armado, de acordo com o **Eurocódigo 2 — NP EN 1992-1-1:2010 + A1:2019**, com interface gráfica, exportação de relatórios e apoio ao dimensionamento preliminar de armaduras de punçoamento.
+Verificação do punçoamento em lajes de betão armado segundo a **NP EN 1992-1-1:2010, AC:2012 e A1:2019**, com o Anexo Nacional português.
 
-O programa permite verificar casos correntes de pilares interiores, pilares de bordo, pilares de canto e pilares circulares, com cálculo dos principais parâmetros resistentes e atuantes.
+Aplicação em Python com interface gráfica, preparação de ligações laje–pilar, gestão de conjuntos e relatórios de cálculo rastreáveis. O referencial implementado é o da primeira geração do Eurocódigo 2.
 
----
+## Versão de referência
 
-## Funcionalidades principais
+A **1.15.0** é a base congelada para o desenvolvimento seguinte. Esta publicação mantém, byte a byte, o código da distribuição 1.15.0. As alterações de publicação abrangem documentação, organização dos registos públicos e integração contínua.
 
-- Verificação ao punçoamento segundo o EC2;
-- Interface gráfica em `tkinter`;
-- Entrada organizada de dados geométricos, materiais e esforços;
-- Representação gráfica simplificada dos perímetros `u0`, `u1` e `u1*`;
-- Cálculo do coeficiente `β`;
-- Verificação de:
-  - tensão de cálculo no perímetro crítico;
-  - resistência do betão sem armadura de punçoamento;
-  - resistência máxima junto ao pilar;
-  - necessidade de armadura de punçoamento;
-- Recomendação preliminar de pormenorização;
-- Exportação de relatório técnico em PDF;
-- Exportação de resultados para Excel;
-- Exportação simples em TXT.
+Consulte [BASELINE.md](BASELINE.md) para a identificação da distribuição original e as regras de evolução. O congelamento não constitui certificação nem elimina as limitações documentadas.
 
----
+## Funcionalidades
 
-## Estrutura do projeto
-
-```text
-PunchingShearEC2/
-│
-├── Punching_EC2.py        # Motor de cálculo
-├── Punching_EC2_GUI.py    # Interface gráfica
-├── TestePuncoamentoEC2.py # Ficheiro de testes/exemplos
-├── _utils.py              # Funções auxiliares
-├── __init__.py
-├── README.md
-└── requirements.txt
-```
-
----
+- Pilares interiores, de bordo e de canto, dentro do âmbito geométrico implementado.
+- Verificações junto ao pilar, no perímetro de controlo e nos contornos exteriores.
+- Métodos de cálculo de β com condições de aplicabilidade explícitas.
+- Proposta e conferência de armadura de punçoamento por fiadas e coordenadas dos ramos.
+- Armadura longitudinal manual ou por base e reforço, com cálculo automático de As,x, As,y, dx, dy e d.
+- Importação de tabelas XLSX, CSV e TSV, com conservação da origem dos dados.
+- Preparação das ligações por piso; revisão dos eixos e orientação conjunta de geometria e esforços.
+- Seleção de barras por listas e intervalos, com extensão à prumada quando a conectividade e as coordenadas o permitem.
+- Grupos de ligações, parâmetros comuns, exceções individuais e cálculo em lote.
+- Gravação de casos e conjuntos em JSON.
+- Relatórios individuais PDF, XLSX, TXT e JSON; relatórios de conjunto PDF, TXT e JSON, filtrados por resultados calculados e atualizados.
+- Editor gráfico de aberturas e exemplos didáticos incluídos.
 
 ## Instalação
 
-Clone o repositório:
+Requer **Python 3.10 ou superior**, Tkinter e as bibliotecas de `requirements.txt`. A distribuição contém código-fonte; não é um executável autónomo.
 
-```bash
+Obtenha o código:
+
+```sh
 git clone https://github.com/lutondatomalela/PunchingShearEC2.git
 cd PunchingShearEC2
 ```
 
-Instale as dependências:
+### Windows
 
-```bash
-pip install -r requirements.txt
+```powershell
+py -3 -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python main.py
 ```
 
-Ou, em alternativa:
+### Linux e macOS
 
-```bash
-python -m pip install -r requirements.txt
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python main.py
 ```
 
----
+A instalação de Python deve incluir Tkinter; em Linux pode ser necessário instalar o pacote correspondente. A verificação visual nativa em cada plataforma e escala de ecrã deve seguir [GUI_TESTES.md](GUI_TESTES.md).
 
-## Dependências
+Também pode descarregar o código na secção [Releases](https://github.com/lutondatomalela/PunchingShearEC2/releases). Extraia a pasta completa, incluindo `punching/` e `examples/`.
 
-O programa usa principalmente bibliotecas padrão do Python.
+## Utilização
 
-Para exportação de relatórios em PDF e Excel, são usadas:
+1. Abra um exemplo ou crie um caso. Para vários apoios, use **Pilares…** e importe as tabelas.
+2. Confira unidades, eixos, sinais, extremos e combinações; prepare as ligações por piso.
+3. Defina a geometria da laje, materiais, bordos, aberturas e armaduras de cada ligação.
+4. Escolha um método de β aplicável e execute **Calcular / F5**.
+5. Consulte **Verificações**, **Fiadas**, **Memória** e as combinações condicionantes.
+6. Guarde o conjunto e exporte os resultados. Alterações de dados exigem novo cálculo.
 
-```text
-reportlab
-openpyxl
+O esforço axial acumulado num pilar não é, por si só, a carga transmitida pela laje. A preparação a partir dos tramos exige esforços ELU originais concomitantes e as condições de equilíbrio documentadas. CQC/SRSS e envolventes não são tratados como esforços concomitantes por simples soma ou diferença.
+
+## Documentação
+
+| Documento | Conteúdo |
+|---|---|
+| [Referência técnica](REFERENCIA_TECNICA.md) | Formulações, unidades, hipóteses, estados e exportações |
+| [Métodos de β](METODOS_BETA.md) | Expressões e domínio de aplicação |
+| [Importação](IMPORTACAO.md) | Tabelas genéricas, campos e unidades |
+| [Modelo e ligações](MODELO_IMPORTACAO.md) | Origem dos esforços e conferência da ligação |
+| [Preparação por piso](MODELO_POR_PISO.md) | Eixos, intervalos, prumadas e gravação |
+| [Armadura longitudinal](ARMADURA_LONGITUDINAL.md) | Base, reforço, camadas e alturas úteis |
+| [Grupos e relatórios](GRUPOS_E_RELATORIOS.md) | Predefinições, edição em lote e âmbito exportado |
+| [Aberturas](ABERTURAS_GUI.md) | Definição gráfica e limites geométricos |
+| [Exemplos](examples/README.md) | Casos didáticos e resultados esperados |
+| [Validação](VALIDACAO.md) | Ensaios automatizados e limites da evidência |
+| [Histórico](CHANGELOG.md) | Evolução das versões |
+
+## Âmbito e limitações
+
+O programa é uma ferramenta de apoio ao projeto. A interpretação normativa, a conferência dos dados e a validação do pormenor construtivo permanecem da responsabilidade do projetista.
+
+Entre os casos fora do âmbito estão apoios de parede, capitéis, espessura variável, pilares circulares de bordo/canto e apoios retangulares com razão entre dimensões ≥ 4. Flexão, esforço transverso unidirecional, ELS e integridade global exigem verificações próprias.
+
+Limitações operacionais mantidas na 1.15.0:
+
+- A substituição de uma tabela de nós já importada exige um novo conjunto.
+- Propostas de armadura diferentes entre combinações exigem conferência de um pormenor comum; não são automaticamente uma única solução executável.
+- A extensão à prumada exige barras verticais, coordenadas compatíveis e nós de extremidade comuns.
+- As combinações já preparadas não são removidas silenciosamente.
+- Os testes automatizados não substituem a inspeção visual da interface nem a verificação independente de um projeto.
+
+## Testes
+
+```sh
+python -m pip install -r requirements-dev.txt
+python -m pytest -q
+python tools/verify_baseline.py
 ```
 
-Instalação manual:
+A campanha local da publicação reúne **533 testes aprovados** em Python 3.12.14. A integração contínua executa a suite e a conferência da base; os resultados efetivos estão disponíveis em [Actions](https://github.com/lutondatomalela/PunchingShearEC2/actions).
 
-```bash
-pip install reportlab openpyxl
-```
+## Estrutura
 
----
+- `main.py` — arranque da aplicação.
+- `punching/` — cálculo, geometria, importação, interface e relatórios.
+- `examples/` — casos didáticos e tabelas de demonstração.
+- `tests/` — testes automatizados.
+- `validation/` — identificação da base e registos públicos de validação.
+- `tools/` — conferência de integridade da versão.
+- `docs/releases/` — notas de publicação.
 
-## Como executar
+Os antigos pontos de entrada `Punching_EC2.py` e `Punching_EC2_GUI.py` são conservados para compatibilidade.
 
-Para abrir a interface gráfica:
+## Contribuições e licença
 
-```bash
-python Punching_EC2_GUI.py
-```
+As próximas alterações devem partir desta base, usar uma nova versão e incluir testes e registo no histórico. Ver [CONTRIBUTING.md](CONTRIBUTING.md).
 
-O motor de cálculo encontra-se em:
-
-```text
-Punching_EC2.py
-```
-
-Este ficheiro contém a classe principal de cálculo e pode ser usado diretamente em scripts próprios.
-
----
-
-## Casos disponíveis na interface
-
-A interface inclui exemplos e modos de cálculo para:
-
-- Pilar interior retangular;
-- Pilar de bordo;
-- Pilar de canto;
-- Pilar circular.
-
-A designação interior, bordo ou canto refere-se à **posição do pilar na laje**, e não ao tipo de laje.
-
----
-
-## Enquadramento normativo
-
-A verificação segue a lógica da **NP EN 1992-1-1:2010 + A1:2019**, em particular as disposições relativas ao punçoamento em lajes.
-
-O programa considera, entre outros aspetos:
-
-- perímetro junto ao pilar `u0`;
-- perímetro crítico `u1`;
-- perímetro reduzido `u1*`, quando aplicável;
-- tensão de cálculo `v_Ed`;
-- resistência ao punçoamento sem armadura `v_Rd,c`;
-- resistência máxima `v_Rd,max`;
-- coeficiente de majoração `β`;
-- recomendações preliminares para armadura de punçoamento.
-
-Para pilares de bordo e de canto, foram consideradas as formulações específicas do EC2, incluindo a distinção entre excentricidades dirigidas para o interior ou para o exterior da laje.
-
----
-
-## Exportação de relatórios
-
-A interface permite exportar:
-
-### Relatório PDF
-
-Relatório técnico formatado com:
-- dados de entrada;
-- parâmetros de cálculo;
-- resultados principais;
-- referências normativas;
-- conclusão;
-- recomendação de pormenorização;
-- nota técnica final.
-
-### Excel
-
-Ficheiro `.xlsx` com:
-- resumo;
-- dados de entrada;
-- resultados detalhados;
-- memória simplificada.
-
-### TXT
-
-Relatório simples em texto, equivalente ao resumo apresentado na interface.
-
----
-
-## Utilização típica
-
-1. Abrir a interface gráfica;
-2. Selecionar o tipo de pilar;
-3. Introduzir geometria, materiais e esforços;
-4. Escolher o modo de cálculo de `β`;
-5. Executar a verificação;
-6. Rever os resultados na interface;
-7. Exportar PDF ou Excel, se necessário.
-
----
-
-## Notas importantes
-
-- A ferramenta destina-se a apoio ao cálculo e à verificação técnica.
-- A interpretação final das disposições do Eurocódigo 2 cabe ao projetista.
-- Em casos fora do domínio corrente, recomenda-se validação independente ou modelo complementar.
-
----
-
-## Desenvolvimento futuro
-
-Melhorias previstas:
-
-- módulo para lajes apoiadas em paredes;
-- verificação de apoios lineares por esforço transverso unidirecional;
-- tratamento de paredes curtas como áreas carregadas alongadas;
-- exportação PDF com desenhos técnicos mais detalhados;
-- organização modular do projeto;
-- criação de executável para Windows.
-
----
-
-## Autor
-
-Desenvolvido por **Lutonda Tomalela, Engº**.
-
-Repositório:
-
-```text
-https://github.com/lutondatomalela/PunchingShearEC2
-```
-
----
-
-## Licença
-
-Este projeto é distribuído sob a licença MIT.
+Distribuído sob a [licença MIT](LICENSE). Repositório: [lutondatomalela/PunchingShearEC2](https://github.com/lutondatomalela/PunchingShearEC2).
