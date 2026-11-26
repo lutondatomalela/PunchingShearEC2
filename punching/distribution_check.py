@@ -15,6 +15,7 @@ def run(output):
         from .connections import ConnectionBook
         from .connection_ui import write_json_atomic
         from .reports import export_json, export_txt, export_pdf, export_xlsx
+        from .collection_reports import build_report, export_collection_pdf
         from .table_import import read_table
         from openpyxl import load_workbook
         root = Path(gui.__file__).resolve().parent
@@ -69,6 +70,9 @@ def run(output):
         assert "Entradas" in wb.sheetnames
         wb.close()
         evidence["checks"].append("exports_pdf_xlsx_txt_json")
+        export_collection_pdf(build_report(restored, only_calculated=False), target / "conjunto.pdf")
+        assert (target / "conjunto.pdf").read_bytes().startswith(b"%PDF-")
+        evidence["checks"].append("collection_pdf_tracking")
         assert read_table(root / "examples/importacao/Exemplo_importacao.xlsx").rows
         assert read_table(root / "examples/importacao/Modelo_Nos.csv").rows
         evidence["checks"].append("imports_xlsx_utf16_csv")

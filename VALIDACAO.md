@@ -1,5 +1,13 @@
 # Validação — PunchingShearEC2
 
+## Release candidate 1.16.0-rc.1
+
+A revisão de apresentação acrescenta 14 regressões, para um total de 548 testes. A leitura dos PDFs verifica estados, valores resistentes, unidades e sinais dos esforços, ausência de códigos internos e conservação dos registos técnicos. Inclui armadura automática, cobertura parcial, casos sem cálculo e a pendência de pormenor comum entre propostas que verificam individualmente.
+
+Os PDFs dos 29 exemplos individuais públicos são gerados e lidos na suite. Foram revistos visualmente PDFs representativos de casos individuais e de conjunto, incluindo quadros, plantas, quebras de página e rodapés. O exemplo de relatório publicado usa apenas os dados fictícios de grupos e conserva explicitamente as combinações modais pendentes.
+
+O motor de cálculo e o formato dos projetos permanecem inalterados. O ensaio do executável acrescenta a exportação PDF do conjunto. A aprovação em cada ambiente e o ensaio do executável Windows devem ser conferidos em Actions e no BUILD-INFO.json da release; a inspeção completa da interface em diferentes postos e escalas de ecrã continua pendente.
+
 ## Release candidate 1.15.1-rc.1
 
 A RC usa leituras UTF-8 explícitas nos testes e acrescenta um teste de regressão da linha de comandos com saída CP1252 estrita: os resultados JSON/TXT mantêm UTF-8 e um símbolo não representável no terminal não interrompe o cálculo.

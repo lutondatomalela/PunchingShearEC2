@@ -1,4 +1,4 @@
-# Grupos e relatórios — PunchingShearEC2 1.13.0
+# Grupos e relatórios — PunchingShearEC2
 
 Esta versão permite preparar e calcular vários pilares na mesma sessão. Cada ligação conserva os seus esforços por combinação, a secção, as aberturas, o afastamento aos bordos e os dados que já foram definidos individualmente.
 
@@ -77,7 +77,7 @@ Exemplo: uma ligação com 17 combinações calculadas e 16 pendentes apresenta 
 
 A exportação utiliza os resultados atuais e não inicia o cálculo de novos pilares. Desative o filtro de calculados para obter um **mapa de acompanhamento**, incluindo casos pendentes e por calcular. PDF, TXT e JSON conservam o âmbito escolhido. O PDF pode detalhar apenas as combinações condicionantes ou todas as combinações exportadas.
 
-O relatório identifica projeto, versão, referencial normativo, data de emissão, origem dos esforços e repositório. Conserva a tipografia e os espaçamentos dos relatórios anteriores.
+O PDF identifica projeto, versão, referencial normativo, data de emissão, origem dos esforços e repositório. Apresenta os parâmetros pelo nome, símbolo e unidade, com quadros de verificações e plantas. Materiais e hipóteses comuns não são repetidos em cada ficha. Consulte [Relatórios para a memória](docs/RELATORIOS.md) para a estrutura, seleção de fichas e exemplo público.
 
 ## 9. Guardar
 

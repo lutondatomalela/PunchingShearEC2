@@ -153,7 +153,8 @@ def test_offset_detail_exports_actual_contributing_steel(tmp_path):
     export_pdf(r,tmp_path/'p157.pdf');export_xlsx(r,tmp_path/'p157.xlsx')
     from openpyxl import load_workbook
     wb=load_workbook(tmp_path/'p157.xlsx')
-    assert wb['Resumo']['B2'].value=='PASS_WITH'
+    assert wb['Resumo']['B2'].value=='VERIFICA'
+    assert wb['Resumo']['B3'].value==r['conclusion']
     assert wb['Contornos']['C3'].value==pytest.approx(3.706637061435917)
     assert wb['Fiadas'].max_row==len(r['reinforcement_rows'])+1
     assert wb['FiadasContornos'].max_row==len(r['reinforcement_rows'])+1

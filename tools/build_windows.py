@@ -29,7 +29,7 @@ def main():
     draw.rectangle((98, 82, 158, 173), fill="#e5f0ff")
     icon.save(work / "app.ico", sizes=[(16,16),(32,32),(48,48),(64,64),(128,128),(256,256)])
     version_resource = """VSVersionInfo(
-  ffi=FixedFileInfo(filevers=(1,15,1,1), prodvers=(1,15,1,1), mask=0x3f,
+  ffi=FixedFileInfo(filevers=(1,16,0,1), prodvers=(1,16,0,1), mask=0x3f,
                    flags=0x2, OS=0x40004, fileType=0x1, subtype=0, date=(0,0)),
   kids=[StringFileInfo([StringTable('040904B0', [
     StringStruct('CompanyName', 'Lutonda Tomalela'),

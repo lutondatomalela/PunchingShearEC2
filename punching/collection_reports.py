@@ -1,14 +1,12 @@
 """Consolidated reports: current combination results, grouped by floor and support."""
-from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime, timezone
-from html import escape
 import json
 from pathlib import Path
 
 from .collection_workflow import cached_calculation, summaries, PENDING_LABELS
 from .connections import describe_case
-from .reports import sections, drawing, _pdf_fonts, INPUT_LABELS, fmt
+from .reports import sections
 from .version import VERSION, STANDARD, REPOSITORY
 
 
@@ -73,7 +71,18 @@ def detail_combinations(items, group, full):
     for field in ('Asw_sr_req','r_out_face'):
         available=[e for e in items if e['snapshot'] and e['snapshot']['values'].get(field) is not None]
         if available:chosen.add(max(available,key=lambda e:e['snapshot']['values'][field])['combination'])
-    chosen.update(e['combination'] for e in items if e['status'].startswith('FAIL'))
+    chosen.update(e['combination'] for e in items if e['status'] not in ('PASS_WITH','PASS_WITHOUT'))
+    # Also represent each distinct physical input configuration, even if it does not govern.
+    configurations={}
+    for e in items:
+        if not e.get('snapshot'):continue
+        physical={k:v for k,v in e['snapshot']['inputs'].items()
+                  if k not in ('V_Ed','M_Edx','M_Edy','combination','edge_perp_interior','corner_interior')}
+        signature=json.dumps(physical,sort_keys=True,ensure_ascii=False)
+        configurations.setdefault(signature,[]).append(e['combination'])
+    for combinations in configurations.values():
+        if not chosen.intersection(combinations):
+            chosen.add(combinations[0])
     # Failed input/scope cases are individually listed in the result table.
     if not chosen and items:chosen.add(items[0]['combination'])
     return chosen
@@ -100,76 +109,5 @@ def export_collection_txt(report,path):
 
 
 def export_collection_pdf(report,path):
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, PageBreak, CondPageBreak
-    from reportlab.lib.styles import ParagraphStyle
-    from reportlab.lib.pagesizes import A4
-    from reportlab.lib import colors
-    font,bold=_pdf_fonts();width=A4[0]-104
-    body=ParagraphStyle('body',fontName=font,fontSize=10,leading=15,spaceAfter=6)
-    heading=ParagraphStyle('heading',fontName=bold,fontSize=12,leading=18,spaceBefore=14,spaceAfter=10,keepWithNext=True)
-    small=ParagraphStyle('small',fontName=font,fontSize=8,leading=12,spaceAfter=0)
-    title=ParagraphStyle('title',parent=heading,fontSize=15,leading=21,spaceAfter=16)
-    table_heading=ParagraphStyle('table_heading',parent=heading,keepWithNext=False)
-    def par(value,style=body):return Paragraph(escape(str(value)),style)
-    def table(headers,values,widths):
-        rows=[[par(v,small) for v in headers]]+[[par(v,small) for v in row] for row in values]
-        t=Table(rows,colWidths=widths,repeatRows=1,hAlign='LEFT')
-        t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),colors.HexColor('#dfe9f0')),
-            ('LINEBELOW',(0,0),(-1,0),.6,colors.HexColor('#7b8a96')),('VALIGN',(0,0),(-1,-1),'TOP'),
-            ('LEFTPADDING',(0,0),(-1,-1),5),('RIGHTPADDING',(0,0),(-1,-1),5),
-            ('TOPPADDING',(0,0),(-1,-1),5),('BOTTOMPADDING',(0,0),(-1,-1),5),
-            ('ROWBACKGROUNDS',(0,1),(-1,-1),[colors.white,colors.HexColor('#f5f7fa')])]))
-        return t
-    story=[par('Verificação de punçoamento',title),par('Conjunto de ligações por piso',heading),
-        par('Projeto: '+(' / '.join(report['projects']) or 'Por identificar')),par(f"Versão {report['version']} | Emissão {report['emitted_at']}"),par(report['standard']),
-        par(f"{len(report['floor_order'])} pisos; {len(report['groups'])} ligações; {len(report['entries'])} combinações verificadas ou com pendências registadas."),par(report['scope'])]
-    if report['model_reference']:story.append(par('Referência do modelo: '+report['model_reference']))
-    story.append(par('VEd e MEd são concomitantes por combinação. A combinação condicionante é indicada por verificação, sem construir uma combinação artificial de máximos.'))
-    story.append(par('Detalhe: '+('todas as combinações.' if report['full'] else 'combinações condicionantes; os quadros apresentam as combinações abrangidas pela seleção.')))
-    for floor in report['floor_order']:
-        story.append(par('Piso: '+floor,heading))
-        groups=[g for g in report['groups'] if g['floor']==floor]
-        story.append(table(['Pilar','Calculadas / total','Falhas','Omitidas','Conclusão'],[[g['support'],f"{g['calculated_count']}/{g['total_count']}",g['failed'],g['omitted_count'],g['status']] for g in groups],[70,83,40,52,width-245]))
-    for floor in report['floor_order']:
-        for group in [g for g in report['groups'] if g['floor']==floor]:
-            items=[e for e in report['entries'] if (e['floor'],e['support'])==(floor,group['support'])]
-            story.extend([PageBreak(),par(f"Piso: {floor} - Pilar {group['support']}",heading),par('Conclusão da ligação: '+group['status']),par(group['coverage']+'; '+str(group['omitted_count'])+' omitidas.'),par('Grupo: '+(group['group'] or group['classification']))])
-            if group['different_reinforcement_proposals']:
-                story.append(par('Existem propostas de armadura distintas entre combinações. A adoção de um pormenor comum requer a sua conferência em todas as combinações; não basta escolher a maior área de aço.'))
-            rows=[]
-            for e in items:
-                r=e['snapshot'];v=r['load_trace']['adopted'] if r else e.get('actions')
-                rows.append([e['combination'],*(f'{v[f]:.3f}' if v else '-' for f in ('V_Ed','M_Edx','M_Edy')),r['badge'] if r else PENDING_LABELS[e['status']]])
-            story.append(table(['Combinação','VEd (kN)','MEdx (kN.m)','MEdy (kN.m)','Situação'],rows,[88,66,75,75,width-304]))
-            story.append(par('Combinações condicionantes',heading))
-            if group['governing']:
-                for g in group['governing'].values():story.append(par(f"{g['name']}: {g['combination']}; utilização {g['utilization']:.3f}."))
-            else:story.append(par('Não existem verificações resistentes concluídas.'))
-            for e in items:
-                if e['error']:story.append(par(e['combination']+': '+e['error']))
-            chosen=detail_combinations(items,group,report['full'])
-            for e in items:
-                if e['combination'] not in chosen:continue
-                story.extend([PageBreak(),par(f"{floor} / {group['support']} / {e['combination']}",heading)])
-                r=e['snapshot']
-                if r:
-                    for i,sec in enumerate(sections(r)):
-                        story.append(par(sec['title'],heading))
-                        for line in sec['lines']:story.append(par(line))
-                        if i==2 and r['geometry']:story.append(drawing(r,width=width))
-                    story.extend([CondPageBreak(110),par('Registo das entradas do caso',table_heading)])
-                    entries=[[INPUT_LABELS.get(k,k),fmt(v)] for k,v in r['inputs'].items() if v is not None and k not in ('openings','u1_ineffective')]
-                    story.append(table(['Entrada','Valor'],entries,[260,width-260]))
-                else:
-                    story.append(par('Verificação pendente: '+e['error']))
-                    for line in e['origin'].splitlines():
-                        if line:story.append(par(line))
-    doc=SimpleDocTemplate(str(path),pagesize=A4,leftMargin=52,rightMargin=52,topMargin=42,bottomMargin=60,
-                         title='PunchingShearEC2 - Memória do conjunto de ligações',author='PunchingShearEC2',
-                         creator='PunchingShearEC2 '+report['version'],subject=report['scope'],
-                         keywords='punçoamento; ligações; grupos; '+report['version'])
-    def footer(canvas,doc):
-        canvas.saveState();canvas.setFont(font,8);canvas.setStrokeColor(colors.lightgrey);canvas.line(52,46,A4[0]-52,46)
-        canvas.drawCentredString(A4[0]/2,34,f"PunchingShearEC2 {report['version']} | {report['emitted_at']} | {doc.page}")
-        canvas.drawCentredString(A4[0]/2,22,REPOSITORY);canvas.linkURL(REPOSITORY,(52,18,A4[0]-52,29),relative=0);canvas.restoreState()
-    doc.build(story,onFirstPage=footer,onLaterPages=footer)
+    from .memory_pdf import export_collection
+    export_collection(report,path)

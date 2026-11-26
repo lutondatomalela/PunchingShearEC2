@@ -146,9 +146,9 @@ def test_all_export_formats_retain_state_and_values(load,status,tmp_path):
     assert status in (tmp_path/'result.txt').read_text(encoding='utf-8')
     from openpyxl import load_workbook
     wb=load_workbook(tmp_path/'result.xlsx')
-    assert wb['Resumo']['B2'].value==status
+    assert wb['Resumo']['B2'].value==r['badge']
     entries=dict(wb['Entradas'].values)
-    assert entries['VEd (N)']==load
+    assert entries['Esforço transverso de cálculo - VEd (N)']==load
     assert entries['Projeto']=="'=2+2"
     ws=wb['Verificacoes']
     for i,c in enumerate(r['checks'],2):

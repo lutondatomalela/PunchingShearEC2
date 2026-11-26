@@ -1,5 +1,17 @@
 # Histórico de alterações
 
+## 1.16.0-rc.1 — 2026-11-26
+
+- PDF individual e de conjunto reorganizados como anexo à memória descritiva e justificativa.
+- Nomes completos, símbolos e unidades dos parâmetros; esforços em kN/kN.m, utilizações em percentagem e vírgula decimal.
+- Síntese por ligação e fichas condicionantes; materiais e hipóteses comuns apresentados uma única vez.
+- Planta junto aos perímetros, quadros de verificações e pormenorização; estados, omissões e falhas mantidos explícitos.
+- Fichas condensadas conservam também pendências e configurações físicas distintas. Opção de todas as combinações preservada.
+- PDF sem registos brutos, hashes ou códigos internos; JSON/TXT técnico conservados.
+- XLSX com descrições completas nas entradas e parâmetros; estado legível em «Resumo» e quatro colunas em «Parametros» (nome, símbolo, valor e unidade).
+- Guia de relatórios, amostra pública e regressões de conteúdo/valores. Ensaio do executável inclui também o PDF do conjunto.
+- Fórmulas, mecanismos de cálculo e formato de projetos preservados.
+
 ## 1.15.1-rc.1 — 2026-09-15
 
 - Primeira candidata com executável Windows x64 autónomo, ícone e metadados.

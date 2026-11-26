@@ -3,6 +3,7 @@ import json
 import math
 from pathlib import Path
 from .version import REPOSITORY
+from .report_parameters import INPUT_NAMES, VALUE_NAMES, readable_input
 
 INPUT_LABELS={
     'project':'Projeto','support':'Apoio / laje','combination':'Combinação ELU',
@@ -31,6 +32,8 @@ INPUT_LABELS={
     'footing_shape':'Forma da sapata','footing_bx':'Bx sapata (m)','footing_by':'By sapata (m)',
     'footing_diameter':'Diâmetro da sapata (m)'}
 
+
+INPUT_LABELS.update(INPUT_NAMES)
 
 def fmt(v,nd=3):
     if v is None:return 'Não calculado'
@@ -188,9 +191,9 @@ def export_xlsx(r,path):
         ws.freeze_panes='A2';ws.auto_filter.ref=ws.dimensions
         return ws
     sheet('Resumo',['Campo','Valor'],[
-        ['Estado',r['status']],['Conclusão',r['conclusion']],['Versão',r['version']],['Norma',r['standard']],
+        ['Estado',r['badge']],['Conclusão',r['conclusion']],['Versão',r['version']],['Norma',r['standard']],
         ['Execução',r['calculated_at']],['Identificador',r['input_hash']]])
-    sheet('Entradas',['Campo','Valor'],[[INPUT_LABELS.get(k,k),fmt(v) if isinstance(v,(list,dict,tuple)) else v] for k,v in r['inputs'].items()])
+    sheet('Entradas',['Campo','Valor'],[[INPUT_LABELS.get(k,k),readable_input(k,v)] for k,v in r['inputs'].items()])
     if r.get('longitudinal_trace'):
         from .longitudinal import trace_lines as longitudinal_lines
         sheet('ArmaduraLongitudinal',['Armadura longitudinal e altura útil'],[[line] for line in longitudinal_lines(r['longitudinal_trace'])]).column_dimensions['A'].width=110
@@ -201,7 +204,9 @@ def export_xlsx(r,path):
     ws=sheet('Verificacoes',['Verificação','vEd (MPa)','Resistência (MPa)','Utilização motor','Utilização XLSX','Estado','Referência'],
           [[c['name'],c['demand'],c['resistance'],c['utilization'],None,'VERIFICA' if c['passed'] else 'NÃO VERIFICA',c['reference']] for c in r['checks']])
     for i in range(2,ws.max_row+1):ws.cell(i,5,f'=IFERROR(B{i}/C{i},"")')
-    sheet('Parametros',['Variável','Valor'],list(r['values'].items())+[['beta: '+k,fmt(v) if isinstance(v,(list,dict)) else v] for k,v in r['beta_terms'].items() if k!='candidates'])
+    sheet('Parametros',['Parâmetro','Símbolo','Valor','Unidade'],
+          [[VALUE_NAMES[k][0],VALUE_NAMES[k][1],v*VALUE_NAMES[k][3] if v is not None else None,VALUE_NAMES[k][2]]
+           for k,v in r['values'].items()])
     sheet('Beta',['Grandeza','Expressão','Substituição numérica','Valor','Unidade','Referência'],
           [[s['symbol'],s['expression'],s['substitution'],s['value'],s['unit'],s['reference']] for s in r['beta_terms'].get('steps',[])])
     if r.get('opening_records'):
@@ -254,7 +259,7 @@ def _pdf_fonts():
     return 'Courier','Courier-Bold'
 
 
-def drawing(r,width=482,height=290):
+def drawing(r,width=482,height=290,legend=True):
     from reportlab.graphics.shapes import Drawing,PolyLine,Rect,Circle,String,Line
     from reportlab.lib import colors
     d=Drawing(width,height);g=r['geometry'];c=g.get('column')
@@ -302,51 +307,12 @@ def drawing(r,width=482,height=290):
     for row in r['reinforcement_rows']:
         for x,y in row['coordinates']:d.add(Circle(*pt(x,y),1.7,fillColor=colors.HexColor('#173c4b'),strokeColor=None))
     font,_=_pdf_fonts()
-    d.add(String(12,12,'u0 roxo | u1 vermelho | u1* ocre | u_out verde | secção crítica azul',fontName=font,fontSize=7))
+    if legend:d.add(String(12,12,'u0 roxo | u1 vermelho | u1* ocre | u_out verde | secção crítica azul',fontName=font,fontSize=7))
     d.add(String(width-63,height-15,'+X →',fontName=font,fontSize=8))
     d.add(String(width-63,height-28,'+Y ↑',fontName=font,fontSize=8))
     return d
 
 
 def export_pdf(r,path):
-    from html import escape
-    from reportlab.platypus import SimpleDocTemplate,Paragraph,Spacer,Table,TableStyle,KeepTogether
-    from reportlab.lib.styles import ParagraphStyle
-    from reportlab.lib.pagesizes import A4
-    from reportlab.lib import colors
-    font,bold=_pdf_fonts();body=ParagraphStyle('body',fontName=font,fontSize=10,leading=15,spaceAfter=6)
-    heading=ParagraphStyle('heading',fontName=bold,fontSize=12,leading=18,spaceBefore=15,spaceAfter=12)
-    small=ParagraphStyle('small',parent=body,fontSize=8,leading=10,spaceAfter=0)
-    title=ParagraphStyle('title',parent=heading,fontSize=15,leading=20,spaceAfter=16)
-    def par(text,style=body):return Paragraph(escape(str(text)),style)
-    doc=SimpleDocTemplate(str(path),pagesize=A4,leftMargin=52,rightMargin=52,topMargin=42,bottomMargin=60,
-                         title='PunchingShearEC2 - Memória de cálculo',author=REPOSITORY)
-    story=[par('Verificação de punçoamento',title)]
-    for index,sec in enumerate(sections(r)):
-        story.append(KeepTogether([par(sec['title'],heading),par(sec['lines'][0])]))
-        for line in sec['lines'][1:]:story.append(par(line))
-        if index==2 and r['geometry']:
-            story.append(Spacer(1,8));story.append(drawing(r,width=A4[0]-104))
-    rows=[[par('Entrada',small),par('Valor',small)]]
-    p=r['inputs']
-    ignored={'u1_ineffective','openings'}
-    if not p['is_sapata']:ignored.update({'footing_shape','footing_bx','footing_by','footing_diameter','sigma_gd_kpa'})
-    if p['pilar_tipo']!='bordo':ignored.add('edge_perp_interior')
-    if p['pilar_tipo']!='canto':ignored.add('corner_interior')
-    if p['pilar_forma']=='circular':ignored.add('pilar_c2')
-    for k,v in p.items():
-        if v is not None and k not in ignored:rows.append([par(INPUT_LABELS.get(k,k),small),par(fmt(v),small)])
-    table=Table(rows,colWidths=[295,A4[0]-104-295],repeatRows=1,hAlign='LEFT')
-    table.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),colors.HexColor('#e3ebf0')),
-                              ('VALIGN',(0,0),(-1,-1),'TOP'),('LINEBELOW',(0,0),(-1,0),.6,colors.grey),
-                              ('LEFTPADDING',(0,0),(-1,-1),4),('RIGHTPADDING',(0,0),(-1,-1),4),
-                              ('TOPPADDING',(0,0),(-1,-1),2),('BOTTOMPADDING',(0,0),(-1,-1),2)]))
-    story.append(KeepTogether([par('Registo das entradas do caso',heading),table]))
-    def footer(canvas,doc):
-        canvas.saveState();canvas.setFont(font,8)
-        canvas.setStrokeColor(colors.lightgrey);canvas.line(52,46,A4[0]-52,46)
-        canvas.drawCentredString(A4[0]/2,34,f"PunchingShearEC2 {r['version']} | {r['calculated_at']} | {doc.page}")
-        canvas.setFont(font,8);canvas.drawCentredString(A4[0]/2,22,REPOSITORY)
-        canvas.linkURL(REPOSITORY,(52,18,A4[0]-52,29),relative=0)
-        canvas.restoreState()
-    doc.build(story,onFirstPage=footer,onLaterPages=footer)
+    from .memory_pdf import export_case
+    export_case(r,path)

@@ -115,7 +115,7 @@ def test_pending_export_is_not_a_calculation_failure_or_zero_steel(tmp_path):
     assert 'Nenhuma verificação concluída' in text_report(r)
     from openpyxl import load_workbook
     wb=load_workbook(tmp_path/'pending.xlsx')
-    assert wb['Resumo']['B2'].value=='BETA_PENDING'
+    assert wb['Resumo']['B2'].value=='β POR FUNDAMENTAR'
     assert wb['Verificacoes'].max_row==1 and wb['Fiadas'].max_row==1
 
 

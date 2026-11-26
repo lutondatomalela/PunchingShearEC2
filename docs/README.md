@@ -10,6 +10,7 @@
 | Base e reforços | [Armadura longitudinal](../ARMADURA_LONGITUDINAL.md) |
 | Trabalho com muitos pilares | [Grupos e relatórios](../GRUPOS_E_RELATORIOS.md) |
 | Aberturas | [Editor](../ABERTURAS_GUI.md) |
+| Relatórios para a memória | [Exportação e exemplo PDF](RELATORIOS.md) |
 | Evidência dos testes | [Validação](../VALIDACAO.md) |
 | Conferência visual | [Guião da interface](../GUI_TESTES.md) |
 | Evolução | [Histórico](../CHANGELOG.md), [base 1.15.0](../BASELINE.md) |

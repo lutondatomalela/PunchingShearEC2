@@ -2,10 +2,10 @@
 
 ## Obter e executar
 
-A distribuição **1.15.1-rc.1** é uma candidata a lançamento para Windows x64. Inclui Python, Tk e as dependências; não exige instalar Python.
+A distribuição **1.16.0-rc.1** é uma candidata a lançamento para Windows x64. Inclui Python, Tk e as dependências; não exige instalar Python.
 
-1. Abra a [release v1.15.1-rc.1](https://github.com/lutondatomalela/PunchingShearEC2/releases/tag/v1.15.1-rc.1).
-2. Descarregue `PunchingShearEC2-1.15.1-rc.1-Windows-x64.zip`.
+1. Abra a [release v1.16.0-rc.1](https://github.com/lutondatomalela/PunchingShearEC2/releases/tag/v1.16.0-rc.1).
+2. Descarregue `PunchingShearEC2-1.16.0-rc.1-Windows-x64.zip`.
 3. Extraia a pasta completa para uma localização à sua escolha.
 4. Execute `PunchingShearEC2.exe`.
 5. Comece por um exemplo e confirme os dados antes de calcular.
@@ -17,7 +17,7 @@ Também está disponível o ficheiro `.exe` autónomo. O ZIP acrescenta exemplos
 A janela e os relatórios identificam a versão. `BUILD-INFO.json` regista o commit de origem, ambiente de compilação, dependências e resultado do ensaio do executável. `SHA256SUMS.txt` permite conferir os ficheiros descarregados:
 
 ```powershell
-Get-FileHash .\PunchingShearEC2-1.15.1-rc.1-Windows-x64.zip -Algorithm SHA256
+Get-FileHash .\PunchingShearEC2-1.16.0-rc.1-Windows-x64.zip -Algorithm SHA256
 ```
 
 Compare o valor com a linha correspondente no ficheiro SHA256SUMS. Esta RC não tem assinatura digital de código; o sistema operativo pode apresentar um aviso de editor desconhecido. O hash identifica o ficheiro, mas não substitui uma assinatura digital.
@@ -26,7 +26,7 @@ Compare o valor com a linha correspondente no ficheiro SHA256SUMS. Esta RC não 
 
 Abra **Exemplos**, selecione um caso e execute **Calcular / F5**. Confira as páginas **Verificações**, **Fiadas** e **Memória**. Para vários pilares, utilize **Pilares…** e guarde o conjunto em JSON.
 
-Os ficheiros de projeto 1.15.0 continuam a usar o mesmo formato. Conserve o original ao ensaiar a RC e recalcule os resultados depois de alterar dados. Consulte [a documentação](README.md) para importação, hipóteses e limitações.
+Os ficheiros de projeto 1.15.0 continuam a usar o mesmo formato. Conserve o original ao ensaiar a RC e recalcule as ligações na nova versão antes de exportar. Para a nova apresentação PDF, consulte [Relatórios para a memória](RELATORIOS.md). Consulte [a documentação](README.md) para importação, hipóteses e limitações.
 
 ## Estado da RC
 

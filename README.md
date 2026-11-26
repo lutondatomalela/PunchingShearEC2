@@ -6,11 +6,11 @@ Aplicação em Python com interface gráfica, preparação de ligações laje–
 
 ## Windows — release candidate
 
-**[Descarregar 1.15.1-rc.1](https://github.com/lutondatomalela/PunchingShearEC2/releases/tag/v1.15.1-rc.1)** · [Instalação e primeiro uso](docs/INSTALACAO_WINDOWS.md) · [Documentação](docs/README.md)
+**[Descarregar 1.16.0-rc.1](https://github.com/lutondatomalela/PunchingShearEC2/releases/tag/v1.16.0-rc.1)** · [Instalação e primeiro uso](docs/INSTALACAO_WINDOWS.md) · [Documentação](docs/README.md)
 
 A distribuição Windows x64 inclui um executável autónomo, exemplos, documentação e metadados de compilação. Não requer Python instalado. Os binários são disponibilizados em **Releases**, com hashes SHA-256 e ligação ao commit de origem.
 
-A **1.15.1-rc.1** acrescenta empacotamento e correções de codificação à base **1.15.0**. As fórmulas e o formato dos projetos permanecem iguais. A candidata só é publicada após aprovação dos testes e do ensaio do executável; a revisão visual completa em postos Windows precede o lançamento estável.
+A **1.16.0-rc.1** reorganiza os relatórios PDF para anexar à memória descritiva e justificativa, com nomes completos dos parâmetros, quadros de verificação e fichas condicionantes. As fórmulas e o formato dos projetos permanecem iguais. A candidata só é publicada após aprovação dos testes e do ensaio do executável; a revisão visual completa em postos Windows precede o lançamento estável.
 
 A referência original está identificada em [BASELINE.md](BASELINE.md). O histórico é preservado; o congelamento não constitui certificação nem elimina as limitações documentadas.
 
@@ -26,6 +26,7 @@ A referência original está identificada em [BASELINE.md](BASELINE.md). O hist�
 - Seleção de barras por listas e intervalos, com extensão à prumada quando a conectividade e as coordenadas o permitem.
 - Grupos de ligações, parâmetros comuns, exceções individuais e cálculo em lote.
 - Gravação de casos e conjuntos em JSON.
+- PDF para a memória com síntese por ligação, nome/símbolo/unidade, materiais comuns e plantas com legenda.
 - Relatórios individuais PDF, XLSX, TXT e JSON; relatórios de conjunto PDF, TXT e JSON, filtrados por resultados calculados e atualizados.
 - Editor gráfico de aberturas e exemplos didáticos incluídos.
 
@@ -81,6 +82,7 @@ O esforço axial acumulado num pilar não é, por si só, a carga transmitida pe
 | [Modelo e ligações](MODELO_IMPORTACAO.md) | Origem dos esforços e conferência da ligação |
 | [Preparação por piso](MODELO_POR_PISO.md) | Eixos, intervalos, prumadas e gravação |
 | [Armadura longitudinal](ARMADURA_LONGITUDINAL.md) | Base, reforço, camadas e alturas úteis |
+| [Apresentação dos relatórios](docs/RELATORIOS.md) | Exportação para a memória e [exemplo PDF](docs/examples/Relatorio_conjunto.pdf) |
 | [Grupos e relatórios](GRUPOS_E_RELATORIOS.md) | Predefinições, edição em lote e âmbito exportado |
 | [Aberturas](ABERTURAS_GUI.md) | Definição gráfica e limites geométricos |
 | [Exemplos](examples/README.md) | Casos didáticos e resultados esperados |
@@ -109,7 +111,7 @@ python -m pytest -q
 python tools/verify_baseline.py
 ```
 
-A suite da RC acrescenta um teste de regressão para consola com codificação legada aos 533 testes da base. A integração contínua executa a suite em Linux e Windows e ensaia o executável antes de publicar. Consulte a [validação](VALIDACAO.md) e os resultados de cada commit em [Actions](https://github.com/lutondatomalela/PunchingShearEC2/actions).
+A suite inclui as referências numéricas da base, a consola com codificação legada e regressões de conteúdo dos relatórios PDF/XLSX. A integração contínua executa a suite em Linux e Windows e ensaia o executável antes de publicar. Consulte a [validação](VALIDACAO.md) e os resultados de cada commit em [Actions](https://github.com/lutondatomalela/PunchingShearEC2/actions).
 
 ## Estrutura
 
